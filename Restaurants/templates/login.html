@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio | Restaurantes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background-color: #d9d9d9;
+            border: 2px solid #00008B;
+            padding: 30px 40px;
+            width: 350px;
+        }
+
+        .card-header {
+            background-color: #00008B;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            margin: -30px -40px 20px -40px;
+            font-size: 14px;
+        }
+
+        h2 {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #000;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .form-group label {
+            width: 100px;
+            font-size: 13px;
+            color: #000;
+        }
+
+        .form-group input {
+            flex: 1;
+            padding: 4px 8px;
+            border: 1px solid #999;
+            font-size: 13px;
+            background-color: white;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 6px 18px;
+            font-size: 13px;
+            background-color: #d9d9d9;
+            border: 1px solid #999;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #c0c0c0;
+        }
+
+        .restaurant-title {
+            font-size: 15px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="card-header">Inicio</div>
+        <p class="restaurant-title">Restaurante</p>
+        <h2>Iniciar Sesión</h2>
+
+        <div class="form-group">
+            <label>Usuario</label>
+            <input type="text" placeholder="Usuario">
+        </div>
+
+        <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" placeholder="••••••">
+        </div>
+
+        <div class="btn-container">
+            <a href="/registro/"><button class="btn">Registrarse</button></a>
+            <button class="btn">Iniciar Sesión</button>
+        </div>
+    </div>
+</body>
+</html>
