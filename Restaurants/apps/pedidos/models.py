@@ -11,6 +11,8 @@ class Productopedido(models.Model):
     class Meta:
         managed = False
         db_table = 'productopedido'
+        verbose_name = 'Producto Pedido'
+        verbose_name_plural = 'Productos Pedidos'
 
 
 class Ticket(models.Model):
@@ -25,12 +27,16 @@ class Ticket(models.Model):
     class Meta:
         managed = False
         db_table = 'ticket'
+        verbose_name = 'Ticket'
+        verbose_name_plural = 'Tickets'
 
 
 class Detalleticket(models.Model):
-    id_ticket = models.ForeignKey(Ticket, models.DO_NOTHING, db_column='id_ticket', blank=True, null=True)
+    id_ticket = models.ForeignKey(Ticket, models.DO_NOTHING, db_column='id_ticket', primary_key=True, blank=True, null=False)
     id_productopedido = models.ForeignKey(Productopedido, models.DO_NOTHING, db_column='id_productopedido', blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'detalleticket'
+        verbose_name = 'Detalle Ticket'
+        verbose_name_plural = 'Detalles Tickets'

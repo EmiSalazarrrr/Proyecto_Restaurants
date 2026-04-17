@@ -8,6 +8,8 @@ class Perfiles(models.Model):
     class Meta:
         managed = False
         db_table = 'perfiles'
+        verbose_name = 'Perfil'
+        verbose_name_plural = 'Perfiles'
 
 
 class Cliente(models.Model):
@@ -22,3 +24,5 @@ class Cliente(models.Model):
     class Meta:
         managed = False
         db_table = 'cliente'
+        verbose_name = 'Cliente'
+        verbose_name_plural = 'Clientes'

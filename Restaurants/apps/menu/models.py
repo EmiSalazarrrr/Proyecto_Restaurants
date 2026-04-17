@@ -10,3 +10,5 @@ class Alimentosbebidas(models.Model):
     class Meta:
         managed = False
         db_table = 'alimentosbebidas'
+        verbose_name = 'Alimento o Bebida'
+        verbose_name_plural = 'Alimentos y Bebidas'
