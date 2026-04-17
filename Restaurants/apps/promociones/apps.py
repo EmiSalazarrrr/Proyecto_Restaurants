@@ -2,4 +2,5 @@ from django.apps import AppConfig
 
 
 class PromocionesConfig(AppConfig):
-    name = 'promociones'
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'apps.promociones'
