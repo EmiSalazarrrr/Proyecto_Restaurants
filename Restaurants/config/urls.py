@@ -11,3 +11,7 @@ urlpatterns = [
     path('agregar-ticket/', views.agregar_ticket_view, name='agregar_ticket'),
     path('historial/', views.historial_view, name='historial'),
 ]
+
+admin.site.site_header = 'Restaurants Admin'
+admin.site.site_title = "Panel de Restaurants"
+admin.site.index_title = "Bienvenido al Panel de Administración de Restaurants de Django"

@@ -1,0 +1,312 @@
+[
+  {
+    "model": "usuarios.perfiles",
+    "pk": 1,
+    "fields": { "tipo_de_usuario": "Administrador" }
+  },
+  {
+    "model": "usuarios.perfiles",
+    "pk": 2,
+    "fields": { "tipo_de_usuario": "Cliente" }
+  },
+
+  {
+    "model": "usuarios.cliente",
+    "pk": "jlopez",
+    "fields": {
+      "numero_celular": "3141234567",
+      "nombre": "Juan",
+      "apellido_paterno": "López",
+      "apellido_materno": "Martínez",
+      "contrase_a": "9b8769a4a742959a2d0298c36fb70623f2dfacda8436237df08d8dfd5b37374c",
+      "id_tipo_de_usuario": 2
+    }
+  },
+  {
+    "model": "usuarios.cliente",
+    "pk": "mgarcia",
+    "fields": {
+      "numero_celular": "3149876543",
+      "nombre": "María",
+      "apellido_paterno": "García",
+      "apellido_materno": "Hernández",
+      "contrase_a": "7428557649a482e5ae23a41b2264c7605bc19d389558b2cf26c2640eca59c7b7",
+      "id_tipo_de_usuario": 2
+    }
+  },
+  {
+    "model": "usuarios.cliente",
+    "pk": "cperez",
+    "fields": {
+      "numero_celular": "3142233445",
+      "nombre": "Carlos",
+      "apellido_paterno": "Pérez",
+      "apellido_materno": "Sánchez",
+      "contrase_a": "b54b8e7974d19f275f1719226e29868300e29872016fd4c36099ca245c168c7c",
+      "id_tipo_de_usuario": 2
+    }
+  },
+  {
+    "model": "usuarios.cliente",
+    "pk": "lrodriguez",
+    "fields": {
+      "numero_celular": "3145566778",
+      "nombre": "Laura",
+      "apellido_paterno": "Rodríguez",
+      "apellido_materno": null,
+      "contrase_a": "07565c81300e0e361c4ebf2801672d010a6a895191111fec54069e817345ffdd",
+      "id_tipo_de_usuario": 2
+    }
+  },
+  {
+    "model": "usuarios.cliente",
+    "pk": "admin01",
+    "fields": {
+      "numero_celular": "3148899001",
+      "nombre": "Adriana",
+      "apellido_paterno": "Mendoza",
+      "apellido_materno": "Torres",
+      "contrase_a": "b8b8eb83374c0bf3b1c3224159f6119dbfff1b7ed6dfecdd80d4e8a895790a34",
+      "id_tipo_de_usuario": 1
+    }
+  },
+
+
+  {
+    "model": "menu.alimentosbebidas",
+    "pk": 1,
+    "fields": {
+      "descripcion": "Hamburguesa clásica con lechuga, tomate y queso cheddar",
+      "costo": "89.00",
+      "nombre": "Hamburguesa Clásica"
+    }
+  },
+  {
+    "model": "menu.alimentosbebidas",
+    "pk": 2,
+    "fields": {
+      "descripcion": "Pizza de pepperoni tamaño mediano con orilla rellena",
+      "costo": "120.00",
+      "nombre": "Pizza Pepperoni"
+    }
+  },
+  {
+    "model": "menu.alimentosbebidas",
+    "pk": 3,
+    "fields": {
+      "descripcion": "Refresco de cola 500ml en lata",
+      "costo": "25.00",
+      "nombre": "Coca-Cola 500ml"
+    }
+  },
+  {
+    "model": "menu.alimentosbebidas",
+    "pk": 4,
+    "fields": {
+      "descripcion": "Ensalada César con aderezo, pollo y crutones",
+      "costo": "65.00",
+      "nombre": "Ensalada César"
+    }
+  },
+  {
+    "model": "menu.alimentosbebidas",
+    "pk": 5,
+    "fields": {
+      "descripcion": "Orden de papas fritas medianas con sal y kétchup",
+      "costo": "45.00",
+      "nombre": "Papas Fritas Medianas"
+    }
+  },
+
+  
+  {
+    "model": "pedidos.productopedido",
+    "pk": 1,
+    "fields": { "id_alimentosbebidas": 1 }
+  },
+  {
+    "model": "pedidos.productopedido",
+    "pk": 2,
+    "fields": { "id_alimentosbebidas": 2 }
+  },
+  {
+    "model": "pedidos.productopedido",
+    "pk": 3,
+    "fields": { "id_alimentosbebidas": 3 }
+  },
+  {
+    "model": "pedidos.productopedido",
+    "pk": 4,
+    "fields": { "id_alimentosbebidas": 4 }
+  },
+  {
+    "model": "pedidos.productopedido",
+    "pk": 5,
+    "fields": { "id_alimentosbebidas": 5 }
+  },
+
+  {
+    "model": "promociones.restricciones",
+    "pk": 1,
+    "fields": { "nombre": "Sin Restricción", "consumo_minimo_para_aplicar": 0 }
+  },
+  {
+    "model": "promociones.restricciones",
+    "pk": 2,
+    "fields": { "nombre": "Mínimo 2 productos", "consumo_minimo_para_aplicar": 2 }
+  },
+  {
+    "model": "promociones.restricciones",
+    "pk": 3,
+    "fields": { "nombre": "Mínimo 3 productos", "consumo_minimo_para_aplicar": 3 }
+  },
+  {
+    "model": "promociones.restricciones",
+    "pk": 4,
+    "fields": { "nombre": "Mínimo 5 productos", "consumo_minimo_para_aplicar": 5 }
+  },
+  {
+    "model": "promociones.restricciones",
+    "pk": 5,
+    "fields": { "nombre": "Cliente Frecuente", "consumo_minimo_para_aplicar": 10 }
+  },
+
+  {
+    "model": "promociones.promocion",
+    "pk": 1,
+    "fields": {
+      "nombre": "Promo Bienvenida",
+      "descripcion": "Descuento especial para clientes nuevos sin condiciones",
+      "porcentaje_a_reducir": "10.00",
+      "id_restriccion": 1
+    }
+  },
+  {
+    "model": "promociones.promocion",
+    "pk": 2,
+    "fields": {
+      "nombre": "Dúo Ahorro",
+      "descripcion": "Descuento al pedir 2 o más productos en una sola orden",
+      "porcentaje_a_reducir": "15.00",
+      "id_restriccion": 2
+    }
+  },
+  {
+    "model": "promociones.promocion",
+    "pk": 3,
+    "fields": {
+      "nombre": "Combo Familiar",
+      "descripcion": "Descuento especial al ordenar 3 o más productos",
+      "porcentaje_a_reducir": "20.00",
+      "id_restriccion": 3
+    }
+  },
+  {
+    "model": "promociones.promocion",
+    "pk": 4,
+    "fields": {
+      "nombre": "Mega Combo",
+      "descripcion": "Gran descuento por pedidos de 5 productos o más",
+      "porcentaje_a_reducir": "25.00",
+      "id_restriccion": 4
+    }
+  },
+  {
+    "model": "promociones.promocion",
+    "pk": 5,
+    "fields": {
+      "nombre": "Cliente VIP",
+      "descripcion": "Descuento exclusivo para clientes con 10 o más compras previas",
+      "porcentaje_a_reducir": "30.00",
+      "id_restriccion": 5
+    }
+  },
+
+  {
+    "model": "pedidos.ticket",
+    "pk": 1,
+    "fields": {
+      "precio_final": "178.00",
+      "fecha": "2024-01-01T12:00:00",
+      "canjeado": 0,
+      "id_promocion": 1,
+      "nombre_usuario": "jlopez",
+      "codigounico": 100001
+    }
+  },
+  {
+    "model": "pedidos.ticket",
+    "pk": 2,
+    "fields": {
+      "precio_final": "102.00",
+      "fecha": "2024-01-02T12:00:00",
+      "canjeado": 1,
+      "id_promocion": 2,
+      "nombre_usuario": "mgarcia",
+      "codigounico": 100002
+    }
+  },
+  {
+    "model": "pedidos.ticket",
+    "pk": 3,
+    "fields": {
+      "precio_final": "65.00",
+      "fecha": "2024-01-03T12:00:00",
+      "canjeado": 0,
+      "id_promocion": null,
+      "nombre_usuario": "cperez",
+      "codigounico": 100003
+    }
+  },
+  {
+    "model": "pedidos.ticket",
+    "pk": 4,
+    "fields": {
+      "precio_final": "160.00",
+      "fecha": "2024-01-04T12:00:00",
+      "canjeado": 0,
+      "id_promocion": 3,
+      "nombre_usuario": "lrodriguez",
+      "codigounico": 100004
+    }
+  },
+  {
+    "model": "pedidos.ticket",
+    "pk": 5,
+    "fields": {
+      "precio_final": "62.50",
+      "fecha": "2024-01-05T12:00:00",
+      "canjeado": 1,
+      "id_promocion": 4,
+      "nombre_usuario": "admin01",
+      "codigounico": 100005
+    }
+  },
+
+
+  {
+    "model": "pedidos.detalleticket",
+    "pk": 1,
+    "fields": { "id_ticket": 1, "id_productopedido": 1 }
+  },
+  {
+    "model": "pedidos.detalleticket",
+    "pk": 2,
+    "fields": { "id_ticket": 2, "id_productopedido": 2 }
+  },
+  {
+    "model": "pedidos.detalleticket",
+    "pk": 3,
+    "fields": { "id_ticket": 3, "id_productopedido": 4 }
+  },
+  {
+    "model": "pedidos.detalleticket",
+    "pk": 4,
+    "fields": { "id_ticket": 4, "id_productopedido": 3 }
+  },
+  {
+    "model": "pedidos.detalleticket",
+    "pk": 5,
+    "fields": { "id_ticket": 5, "id_productopedido": 5 }
+  }
+]

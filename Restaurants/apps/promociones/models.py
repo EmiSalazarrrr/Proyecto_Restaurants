@@ -9,6 +9,8 @@ class Restricciones(models.Model):
     class Meta:
         managed = False
         db_table = 'restricciones'
+        verbose_name = 'Restriccion'
+        verbose_name_plural = 'Restricciones'
 
 
 class Promocion(models.Model):
@@ -21,3 +23,5 @@ class Promocion(models.Model):
     class Meta:
         managed = False
         db_table = 'promocion'
+        verbose_name = 'Promocion'
+        verbose_name_plural = 'Promociones'
