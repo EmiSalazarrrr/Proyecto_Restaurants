@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú Administrador | Restaurants</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: #1a1a2e;
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        header span {
+            font-size: 13px;
+            color: #a0a0c0;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .welcome {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .welcome h2 {
+            font-size: 22px;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .menu-btn {
+            background-color: white;
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
+            padding: 24px 16px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a2e;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .menu-btn:hover {
+            border-color: #1a1a2e;
+            background-color: #f0f0f8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .menu-btn .icon {
+            font-size: 28px;
+        }
+
+        .btn-cerrar {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 500px;
+            padding: 12px;
+            background-color: #1a1a2e;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            text-decoration: none;
+            text-align: center;
+            display: block;
+        }
+
+        .btn-cerrar:hover {
+            background-color: #2d2d4e;
+        }
+
+        footer {
+            text-align: center;
+            padding: 16px;
+            font-size: 12px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Restaurants</h1>
+        <span>Panel Administrador</span>
+    </header>
+
+    <div class="main-content">
+        <div class="welcome">
+            <h2>Bienvenido, Administrador</h2>
+            <p>Selecciona una opción para continuar</p>
+        </div>
+
+        <div class="menu-grid">
+            <a href="#" class="menu-btn">
+                <span class="icon">🍽️</span>
+                Alimentos / Bebidas
+            </a>
+            <a href="#" class="menu-btn">
+                <span class="icon">🪑</span>
+                Atender Mesa
+            </a>
+            <a href="#" class="menu-btn">
+                <span class="icon">🎁</span>
+                Configurar Promociones
+            </a>
+            <a href="#" class="menu-btn">
+                <span class="icon">📊</span>
+                Consultar Métricas Diarias
+            </a>
+        </div>
+
+        <a href="/" class="btn-cerrar">Cerrar Sesión</a>
+    </div>
+
+    <footer>
+        Restaurants &copy; 2026
+    </footer>
+
+</body>
+</html>
