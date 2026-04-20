@@ -17,6 +17,12 @@
             display: flex;
             justify-content: center;
             align-items: center;
+
+            /* FONDO — para cambiar después reemplaza esto por:
+               background-image: url('ruta/imagen.jpg');
+               background-size: cover;
+               background-position: center;
+            */
             background: linear-gradient(
                 135deg,
                 #0a0a1a 0%,
@@ -24,6 +30,23 @@
                 #0d2137 60%,
                 #1a3a2a 100%
             );
+            animation: fadeInBackground 1s ease forwards;
+        }
+
+        @keyframes fadeInBackground {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         body::before {
@@ -60,6 +83,8 @@
             position: relative;
             z-index: 1;
             margin: 30px 20px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.8s forwards;
         }
 
         /* AVATAR */
@@ -83,7 +108,14 @@
             margin-bottom: 8px;
             cursor: pointer;
             transition: all 0.3s;
-            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .avatar-circle:hover {
@@ -108,7 +140,7 @@
             text-transform: uppercase;
         }
 
-        /* MODAL de selección de avatar */
+        /* MODAL */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -128,7 +160,7 @@
         }
 
         .modal {
-            background: rgba(20, 20, 50, 0.95);
+            background: rgba(20, 20, 50, 0.97);
             border: 1px solid rgba(255,255,255,0.15);
             border-radius: 16px;
             padding: 30px;
@@ -176,28 +208,36 @@
 
         .icons-grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 12px;
+            justify-items: center;
         }
 
         .icon-option {
-            width: 52px;
-            height: 52px;
+            width: 64px;
+            height: 64px;
             background: rgba(255,255,255,0.08);
             border: 2px solid transparent;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 26px;
             cursor: pointer;
             transition: all 0.2s;
+            overflow: hidden;
+        }
+
+        .icon-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
         }
 
         .icon-option:hover {
             background: rgba(255,200,80,0.15);
             border-color: rgba(255,200,80,0.5);
-            transform: scale(1.1);
+            transform: scale(1.08);
         }
 
         .icon-option.selected {
@@ -347,41 +387,19 @@
 </head>
 <body>
 
-   
+    <!-- MODAL -->
     <div class="modal-overlay" id="avatarModal">
         <div class="modal">
             <button class="modal-close" onclick="cerrarModal()">✕</button>
             <p class="modal-title">Elige tu ícono</p>
             <p class="modal-subtitle">Selecciona el que más te guste</p>
-            <div class="icons-grid">
-                <div class="icon-option" onclick="seleccionarIcono('🧑')">🧑</div>
-                <div class="icon-option" onclick="seleccionarIcono('👨')">👨</div>
-                <div class="icon-option" onclick="seleccionarIcono('👩')">👩</div>
-                <div class="icon-option" onclick="seleccionarIcono('🧔')">🧔</div>
-                <div class="icon-option" onclick="seleccionarIcono('👱')">👱</div>
-                <div class="icon-option" onclick="seleccionarIcono('🦸')">🦸</div>
-                <div class="icon-option" onclick="seleccionarIcono('🧙')">🧙</div>
-                <div class="icon-option" onclick="seleccionarIcono('🐶')">🐶</div>
-                <div class="icon-option" onclick="seleccionarIcono('🐱')">🐱</div>
-                <div class="icon-option" onclick="seleccionarIcono('🦊')">🦊</div>
-                <div class="icon-option" onclick="seleccionarIcono('🐼')">🐼</div>
-                <div class="icon-option" onclick="seleccionarIcono('🦁')">🦁</div>
-                <div class="icon-option" onclick="seleccionarIcono('🐯')">🐯</div>
-                <div class="icon-option" onclick="seleccionarIcono('🐸')">🐸</div>
-                <div class="icon-option" onclick="seleccionarIcono('🐙')">🐙</div>
-                <div class="icon-option" onclick="seleccionarIcono('🌟')">🌟</div>
-                <div class="icon-option" onclick="seleccionarIcono('🔥')">🔥</div>
-                <div class="icon-option" onclick="seleccionarIcono('🎮')">🎮</div>
-                <div class="icon-option" onclick="seleccionarIcono('🎵')">🎵</div>
-                <div class="icon-option" onclick="seleccionarIcono('🍕')">🍕</div>
-            </div>
+            <div class="icons-grid" id="iconsGrid"></div>
         </div>
     </div>
 
-    <!-- TARJETA principal -->
+    <!-- TARJETA -->
     <div class="card">
 
-       
         <div class="avatar-section">
             <div class="avatar-circle" onclick="abrirModal()" id="avatarCircle">
                 🍽️
@@ -448,9 +466,37 @@
     </div>
 
     <script>
-        let iconoSeleccionado = '🍽️';
+        // ─── AGREGA AQUÍ LOS NOMBRES DE TUS IMÁGENES ────────────
+        // Guárdalas en: static/avatars/
+        // Ejemplo: avatar1.png, avatar2.png, etc.
+        const avatarImagenes = [
+            'avatar1.png',
+            'avatar2.png',
+            'avatar3.png',
+            'avatar4.png',
+            'avatar5.png',
+            'avatar6.png',
+            'avatar7.png',
+            'avatar8.png',
+        ];
+        // ────────────────────────────────────────────────────────
+
+        let avatarSeleccionado = null;
+
+        function generarIconos() {
+            const grid = document.getElementById('iconsGrid');
+            grid.innerHTML = '';
+            avatarImagenes.forEach((imagen, index) => {
+                const div = document.createElement('div');
+                div.className = 'icon-option';
+                div.innerHTML = `<img src="/static/avatars/${imagen}" alt="avatar ${index + 1}">`;
+                div.onclick = () => seleccionarIcono(imagen, div);
+                grid.appendChild(div);
+            });
+        }
 
         function abrirModal() {
+            generarIconos();
             document.getElementById('avatarModal').classList.add('active');
         }
 
@@ -458,19 +504,14 @@
             document.getElementById('avatarModal').classList.remove('active');
         }
 
-        function seleccionarIcono(icono) {
-            iconoSeleccionado = icono;
-            document.getElementById('avatarCircle').textContent = icono;
-
-            
+        function seleccionarIcono(imagen, elemento) {
+            avatarSeleccionado = imagen;
+            const circle = document.getElementById('avatarCircle');
+            circle.innerHTML = `<img src="/static/avatars/${imagen}" alt="avatar seleccionado">`;
             document.querySelectorAll('.icon-option').forEach(el => {
                 el.classList.remove('selected');
-                if (el.textContent === icono) {
-                    el.classList.add('selected');
-                }
             });
-
-            
+            elemento.classList.add('selected');
             setTimeout(() => cerrarModal(), 200);
         }
 
@@ -485,7 +526,6 @@
             }
         }
 
-       
         document.getElementById('avatarModal').addEventListener('click', function(e) {
             if (e.target === this) cerrarModal();
         });
