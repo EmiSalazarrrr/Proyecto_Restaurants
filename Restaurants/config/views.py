@@ -17,3 +17,15 @@ def agregar_ticket_view(request):
 
 def historial_view(request):
     return render(request, 'historial.html')
+
+def alimentos_bebidas_view(request):
+    return render(request, 'alimentos_bebidas.html')
+
+def atender_mesa_view(request):
+    return render(request, 'atender_mesa.html')
+
+def promociones_view(request):
+    return render(request, 'promociones.html')
+
+def metricas_view(request):
+    return render(request, "metricas.html")

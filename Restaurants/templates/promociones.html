@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Administrador | Restaurants</title>
+    <title>Configurar Promociones | Restaurants</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -16,8 +16,8 @@
             --text-primary: #eeeef5;
             --text-secondary: #8888aa;
             --text-muted: #55556a;
-            --success: #4caf82;
             --danger: #e05c5c;
+            --danger-dim: rgba(224,92,92,0.1);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -30,7 +30,7 @@
             display: flex;
         }
 
-        /* ── SIDEBAR ── */
+        /* SIDEBAR */
         .sidebar {
             width: 220px;
             min-height: 100vh;
@@ -57,10 +57,7 @@
             text-transform: uppercase;
         }
 
-        .sidebar-logo span b {
-            color: var(--accent);
-            font-weight: 600;
-        }
+        .sidebar-logo span b { color: var(--accent); font-weight: 600; }
 
         .sidebar-label {
             font-size: 10px;
@@ -83,25 +80,11 @@
             text-decoration: none;
             transition: all 0.18s ease;
             border-left: 3px solid transparent;
-            cursor: pointer;
         }
 
-        .nav-item:hover {
-            color: var(--text-primary);
-            background-color: rgba(255,255,255,0.04);
-        }
-
-        .nav-item.active {
-            color: var(--accent);
-            background-color: var(--accent-dim);
-            border-left-color: var(--accent);
-        }
-
-        .nav-item .nav-icon {
-            font-size: 16px;
-            width: 20px;
-            text-align: center;
-        }
+        .nav-item:hover { color: var(--text-primary); background-color: rgba(255,255,255,0.04); }
+        .nav-item.active { color: var(--accent); background-color: var(--accent-dim); border-left-color: var(--accent); }
+        .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
 
         .sidebar-bottom {
             margin-top: auto;
@@ -127,38 +110,23 @@
             transition: all 0.18s ease;
         }
 
-        .btn-logout:hover {
-            border-color: var(--danger);
-            color: var(--danger);
-            background: rgba(224,92,92,0.07);
-        }
+        .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: rgba(224,92,92,0.07); }
 
-        /* ── MAIN ── */
+        /* MAIN */
         .main {
             margin-left: 220px;
             flex: 1;
             padding: 36px 40px;
-            min-height: 100vh;
         }
 
         .topbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 36px;
+            margin-bottom: 8px;
         }
 
-        .topbar-left h2 {
-            font-size: 22px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .topbar-left p {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-top: 3px;
-        }
+        .topbar h2 { font-size: 22px; font-weight: 600; }
 
         .topbar-badge {
             background: var(--accent-dim);
@@ -171,54 +139,14 @@
             font-family: 'DM Mono', monospace;
         }
 
-        /* ── STAT CARDS ── */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
-            margin-bottom: 28px;
+        .page-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 36px;
         }
 
-        .stat-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 10px;
-            padding: 20px;
-            transition: border-color 0.2s ease;
-        }
-
-        .stat-card:hover {
-            border-color: rgba(201,168,76,0.3);
-        }
-
-        .stat-label {
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-
-        .stat-value {
-            font-size: 26px;
-            font-weight: 600;
-            color: var(--text-primary);
-            font-family: 'DM Mono', monospace;
-            margin-bottom: 4px;
-        }
-
-        .stat-sub {
-            font-size: 12px;
-            color: var(--text-muted);
-        }
-
-        .stat-sub.up { color: var(--success); }
-        .stat-sub.down { color: var(--danger); }
-
-        /* ── ACTION CARDS ── */
         .section-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
             color: var(--text-muted);
             text-transform: uppercase;
@@ -230,7 +158,7 @@
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 14px;
-            margin-bottom: 28px;
+            max-width: 700px;
         }
 
         .action-card {
@@ -253,6 +181,16 @@
             box-shadow: 0 6px 20px rgba(0,0,0,0.2);
         }
 
+        .action-card.danger:hover {
+            border-color: var(--danger);
+            background: var(--danger-dim);
+        }
+
+        .action-card.back:hover {
+            border-color: var(--text-secondary);
+            background: rgba(255,255,255,0.03);
+        }
+
         .action-icon {
             width: 44px;
             height: 44px;
@@ -265,9 +203,10 @@
             flex-shrink: 0;
         }
 
-        .action-info {
-            flex: 1;
-        }
+        .action-card.danger .action-icon { background: var(--danger-dim); }
+        .action-card.back .action-icon { background: rgba(255,255,255,0.05); }
+
+        .action-info { flex: 1; }
 
         .action-title {
             font-size: 14px;
@@ -281,14 +220,10 @@
             color: var(--text-secondary);
         }
 
-        .action-arrow {
-            color: var(--text-muted);
-            font-size: 16px;
-        }
+        .action-arrow { color: var(--text-muted); font-size: 16px; }
 
-        /* ── FOOTER ── */
         .page-footer {
-            margin-top: 20px;
+            margin-top: 32px;
             font-size: 11px;
             color: var(--text-muted);
             font-family: 'DM Mono', monospace;
@@ -297,15 +232,12 @@
 </head>
 <body>
 
-    <!-- SIDEBAR -->
     <aside class="sidebar">
         <div class="sidebar-logo">
             <span>REST<b>AU</b>RANTS</span>
         </div>
-
         <p class="sidebar-label">Menú</p>
-
-        <a href="/menu-admin/" class="nav-item active">
+        <a href="/menu-admin/" class="nav-item">
             <span class="nav-icon">⊞</span> Dashboard
         </a>
         <a href="/alimentos-bebidas/" class="nav-item">
@@ -314,13 +246,12 @@
         <a href="/atender-mesa/" class="nav-item">
             <span class="nav-icon">🪑</span> Atender Mesa
         </a>
-        <a href="/promociones/" class="nav-item">
+        <a href="#" class="nav-item active">
             <span class="nav-icon">🎁</span> Promociones
         </a>
         <a href="/metricas/" class="nav-item">
             <span class="nav-icon">📊</span> Métricas
         </a>
-
         <div class="sidebar-bottom">
             <a href="/" class="btn-logout">
                 <span>⇠</span> Cerrar Sesión
@@ -328,72 +259,60 @@
         </div>
     </aside>
 
-    <!-- MAIN CONTENT -->
     <main class="main">
         <div class="topbar">
-            <div class="topbar-left">
-                <h2>Dashboard</h2>
-                <p>Resumen general del día</p>
-            </div>
+            <h2>Configurar Promociones</h2>
             <div class="topbar-badge">Panel Administrador</div>
         </div>
+        <p class="page-subtitle">Selecciona la operación que deseas realizar sobre las promociones</p>
 
-        <!-- STATS -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-label">Ventas hoy</div>
-                <div class="stat-value">$0</div>
-                <div class="stat-sub">Sin registros aún</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Mesas activas</div>
-                <div class="stat-value">0</div>
-                <div class="stat-sub">Sin actividad</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Clientes hoy</div>
-                <div class="stat-value">0</div>
-                <div class="stat-sub">Sin registros aún</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Promociones activas</div>
-                <div class="stat-value">0</div>
-                <div class="stat-sub">Sin promociones</div>
-            </div>
-        </div>
-
-        <!-- ACCIONES -->
-        <p class="section-title">Acciones rápidas</p>
+        <p class="section-title">Operaciones</p>
         <div class="actions-grid">
-            <a href="/alimentos-bebidas/" class="action-card">
-                <div class="action-icon">🍽️</div>
+            <a href="#" class="action-card">
+                <div class="action-icon">➕</div>
                 <div class="action-info">
-                    <div class="action-title">Alimentos / Bebidas</div>
-                    <div class="action-desc">Gestiona el catálogo del menú</div>
+                    <div class="action-title">Agregar</div>
+                    <div class="action-desc">Crea una nueva promoción</div>
                 </div>
                 <span class="action-arrow">›</span>
             </a>
-            <a href="/atender-mesa/" class="action-card">
-                <div class="action-icon">🪑</div>
+            <a href="#" class="action-card">
+                <div class="action-icon">✏️</div>
                 <div class="action-info">
-                    <div class="action-title">Atender Mesa</div>
-                    <div class="action-desc">Registra pedidos en curso</div>
+                    <div class="action-title">Editar Promoción</div>
+                    <div class="action-desc">Modifica una promoción existente</div>
                 </div>
                 <span class="action-arrow">›</span>
             </a>
-            <a href="/promociones/" class="action-card">
-                <div class="action-icon">🎁</div>
+            <a href="#" class="action-card">
+                <div class="action-icon">🔍</div>
                 <div class="action-info">
-                    <div class="action-title">Configurar Promociones</div>
-                    <div class="action-desc">Crea y gestiona recompensas</div>
+                    <div class="action-title">Consultar</div>
+                    <div class="action-desc">Ve el listado de promociones activas</div>
                 </div>
                 <span class="action-arrow">›</span>
             </a>
-            <a href="/metricas/" class="action-card">
-                <div class="action-icon">📊</div>
+            <a href="#" class="action-card">
+                <div class="action-icon">⚙️</div>
                 <div class="action-info">
-                    <div class="action-title">Consultar Métricas</div>
-                    <div class="action-desc">Estadísticas y reportes del día</div>
+                    <div class="action-title">Configurar Restricciones</div>
+                    <div class="action-desc">Define reglas y límites de uso</div>
+                </div>
+                <span class="action-arrow">›</span>
+            </a>
+            <a href="#" class="action-card danger">
+                <div class="action-icon">🗑️</div>
+                <div class="action-info">
+                    <div class="action-title">Eliminar</div>
+                    <div class="action-desc">Quita una promoción del sistema</div>
+                </div>
+                <span class="action-arrow">›</span>
+            </a>
+            <a href="/menu-admin/" class="action-card back">
+                <div class="action-icon">↩️</div>
+                <div class="action-info">
+                    <div class="action-title">Regresar</div>
+                    <div class="action-desc">Volver al menú principal</div>
                 </div>
                 <span class="action-arrow">›</span>
             </a>
