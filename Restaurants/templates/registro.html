@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio | Registrarse</title>
+    <title>Restaurants | Registrarse</title>
     <style>
         * {
             margin: 0;
@@ -12,120 +12,523 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+
+               /* background-image: url('static/img/fondoCielo.jpeg');
+               background-size: cover;
+               background-position: center; */
+            
+             background: linear-gradient(
+                135deg,
+                #0a0a1a 0%,
+                #1a1a3e 30%,
+                #0d2137 60%,
+                #1a3a2a 100%
+            ); 
+            animation: fadeInBackground 1s ease forwards;
+        }
+
+        @keyframes fadeInBackground {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,180,50,0.08) 0%, transparent 70%);
+            top: -100px;
+            right: -100px;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(30,100,150,0.15) 0%, transparent 70%);
+            bottom: -100px;
+            left: -100px;
+            pointer-events: none;
         }
 
         .card {
-            background-color: #d9d9d9;
-            border: 2px solid #00008B;
-            padding: 30px 40px;
-            width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 40px 50px;
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            z-index: 1;
+            margin: 30px 20px;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.8s forwards;
         }
 
-        .card-header {
-            background-color: #00008B;
-            color: white;
-            text-align: center;
-            padding: 8px;
-            margin: -30px -40px 20px -40px;
-            font-size: 14px;
+        /* AVATAR */
+        .avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 32px;
         }
 
-        p.subtitle {
-            font-size: 13px;
-            text-align: center;
-            margin-bottom: 20px;
-            color: #000;
-        }
-
-        .form-group {
+        .avatar-circle {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,200,80,0.4);
+            border-radius: 50%;
             display: flex;
             align-items: center;
-            margin-bottom: 15px;
-            gap: 10px;
-        }
-
-        .form-group label {
-            width: 130px;
-            font-size: 13px;
-            color: #000;
-        }
-
-        .form-group input {
-            flex: 1;
-            padding: 4px 8px;
-            border: 1px solid #999;
-            font-size: 13px;
-            background-color: white;
-        }
-
-        .btn-container {
-            display: flex;
             justify-content: center;
-            margin-top: 25px;
-        }
-
-        .btn {
-            padding: 6px 18px;
-            font-size: 13px;
-            background-color: #d9d9d9;
-            border: 1px solid #999;
+            font-size: 36px;
+            margin-bottom: 8px;
             cursor: pointer;
+            transition: all 0.3s;
+            overflow: hidden;
         }
 
-        .btn:hover {
-            background-color: #c0c0c0;
+        .avatar-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .avatar-circle:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: rgba(255,200,80,0.7);
+            transform: scale(1.05);
+        }
+
+        .avatar-hint {
+            font-size: 10px;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .avatar-label {
+            font-size: 10px;
+            color: rgba(255,200,80,0.6);
+            letter-spacing: 1px;
+            cursor: pointer;
+            margin-top: 6px;
+            text-transform: uppercase;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: rgba(20, 20, 50, 0.97);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 30px;
+            width: 340px;
+            position: relative;
+        }
+
+        .modal-title {
+            font-size: 14px;
+            color: white;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .modal-subtitle {
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            justify-items: center;
+        }
+
+        .icon-option {
+            width: 64px;
+            height: 64px;
+            background: rgba(255,255,255,0.08);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+
+        .icon-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .icon-option:hover {
+            background: rgba(255,200,80,0.15);
+            border-color: rgba(255,200,80,0.5);
+            transform: scale(1.08);
+        }
+
+        .icon-option.selected {
+            background: rgba(255,200,80,0.2);
+            border-color: rgba(255,200,80,0.8);
+        }
+
+        /* FORMULARIO */
+        .form-title {
+            font-size: 24px;
+            font-weight: 300;
+            color: white;
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+        }
+
+        .form-subtitle {
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            letter-spacing: 1px;
+            margin-bottom: 32px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 24px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group.full {
+            grid-column: 1 / -1;
+        }
+
+        .input-group label {
+            font-size: 10px;
+            color: rgba(255,200,80,0.8);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 14px;
+            color: white;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255,255,255,0.25);
+            font-size: 13px;
+        }
+
+        .input-group input:focus {
+            border-color: rgba(255,200,80,0.5);
+            background: rgba(255,255,255,0.12);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper input {
+            width: 100%;
+            padding-right: 42px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.4);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 0;
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: rgba(255,200,80,0.8);
+        }
+
+        .btn-register {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,200,80,0.9);
+            color: #12122a;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 28px;
+            transition: all 0.3s;
+        }
+
+        .btn-register:hover {
+            background: rgba(255,200,80,1);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(255,200,80,0.2);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.4);
+        }
+
+        .login-link a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            padding-bottom: 1px;
+            transition: all 0.2s;
+        }
+
+        .login-link a:hover {
+            color: white;
+            border-bottom-color: white;
+        }
+
+        .divider-line {
+            width: 30px;
+            height: 1px;
+            background: rgba(255,200,80,0.3);
+            margin: 0 auto 20px;
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="card-header">Inicio | Registrarse</div>
-        <p class="subtitle">Ingresa los siguientes datos</p>
 
-        <div class="form-group">
-            <label>Nombre</label>
-            <input type="text" placeholder="Emiliano">
-        </div>
-
-        <div class="form-group">
-            <label>Apellido paterno</label>
-            <input type="text" placeholder="Salazar">
-        </div>
-
-        <div class="form-group">
-            <label>Apellido Materno</label>
-            <input type="text" placeholder="Figueroa">
-        </div>
-
-        <div class="form-group">
-            <label>Número de Celular</label>
-            <input type="tel" placeholder="3121234567">
-        </div>
-
-        <div class="form-group">
-            <label>Nombre de Usuario</label>
-            <input type="text" placeholder="Emi123">
-        </div>
-
-        <div class="form-group">
-            <label>Contraseña</label>
-            <input type="password" placeholder="••••••">
-        </div>
-
-        <div class="form-group">
-            <label>Repetir contraseña</label>
-            <input type="password" placeholder="••••••">
-        </div>
-
-        <div class="btn-container">
-            <button class="btn">Registrar</button>
+    <!-- MODAL -->
+    <div class="modal-overlay" id="avatarModal">
+        <div class="modal">
+            <button class="modal-close" onclick="cerrarModal()">✕</button>
+            <p class="modal-title">Elige tu ícono</p>
+            <p class="modal-subtitle">Selecciona el que más te guste</p>
+            <div class="icons-grid" id="iconsGrid"></div>
         </div>
     </div>
+
+    <!-- TARJETA -->
+    <div class="card">
+
+        <div class="avatar-section">
+            <div class="avatar-circle" onclick="abrirModal()" id="avatarCircle">
+                🍽️
+            </div>
+            <span class="avatar-hint">RESTAURANTS</span>
+            <span class="avatar-label" onclick="abrirModal()">✦ Elegir ícono</span>
+        </div>
+
+        <div class="divider-line"></div>
+        <h2 class="form-title">Crear Cuenta</h2>
+        <p class="form-subtitle">Ingresa tus datos para registrarte</p>
+
+        <div class="form-grid">
+
+            <div class="input-group">
+                <label>Nombre</label>
+                <input type="text" placeholder="Tu nombre">
+            </div>
+
+            <div class="input-group">
+                <label>Apellido Paterno</label>
+                <input type="text" placeholder="Apellido paterno">
+            </div>
+
+            <div class="input-group">
+                <label>Apellido Materno</label>
+                <input type="text" placeholder="Apellido materno">
+            </div>
+
+            <div class="input-group">
+                <label>Número de Celular</label>
+                <input type="tel" placeholder="10 dígitos">
+            </div>
+
+            <div class="input-group full">
+                <label>Nombre de Usuario</label>
+                <input type="text" placeholder="Elige un nombre de usuario">
+            </div>
+
+            <div class="input-group full">
+                <label>Contraseña</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password" placeholder="••••••••">
+                    <button class="toggle-password" onclick="togglePass('password', this)">👁</button>
+                </div>
+            </div>
+
+            <div class="input-group full">
+                <label>Repetir Contraseña</label>
+                <div class="input-wrapper">
+                    <input type="password" id="password2" placeholder="••••••••">
+                    <button class="toggle-password" onclick="togglePass('password2', this)">👁</button>
+                </div>
+            </div>
+
+        </div>
+
+        <button class="btn-register">Registrarse</button>
+
+        <div class="login-link">
+            ¿Ya tienes cuenta? <a href="/">Iniciar Sesión</a>
+        </div>
+
+    </div>
+
+    <script>
+        // ─── AGREGA AQUÍ LOS NOMBRES DE TUS IMÁGENES ────────────
+        // Guárdalas en: static/avatars/
+        // Ejemplo: avatar1.png, avatar2.png, etc.
+        const avatarImagenes = [
+            'avatar1.png',
+            'avatar2.png',
+            'avatar3.png',
+            'avatar4.png',
+            'avatar5.png',
+            'avatar6.png',
+            'avatar7.png',
+            'avatar8.png',
+        ];
+        // ────────────────────────────────────────────────────────
+
+        let avatarSeleccionado = null;
+
+        function generarIconos() {
+            const grid = document.getElementById('iconsGrid');
+            grid.innerHTML = '';
+            avatarImagenes.forEach((imagen, index) => {
+                const div = document.createElement('div');
+                div.className = 'icon-option';
+                div.innerHTML = `<img src="/static/avatars/${imagen}" alt="avatar ${index + 1}">`;
+                div.onclick = () => seleccionarIcono(imagen, div);
+                grid.appendChild(div);
+            });
+        }
+
+        function abrirModal() {
+            generarIconos();
+            document.getElementById('avatarModal').classList.add('active');
+        }
+
+        function cerrarModal() {
+            document.getElementById('avatarModal').classList.remove('active');
+        }
+
+        function seleccionarIcono(imagen, elemento) {
+            avatarSeleccionado = imagen;
+            const circle = document.getElementById('avatarCircle');
+            circle.innerHTML = `<img src="/static/avatars/${imagen}" alt="avatar seleccionado">`;
+            document.querySelectorAll('.icon-option').forEach(el => {
+                el.classList.remove('selected');
+            });
+            elemento.classList.add('selected');
+            setTimeout(() => cerrarModal(), 200);
+        }
+
+        function togglePass(id, btn) {
+            const input = document.getElementById(id);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁';
+            }
+        }
+
+        document.getElementById('avatarModal').addEventListener('click', function(e) {
+            if (e.target === this) cerrarModal();
+        });
+    </script>
+
 </body>
 </html>

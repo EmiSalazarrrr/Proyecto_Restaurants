@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio | Restaurantes</title>
+    <title>Restaurants | Iniciar Sesión</title>
     <style>
         * {
             margin: 0;
@@ -12,102 +12,307 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            height: 100vh;
             display: flex;
+            overflow: hidden;
+        }
+
+        /* LADO IZQUIERDO */
+        .left-panel {
+            width: 50%;
+            background: linear-gradient(
+                135deg,
+                #0a0a1a 0%,
+                #1a1a3e 30%,
+                #0d2137 60%,
+                #1a3a2a 100%
+            );
+            display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            position: relative;
+            overflow: hidden;
         }
 
-        .card {
-            background-color: #d9d9d9;
-            border: 2px solid #00008B;
-            padding: 30px 40px;
-            width: 350px;
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,180,50,0.15) 0%, transparent 70%);
+            top: 20%;
+            left: 30%;
+            transform: translate(-50%, -50%);
         }
 
-        .card-header {
-            background-color: #00008B;
-            color: white;
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(30,100,150,0.3) 0%, transparent 70%);
+            bottom: 20%;
+            right: 10%;
+        }
+
+        .decoration {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+
+        .deco-1 {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(20,80,60,0.8), transparent);
+            top: 10%;
+            left: 5%;
+        }
+
+        .deco-2 {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(10,40,80,0.9), transparent);
+            bottom: 15%;
+            left: 15%;
+        }
+
+        .deco-3 {
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(180,140,30,0.4), transparent);
+            top: 45%;
+            right: 15%;
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 2;
             text-align: center;
-            padding: 8px;
-            margin: -30px -40px 20px -40px;
+            padding: 40px;
+        }
+
+        /* Línea decorativa arriba del Welcome */
+        .deco-line-top {
+            width: 40px;
+            height: 1px;
+            background: rgba(255,200,80,0.6);
+            margin: 0 auto 30px;
+        }
+
+        .welcome-text {
+            font-size: 52px;
+            font-weight: 100;
+            letter-spacing: 16px;
+            color: white;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            text-shadow: 0 0 60px rgba(255,255,255,0.2);
+        }
+
+        .brand-name {
+            font-size: 13px;
+            color: rgba(255,200,80,0.85);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+            font-weight: 400;
+        }
+
+        .divider {
+            width: 40px;
+            height: 1px;
+            background: rgba(255,200,80,0.4);
+            margin: 0 auto 28px;
+        }
+
+        .tagline {
+            color: rgba(255,255,255,0.4);
+            font-size: 12px;
+            letter-spacing: 2px;
+            line-height: 2;
+            text-transform: uppercase;
+        }
+
+        /* Año discreto abajo */
+        .year-tag {
+            position: absolute;
+            bottom: 30px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 3px;
+        }
+
+        /* LADO DERECHO */
+        .right-panel {
+            width: 50%;
+            background: #f7f7f9;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px 80px;
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .form-title {
+            font-size: 30px;
+            font-weight: 400;
+            color: #12122a;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        .form-subtitle {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 48px;
+            letter-spacing: 0.3px;
+        }
+
+        .input-group {
+            margin-bottom: 32px;
+            position: relative;
+        }
+
+        /* Label oscuro y claro */
+        .input-group label {
+            display: block;
+            font-size: 11px;
+            color: #555;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        /* Input con texto más oscuro */
+        .input-group input {
+            width: 100%;
+            border: none;
+            border-bottom: 1.5px solid #d0d0d8;
+            padding: 10px 0;
+            font-size: 15px;
+            color: #12122a;
+            outline: none;
+            background: transparent;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            border-bottom-color: #12122a;
+        }
+
+        /* Placeholder más claro para diferenciar */
+        .input-group input::placeholder {
+            color: #b0b0c0;
             font-size: 14px;
         }
 
-        h2 {
-            font-size: 16px;
-            margin-bottom: 20px;
-            color: #000;
-        }
-
-        .form-group {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-            gap: 10px;
-        }
-
-        .form-group label {
-            width: 100px;
+        .btn-login {
+            width: 100%;
+            padding: 16px;
+            background-color: #12122a;
+            color: white;
+            border: none;
+            border-radius: 4px;
             font-size: 13px;
-            color: #000;
-        }
-
-        .form-group input {
-            flex: 1;
-            padding: 4px 8px;
-            border: 1px solid #999;
-            font-size: 13px;
-            background-color: white;
-        }
-
-        .btn-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 25px;
-        }
-
-        .btn {
-            padding: 6px 18px;
-            font-size: 13px;
-            background-color: #d9d9d9;
-            border: 1px solid #999;
+            letter-spacing: 3px;
+            text-transform: uppercase;
             cursor: pointer;
+            margin-top: 16px;
+            transition: background-color 0.3s, transform 0.1s;
         }
 
-        .btn:hover {
-            background-color: #c0c0c0;
+        .btn-login:hover {
+            background-color: #2a2a4a;
+            transform: translateY(-1px);
         }
 
-        .restaurant-title {
-            font-size: 15px;
-            font-weight: bold;
-            margin-bottom: 20px;
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 13px;
+            color: #888;
+        }
+
+        .register-link a {
+            color: #12122a;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 1px solid #12122a;
+            padding-bottom: 1px;
+            transition: opacity 0.2s;
+        }
+
+        .register-link a:hover {
+            opacity: 0.5;
+        }
+
+        .logo-bottom {
+            margin-top: 60px;
+            font-size: 10px;
+            color: #817f7f;
+            letter-spacing: 3px;
+            text-align: center;
+            text-transform: uppercase;
         }
     </style>
 </head>
 <body>
-    <div class="card">
-        <div class="card-header">Inicio</div>
-        <p class="restaurant-title">Restaurante</p>
-        <h2>Iniciar Sesión</h2>
 
-        <div class="form-group">
-            <label>Usuario</label>
-            <input type="text" placeholder="Usuario">
+    <!-- LADO IZQUIERDO -->
+    <div class="left-panel">
+        <div class="decoration deco-1"></div>
+        <div class="decoration deco-2"></div>
+        <div class="decoration deco-3"></div>
+
+        <div class="left-content">
+            <div class="deco-line-top"></div>
+            <h1 class="welcome-text">Welcome</h1>
+            <p class="brand-name">✦ Restaurants ✦</p>
+            <div class="divider"></div>
+            <p class="tagline">Tu historial<br>y recompensas<br>en un solo lugar</p>
         </div>
 
-        <div class="form-group">
-            <label>Contraseña</label>
-            <input type="password" placeholder="••••••">
-        </div>
+        <span class="year-tag">© 2026</span>
+    </div>
 
-        <div class="btn-container">
-            <a href="/registro/"><button class="btn">Registrarse</button></a>
-            <button class="btn">Iniciar Sesión</button>
+    <!-- LADO DERECHO -->
+    <div class="right-panel">
+        <div class="form-container">
+            <h2 class="form-title">Iniciar Sesión</h2>
+            <p class="form-subtitle">Ingresa tus credenciales para continuar</p>
+
+            <div class="input-group">
+                <label>Usuario</label>
+                <input type="text" placeholder="Tu nombre de usuario">
+            </div>
+
+            <div class="input-group">
+                <label>Contraseña</label>
+                <input type="password" placeholder="••••••••">
+            </div>
+
+            <button class="btn-login">Ingresar</button>
+
+            <div class="register-link">
+                ¿No tienes cuenta? <a href="/registro/">Regístrate aquí</a>
+            </div>
+
+            <div class="logo-bottom">Restaurants © 2026</div>
         </div>
     </div>
+
 </body>
 </html>

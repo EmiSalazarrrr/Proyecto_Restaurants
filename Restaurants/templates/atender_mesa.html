@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atender Mesa | Restaurants</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f1a;
+            --sidebar-bg: #1a1a2e;
+            --card-bg: #1e1e32;
+            --card-border: #2a2a45;
+            --accent: #c9a84c;
+            --accent-dim: rgba(201,168,76,0.12);
+            --text-primary: #eeeef5;
+            --text-secondary: #8888aa;
+            --text-muted: #55556a;
+            --danger: #e05c5c;
+            --danger-dim: rgba(224,92,92,0.1);
+            --success: #4caf82;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 220px;
+            min-height: 100vh;
+            background-color: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            padding: 28px 0;
+            position: fixed;
+            top: 0; left: 0;
+            border-right: 1px solid var(--card-border);
+        }
+
+        .sidebar-logo {
+            padding: 0 24px 28px;
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-logo span {
+            font-size: 17px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+            text-transform: uppercase;
+        }
+
+        .sidebar-logo span b { color: var(--accent); font-weight: 600; }
+
+        .sidebar-label {
+            font-size: 10px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            padding: 0 24px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 24px;
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.18s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover { color: var(--text-primary); background-color: rgba(255,255,255,0.04); }
+        .nav-item.active { color: var(--accent); background-color: var(--accent-dim); border-left-color: var(--accent); }
+        .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+        .sidebar-bottom {
+            margin-top: auto;
+            padding: 20px 24px 0;
+            border-top: 1px solid var(--card-border);
+        }
+
+        .btn-logout {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            padding: 10px 14px;
+            background: transparent;
+            border: 1px solid var(--card-border);
+            border-radius: 7px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.18s ease;
+        }
+
+        .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: rgba(224,92,92,0.07); }
+
+        /* MAIN */
+        .main {
+            margin-left: 220px;
+            flex: 1;
+            padding: 36px 40px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .topbar h2 { font-size: 22px; font-weight: 600; }
+
+        .topbar-badge {
+            background: var(--accent-dim);
+            border: 1px solid rgba(201,168,76,0.3);
+            color: var(--accent);
+            font-size: 12px;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-family: 'DM Mono', monospace;
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+
+        /* PEDIDO CARD */
+        .pedido-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 28px;
+            max-width: 720px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+        }
+
+        /* TABLA HEADER */
+        .table-header {
+            display: grid;
+            grid-template-columns: 1fr 110px 120px 36px;
+            gap: 12px;
+            padding: 0 4px 10px;
+            border-bottom: 1px solid var(--card-border);
+            margin-bottom: 12px;
+        }
+
+        .table-header span {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* FILA PLATILLO */
+        .platillo-row {
+            display: grid;
+            grid-template-columns: 1fr 110px 120px 36px;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .platillo-select {
+            width: 100%;
+            padding: 9px 12px;
+            background: #16162a;
+            border: 1px solid var(--card-border);
+            border-radius: 7px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            outline: none;
+            transition: border-color 0.18s;
+            cursor: pointer;
+        }
+
+        .platillo-select:focus { border-color: var(--accent); }
+
+        .cantidad-input {
+            width: 100%;
+            padding: 9px 12px;
+            background: #16162a;
+            border: 1px solid var(--card-border);
+            border-radius: 7px;
+            color: var(--text-primary);
+            font-size: 13px;
+            font-family: 'DM Mono', monospace;
+            outline: none;
+            transition: border-color 0.18s;
+            text-align: center;
+        }
+
+        .cantidad-input:focus { border-color: var(--accent); }
+
+        .costo-display {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--accent);
+            font-family: 'DM Mono', monospace;
+            padding: 9px 4px;
+        }
+
+        .btn-remove {
+            width: 32px;
+            height: 32px;
+            background: var(--danger-dim);
+            border: 1px solid rgba(224,92,92,0.2);
+            border-radius: 7px;
+            color: var(--danger);
+            font-size: 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.18s;
+            flex-shrink: 0;
+        }
+
+        .btn-remove:hover { background: rgba(224,92,92,0.2); }
+
+        /* BOTÓN AGREGAR FILA */
+        .btn-add-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+            padding: 9px 16px;
+            background: transparent;
+            border: 1px dashed var(--card-border);
+            border-radius: 7px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.18s;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-add-row:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        /* TOTAL */
+        .total-section {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .total-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .total-value {
+            font-size: 26px;
+            font-weight: 600;
+            color: var(--accent);
+            font-family: 'DM Mono', monospace;
+        }
+
+        /* BOTÓN IMPRIMIR */
+        .btn-imprimir {
+            margin-top: 20px;
+            width: 100%;
+            padding: 13px;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            color: #0f0f1a;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-imprimir:hover {
+            background: #d4b55a;
+            box-shadow: 0 4px 16px rgba(201,168,76,0.25);
+        }
+
+        .page-footer {
+            margin-top: 28px;
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: 'DM Mono', monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span>REST<b>AU</b>RANTS</span>
+        </div>
+        <p class="sidebar-label">Menú</p>
+        <a href="/menu-admin/" class="nav-item">
+            <span class="nav-icon">⊞</span> Dashboard
+        </a>
+        <a href="/alimentos-bebidas/" class="nav-item">
+            <span class="nav-icon">🍽️</span> Alimentos / Bebidas
+        </a>
+        <a href="#" class="nav-item active">
+            <span class="nav-icon">🪑</span> Atender Mesa
+        </a>
+        <a href="/promociones/" class="nav-item">
+            <span class="nav-icon">🎁</span> Promociones
+        </a>
+        <a href="/metricas/" class="nav-item">
+            <span class="nav-icon">📊</span> Métricas
+        </a>
+        <div class="sidebar-bottom">
+            <a href="/" class="btn-logout">
+                <span>⇠</span> Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <main class="main">
+        <div class="topbar">
+            <h2>Atender Mesa</h2>
+            <div class="topbar-badge">Panel Administrador</div>
+        </div>
+        <p class="page-subtitle">Selecciona los platillos y cantidades del pedido</p>
+
+        <div class="pedido-card">
+            <p class="section-title">Platillos del pedido</p>
+
+            <div class="table-header">
+                <span>Platillo</span>
+                <span>Cantidad</span>
+                <span>Costo</span>
+                <span></span>
+            </div>
+
+            <div id="filas-container">
+                <!-- Las filas se generan con JS -->
+            </div>
+
+            <button class="btn-add-row" onclick="agregarFila()">
+                ＋ Agregar platillo
+            </button>
+
+            <div class="total-section">
+                <span class="total-label">Total</span>
+                <span class="total-value" id="total-display">$0.00</span>
+            </div>
+
+            <button class="btn-imprimir" onclick="imprimirTicket()">
+                🖨️ Imprimir Ticket
+            </button>
+        </div>
+
+        <div class="page-footer">Restaurants &copy; 2026 — Panel de Administración</div>
+    </main>
+
+    <script>
+        // Catálogo de ejemplo — se reemplazará con datos reales del backend
+        const catalogo = [
+            { nombre: "Chilaquiles verdes",  precio: 135 },
+            { nombre: "Chilaquiles rojos",   precio: 135 },
+            { nombre: "Enchiladas",          precio: 110 },
+            { nombre: "Tacos de canasta",    precio: 80  },
+            { nombre: "Limonada",            precio: 40  },
+            { nombre: "Agua de jamaica",     precio: 35  },
+            { nombre: "Pieza de pan",        precio: 40  },
+            { nombre: "Café americano",      precio: 55  },
+        ];
+
+        let filaId = 0;
+
+        function agregarFila() {
+            filaId++;
+            const container = document.getElementById('filas-container');
+
+            const opciones = catalogo.map(item =>
+                `<option value="${item.precio}">${item.nombre}</option>`
+            ).join('');
+
+            const fila = document.createElement('div');
+            fila.className = 'platillo-row';
+            fila.id = `fila-${filaId}`;
+            fila.innerHTML = `
+                <select class="platillo-select" onchange="actualizarCosto(${filaId})">
+                    ${opciones}
+                </select>
+                <input
+                    type="number"
+                    class="cantidad-input"
+                    value="1"
+                    min="1"
+                    max="99"
+                    id="cant-${filaId}"
+                    onchange="actualizarCosto(${filaId})"
+                    oninput="actualizarCosto(${filaId})"
+                />
+                <span class="costo-display" id="costo-${filaId}">$${catalogo[0].precio}.00</span>
+                <button class="btn-remove" onclick="eliminarFila(${filaId})">✕</button>
+            `;
+            container.appendChild(fila);
+            recalcularTotal();
+        }
+
+        function actualizarCosto(id) {
+            const select = document.querySelector(`#fila-${id} .platillo-select`);
+            const cant = parseInt(document.getElementById(`cant-${id}`).value) || 1;
+            const precio = parseFloat(select.value);
+            const subtotal = precio * cant;
+            document.getElementById(`costo-${id}`).textContent = `$${subtotal.toFixed(2)}`;
+            recalcularTotal();
+        }
+
+        function eliminarFila(id) {
+            const fila = document.getElementById(`fila-${id}`);
+            if (fila) fila.remove();
+            recalcularTotal();
+        }
+
+        function recalcularTotal() {
+            const costos = document.querySelectorAll('.costo-display');
+            let total = 0;
+            costos.forEach(el => {
+                total += parseFloat(el.textContent.replace('$', '')) || 0;
+            });
+            document.getElementById('total-display').textContent = `$${total.toFixed(2)}`;
+        }
+
+        function imprimirTicket() {
+            // Función de impresión — se implementará con el backend
+            alert('Funcionalidad de impresión pendiente de implementación.');
+        }
+
+        // Iniciar con una fila vacía
+        agregarFila();
+    </script>
+
+</body>
+</html>

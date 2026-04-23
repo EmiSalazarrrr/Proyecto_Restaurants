@@ -5,136 +5,231 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Historial | Restaurants</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f5f5f5;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background: linear-gradient(
+                135deg,
+                #0a0a1a 0%,
+                #1a1a3e 30%,
+                #0d2137 60%,
+                #1a3a2a 100%
+            );
+            /* Para cambiar a imagen:
+               background-image: url('ruta/imagen.jpg');
+               background-size: cover;
+               background-position: center;
+            */
+            animation: fadeIn 1s ease forwards;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,180,50,0.07) 0%, transparent 70%);
+            top: -100px;
+            right: -100px;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(30,100,150,0.12) 0%, transparent 70%);
+            bottom: -100px;
+            left: -100px;
+            pointer-events: none;
+        }
+
+        /* HEADER */
         header {
-            background-color: #1a1a2e;
-            color: white;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
             padding: 18px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 10;
         }
-        header h1 {
-            font-size: 20px;
-            font-weight: 600;
-            letter-spacing: 1px;
+
+        .header-logo {
+            font-size: 18px;
+            font-weight: 300;
+            color: white;
+            letter-spacing: 3px;
+            text-transform: uppercase;
         }
-        header span {
-            font-size: 13px;
-            color: #a0a0c0;
+
+        .header-logo span { color: rgba(255,200,80,0.9); }
+
+        .header-tag {
+            font-size: 11px;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
+
+        /* CONTENIDO */
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 40px 20px;
+            padding: 48px 24px;
+            position: relative;
+            z-index: 1;
         }
+
+        /* ENCABEZADO DE PÁGINA */
         .page-header {
             width: 100%;
             max-width: 860px;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.2s forwards;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
         }
-        .page-header h2 {
+
+        .page-header-left h2 {
             font-size: 24px;
-            font-weight: 700;
-            color: #1a1a2e;
+            font-weight: 200;
+            color: white;
+            letter-spacing: 3px;
+            text-transform: uppercase;
             margin-bottom: 6px;
         }
-        .page-header p {
-            font-size: 14px;
-            color: #666;
+
+        .page-header-left p {
+            font-size: 12px;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 1px;
         }
+
         .btn-regresar {
-            display: inline-block;
-            margin-bottom: 24px;
-            padding: 11px 20px;
-            background-color: white;
-            color: #1a1a2e;
-            border: 1.5px solid #ddd;
+            padding: 10px 20px;
+            background: transparent;
+            color: rgba(255,255,255,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 12px;
+            letter-spacing: 1px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s;
             text-decoration: none;
-            align-self: flex-start;
+            white-space: nowrap;
         }
+
         .btn-regresar:hover {
-            border-color: #1a1a2e;
-            background-color: #f0f0f8;
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.7);
         }
+
+        /* TABLA */
         .table-wrapper {
             width: 100%;
             max-width: 860px;
-            background-color: white;
-            border: 1.5px solid #ddd;
-            border-radius: 10px;
+            background: rgba(255,255,255,0.07);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.4s forwards;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
         }
+
         thead {
-            background-color: #1a1a2e;
-            color: white;
+            background: rgba(255,200,80,0.1);
+            border-bottom: 1px solid rgba(255,200,80,0.2);
         }
+
         thead th {
-            padding: 14px 18px;
+            padding: 16px 20px;
             text-align: left;
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 600;
-            letter-spacing: 0.5px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255,200,80,0.8);
         }
+
         tbody tr {
-            border-bottom: 1px solid #eee;
-            transition: background-color 0.15s ease;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: background 0.2s;
         }
-        tbody tr:last-child {
-            border-bottom: none;
-        }
+
+        tbody tr:last-child { border-bottom: none; }
+
         tbody tr:hover {
-            background-color: #f7f7fc;
+            background: rgba(255,255,255,0.05);
         }
+
         tbody td {
-            padding: 14px 18px;
-            font-size: 14px;
-            color: #333;
+            padding: 16px 20px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
         }
+
+        /* ESTADO VACÍO */
         .empty-state {
-            padding: 60px 20px;
+            padding: 70px 20px;
             text-align: center;
-            color: #aaa;
         }
-        .empty-state .empty-icon {
-            font-size: 40px;
-            margin-bottom: 12px;
+
+        .empty-icon {
+            font-size: 44px;
+            display: block;
+            margin-bottom: 16px;
+            opacity: 0.4;
         }
+
         .empty-state p {
-            font-size: 14px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 1px;
         }
+
         footer {
             text-align: center;
-            padding: 16px;
-            font-size: 12px;
-            color: #aaa;
+            padding: 20px;
+            font-size: 10px;
+            color: rgba(255,255,255,0.15);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
         }
     </style>
 </head>
 <body>
+<<<<<<< HEAD
     <header>
         <h1>Restaurants</h1>
         <span>Mi cuenta</span>
@@ -146,6 +241,23 @@
         </div>
 
         <a href="/menu-cliente/" class="btn-secondary">← Regresar</a>
+=======
+
+    <header>
+        <div class="header-logo">Rest<span>aurants</span></div>
+        <span class="header-tag">Mi cuenta</span>
+    </header>
+
+    <div class="main-content">
+
+        <div class="page-header">
+            <div class="page-header-left">
+                <h2>📋 Historial</h2>
+                <p>Consulta tus consumos anteriores</p>
+            </div>
+            <a href="/menu-cliente/" class="btn-regresar">← Regresar</a>
+        </div>
+>>>>>>> origin/Visual
 
         <div class="table-wrapper">
             <table>
@@ -159,21 +271,37 @@
                     </tr>
                 </thead>
                 <tbody>
+<<<<<<< HEAD
                     <!-- Aquí se llenarán los registros dinámicamente -->
                     <tr>
                         <td colspan="5">
                             <div class="empty-state">
                                 <div class="empty-icon">🧾</div>
                                 <p>Aún no tienes consumos registrados.</p>
+=======
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <span class="empty-icon">🧾</span>
+                                <p>Aún no tienes consumos registrados</p>
+>>>>>>> origin/Visual
                             </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+<<<<<<< HEAD
     </div>
     <footer>
         Restaurants &copy; 2026
     </footer>
+=======
+
+    </div>
+
+    <footer>Restaurants &copy; 2026</footer>
+
+>>>>>>> origin/Visual
 </body>
 </html>

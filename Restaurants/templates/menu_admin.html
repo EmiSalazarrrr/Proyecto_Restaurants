@@ -132,42 +132,110 @@
 </head>
 <body>
 
-    <header>
-        <h1>Restaurants</h1>
-        <span>Panel Administrador</span>
-    </header>
-
-    <div class="main-content">
-        <div class="welcome">
-            <h2>Bienvenido, Administrador</h2>
-            <p>Selecciona una opción para continuar</p>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span>REST<b>AU</b>RANTS</span>
         </div>
 
-        <div class="menu-grid">
-            <a href="#" class="menu-btn">
-                <span class="icon">🍽️</span>
-                Alimentos / Bebidas
+        <p class="sidebar-label">Menú</p>
+
+        <a href="/menu-admin/" class="nav-item active">
+            <span class="nav-icon">⊞</span> Dashboard
+        </a>
+        <a href="/alimentos-bebidas/" class="nav-item">
+            <span class="nav-icon">🍽️</span> Alimentos / Bebidas
+        </a>
+        <a href="/atender-mesa/" class="nav-item">
+            <span class="nav-icon">🪑</span> Atender Mesa
+        </a>
+        <a href="/promociones/" class="nav-item">
+            <span class="nav-icon">🎁</span> Promociones
+        </a>
+        <a href="/metricas/" class="nav-item">
+            <span class="nav-icon">📊</span> Métricas
+        </a>
+
+        <div class="sidebar-bottom">
+            <a href="/" class="btn-logout">
+                <span>⇠</span> Cerrar Sesión
             </a>
-            <a href="#" class="menu-btn">
-                <span class="icon">🪑</span>
-                Atender Mesa
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main">
+        <div class="topbar">
+            <div class="topbar-left">
+                <h2>Dashboard</h2>
+                <p>Resumen general del día</p>
+            </div>
+            <div class="topbar-badge">Panel Administrador</div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Ventas hoy</div>
+                <div class="stat-value">$0</div>
+                <div class="stat-sub">Sin registros aún</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Mesas activas</div>
+                <div class="stat-value">0</div>
+                <div class="stat-sub">Sin actividad</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Clientes hoy</div>
+                <div class="stat-value">0</div>
+                <div class="stat-sub">Sin registros aún</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Promociones activas</div>
+                <div class="stat-value">0</div>
+                <div class="stat-sub">Sin promociones</div>
+            </div>
+        </div>
+
+        <!-- ACCIONES -->
+        <p class="section-title">Acciones rápidas</p>
+        <div class="actions-grid">
+            <a href="/alimentos-bebidas/" class="action-card">
+                <div class="action-icon">🍽️</div>
+                <div class="action-info">
+                    <div class="action-title">Alimentos / Bebidas</div>
+                    <div class="action-desc">Gestiona el catálogo del menú</div>
+                </div>
+                <span class="action-arrow">›</span>
             </a>
-            <a href="#" class="menu-btn">
-                <span class="icon">🎁</span>
-                Configurar Promociones
+            <a href="/atender-mesa/" class="action-card">
+                <div class="action-icon">🪑</div>
+                <div class="action-info">
+                    <div class="action-title">Atender Mesa</div>
+                    <div class="action-desc">Registra pedidos en curso</div>
+                </div>
+                <span class="action-arrow">›</span>
             </a>
-            <a href="#" class="menu-btn">
-                <span class="icon">📊</span>
-                Consultar Métricas Diarias
+            <a href="/promociones/" class="action-card">
+                <div class="action-icon">🎁</div>
+                <div class="action-info">
+                    <div class="action-title">Configurar Promociones</div>
+                    <div class="action-desc">Crea y gestiona recompensas</div>
+                </div>
+                <span class="action-arrow">›</span>
+            </a>
+            <a href="/metricas/" class="action-card">
+                <div class="action-icon">📊</div>
+                <div class="action-info">
+                    <div class="action-title">Consultar Métricas</div>
+                    <div class="action-desc">Estadísticas y reportes del día</div>
+                </div>
+                <span class="action-arrow">›</span>
             </a>
         </div>
 
-        <a href="/" class="btn-cerrar">Cerrar Sesión</a>
-    </div>
-
-    <footer>
-        Restaurants &copy; 2026
-    </footer>
+        <div class="page-footer">Restaurants &copy; 2026 — Panel de Administración</div>
+    </main>
 
 </body>
 </html>

@@ -10,6 +10,13 @@ urlpatterns = [
     path('menu-cliente/', views.menu_cliente_view, name='menu_cliente'),
     path('agregar-ticket/', views.agregar_ticket_view, name='agregar_ticket'),
     path('historial/', views.historial_view, name='historial'),
+    path('alimentos-bebidas/', views.alimentos_bebidas_view, name='alimentos_bebidas'),
+    path('atender-mesa/', views.atender_mesa_view, name='atender_mesa'),
+    path('promociones/', views.promociones_view, name='promociones'),
+    path('metricas/', views.metricas_view, name='metricas'),
+    path('agregar-alimento/', views.agregar_alimento_view, name='agregar_alimento'),
+    path('modificar-alimento/', views.modificar_alimento_view, name='modificar_alimento'),
+    path('eliminar-alimento/', views.eliminar_alimento_view, name='eliminar_alimento'),
 ]
 
 admin.site.site_header = 'Restaurants Admin'

@@ -13,129 +13,271 @@
 
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background-color: #f5f5f5;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            background: linear-gradient(
+                135deg,
+                #0a0a1a 0%,
+                #1a1a3e 30%,
+                #0d2137 60%,
+                #1a3a2a 100%
+            );
+            animation: fadeIn 1s ease forwards;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        
+        body::before {
+            content: '';
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,180,50,0.07) 0%, transparent 70%);
+            top: -100px;
+            right: -100px;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(30,100,150,0.12) 0%, transparent 70%);
+            bottom: -100px;
+            left: -100px;
+            pointer-events: none;
+        }
+
+        
         header {
-            background-color: #1a1a2e;
-            color: white;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
             padding: 18px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: relative;
+            z-index: 10;
         }
 
-        header h1 {
-            font-size: 20px;
-            font-weight: 600;
-            letter-spacing: 1px;
+        .header-logo {
+            font-size: 18px;
+            font-weight: 300;
+            color: white;
+            letter-spacing: 3px;
+            text-transform: uppercase;
         }
 
-        header span {
-            font-size: 13px;
-            color: #a0a0c0;
+        .header-logo span {
+            color: rgba(255,200,80,0.9);
         }
 
+        .header-tag {
+            font-size: 11px;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* CONTENIDO PRINCIPAL */
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 40px 20px;
+            padding: 60px 20px;
+            position: relative;
+            z-index: 1;
         }
 
+        /* BIENVENIDA */
         .welcome {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 48px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.3s forwards;
+        }
+
+        .welcome-icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 0 20px rgba(255,200,80,0.3));
         }
 
         .welcome h2 {
-            font-size: 26px;
-            color: #1a1a2e;
-            margin-bottom: 10px;
+            font-size: 28px;
+            font-weight: 200;
+            color: white;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .welcome-divider {
+            width: 40px;
+            height: 1px;
+            background: rgba(255,200,80,0.4);
+            margin: 12px auto;
         }
 
         .welcome p {
-            font-size: 15px;
-            color: #666;
-            max-width: 320px;
-            line-height: 1.5;
+            font-size: 13px;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 1px;
+            line-height: 1.8;
         }
 
+        /* BOTONES DEL MENÚ */
         .menu-grid {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
             width: 100%;
-            max-width: 400px;
+            max-width: 380px;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.5s forwards;
         }
 
         .menu-btn {
-            background-color: white;
-            border: 1.5px solid #ddd;
-            border-radius: 8px;
+            background: rgba(255,255,255,0.07);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 12px;
             padding: 20px 24px;
-            font-size: 15px;
-            font-weight: 500;
-            color: #1a1a2e;
+            font-size: 14px;
+            font-weight: 400;
+            color: white;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 18px;
             text-decoration: none;
+            letter-spacing: 0.5px;
         }
 
         .menu-btn:hover {
-            border-color: #1a1a2e;
-            background-color: #f0f0f8;
+            background: rgba(255,200,80,0.12);
+            border-color: rgba(255,200,80,0.4);
+            transform: translateX(6px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        .menu-btn .icon-wrap {
+            width: 42px;
+            height: 42px;
+            background: rgba(255,200,80,0.1);
+            border: 1px solid rgba(255,200,80,0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        .menu-btn:hover .icon-wrap {
+            background: rgba(255,200,80,0.2);
+            border-color: rgba(255,200,80,0.5);
+        }
+
+        .menu-btn .btn-text {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .menu-btn .btn-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: white;
+        }
+
+        .menu-btn .btn-desc {
+            font-size: 11px;
+            color: rgba(255,255,255,0.35);
+            letter-spacing: 0.5px;
+        }
+
+        .menu-btn .arrow {
+            margin-left: auto;
+            color: rgba(255,255,255,0.2);
+            font-size: 18px;
+            transition: all 0.3s;
+        }
+
+        .menu-btn:hover .arrow {
+            color: rgba(255,200,80,0.6);
             transform: translateX(4px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
 
-        .menu-btn .icon {
-            font-size: 22px;
-            width: 30px;
-            text-align: center;
-        }
-
+        /* BOTÓN CERRAR SESIÓN */
         .btn-cerrar {
             margin-top: 24px;
             width: 100%;
-            max-width: 400px;
+            max-width: 380px;
             padding: 14px;
-            background-color: #1a1a2e;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
+            background: transparent;
+            color: rgba(255,255,255,0.35);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 400;
+            letter-spacing: 2px;
+            text-transform: uppercase;
             cursor: pointer;
-            transition: background-color 0.2s ease;
+            transition: all 0.3s;
             text-decoration: none;
             text-align: center;
             display: block;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease 0.7s forwards;
         }
 
         .btn-cerrar:hover {
-            background-color: #2d2d4e;
+            background: rgba(255,80,80,0.1);
+            border-color: rgba(255,80,80,0.3);
+            color: rgba(255,120,120,0.8);
         }
 
+        /* FOOTER */
         footer {
             text-align: center;
-            padding: 16px;
-            font-size: 12px;
-            color: #aaa;
+            padding: 20px;
+            font-size: 10px;
+            color: rgba(255,255,255,0.15);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 1;
         }
     </style>
 </head>
 <body>
 
     <header>
+<<<<<<< HEAD
         <h1>Restaurants</h1>
         <span>Mi cuenta</span>
     </header>
@@ -144,23 +286,61 @@
         <div class="welcome">
             <h2>¡Bienvenido! 👋</h2>
             <p>Gestiona tus consumos, historial y recompensas desde aquí</p>
+=======
+        <div class="header-logo">Rest<span>aurants</span></div>
+        <span class="header-tag">Mi cuenta</span>
+    </header>
+
+    <div class="main-content">
+
+        <div class="welcome">
+            <span class="welcome-icon">🍽️</span>
+            <h2>Bienvenido</h2>
+            <div class="welcome-divider"></div>
+            <p>Gestiona tus consumos, historial<br>y recompensas desde aquí</p>
+>>>>>>> origin/Visual
         </div>
 
         <div class="menu-grid">
             <a href="/agregar-ticket/" class="menu-btn">
+<<<<<<< HEAD
                 <span class="icon">🎫</span>Agregar Ticket
             </a>
             <a href="/historial/" class="menu-btn">
                 <span class="icon">📋</span>Ver Historial
+=======
+                <div class="icon-wrap">🎫</div>
+                <div class="btn-text">
+                    <span class="btn-title">Agregar Ticket</span>
+                    <span class="btn-desc">Registra tu código de compra</span>
+                </div>
+                <span class="arrow">›</span>
+            </a>
+
+            <a href="/historial/" class="menu-btn">
+                <div class="icon-wrap">📋</div>
+                <div class="btn-text">
+                    <span class="btn-title">Ver Historial</span>
+                    <span class="btn-desc">Consulta tus consumos anteriores</span>
+                </div>
+                <span class="arrow">›</span>
+>>>>>>> origin/Visual
             </a>
         </div>
 
         <a href="/" class="btn-cerrar">Cerrar Sesión</a>
+<<<<<<< HEAD
     </div>
 
     <footer>
         Restaurants &copy; 2026
     </footer>
+=======
+
+    </div>
+
+    <footer>Restaurants &copy; 2026</footer>
+>>>>>>> origin/Visual
 
 </body>
 </html>
