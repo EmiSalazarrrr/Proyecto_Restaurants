@@ -29,3 +29,12 @@ def promociones_view(request):
 
 def metricas_view(request):
     return render(request, "metricas.html")
+
+def agregar_alimento_view(request):
+    return render(request, "agregar_alimento.html")
+
+def modificar_alimento_view(request):
+    return render(request, "modificar_alimento.html")
+
+def eliminar_alimento_view(request):
+    return render(request, "eliminar_alimento.html")
