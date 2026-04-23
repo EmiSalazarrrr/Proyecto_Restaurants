@@ -20,6 +20,8 @@ class Promocion(models.Model):
     porcentaje_a_reducir = models.DecimalField(max_digits=5, decimal_places=2)
     id_restriccion = models.ForeignKey(Restricciones, models.DO_NOTHING, db_column='id_restriccion', blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.nombre} - {self.descripcion}"
     class Meta:
         managed = False
         db_table = 'promocion'

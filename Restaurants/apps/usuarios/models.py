@@ -5,6 +5,8 @@ class Perfiles(models.Model):
     id_tipo_de_usuario = models.AutoField(primary_key=True)
     tipo_de_usuario = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.tipo_de_usuario
     class Meta:
         managed = False
         db_table = 'perfiles'
@@ -21,6 +23,8 @@ class Cliente(models.Model):
     contrase_a = models.CharField(db_column='contrase??a', max_length=255)
     id_tipo_de_usuario = models.ForeignKey(Perfiles, models.DO_NOTHING, db_column='id_tipo_de_usuario', blank=True, null=True)
 
+    def __str__(self):
+        return f"{self.nombre_usuario} - {self.nombre} {self.apellido_paterno}"
     class Meta:
         managed = False
         db_table = 'cliente'
