@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 from . import views
 
 urlpatterns = [
@@ -12,11 +12,12 @@ urlpatterns = [
     path('historial/', views.historial_view, name='historial'),
     path('alimentos-bebidas/', views.alimentos_bebidas_view, name='alimentos_bebidas'),
     path('atender-mesa/', views.atender_mesa_view, name='atender_mesa'),
-    path('promociones/', views.promociones_view, name='promociones'),
+    path('promociones-lista/', views.promociones_view, name='promociones_web'),
     path('metricas/', views.metricas_view, name='metricas'),
-    path('agregar-alimento/', views.agregar_alimento_view, name='agregar_alimento'),
-    path('modificar-alimento/', views.modificar_alimento_view, name='modificar_alimento'),
-    path('eliminar-alimento/', views.eliminar_alimento_view, name='eliminar_alimento'),
+    path('menu/', include('apps.menu.urls')),
+    path('pedidos/', include('apps.pedidos.urls')),
+    path('promociones/', include('apps.promociones.urls')),
+    path('usuarios/', include('apps.usuarios.urls')),
 ]
 
 admin.site.site_header = 'Restaurants Admin'

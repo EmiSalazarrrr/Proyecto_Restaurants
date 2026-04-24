@@ -2,80 +2,49 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eliminar Alimento/Bebida | Restaurants</title>
+    <title>Eliminar Alimento | Restaurants</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #0f0f1a;
-            --sidebar-bg: #1a1a2e;
-            --card-bg: #1e1e32;
-            --card-border: #2a2a45;
-            --accent: #c9a84c;
-            --accent-dim: rgba(201,168,76,0.12);
-            --text-primary: #eeeef5;
-            --text-secondary: #8888aa;
-            --text-muted: #55556a;
-            --danger: #e05c5c;
-            --danger-dim: rgba(224,92,92,0.1);
-            --danger-border: rgba(224,92,92,0.3);
-        }
+        :root { --bg: #0f0f1a; --sidebar-bg: #1a1a2e; --card-bg: #1e1e32; --card-border: #2a2a45; --accent: #c9a84c; --accent-dim: rgba(201,168,76,0.12); --text-primary: #eeeef5; --text-secondary: #8888aa; --text-muted: #55556a; --danger: #e05c5c; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; background-color: var(--bg); color: var(--text-primary); min-height: 100vh; display: flex; }
-
-        .sidebar { width: 220px; min-height: 100vh; background-color: var(--sidebar-bg); display: flex; flex-direction: column; padding: 28px 0; position: fixed; top: 0; left: 0; border-right: 1px solid var(--card-border); }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; display: flex; }
+        .sidebar { width: 220px; min-height: 100vh; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 28px 0; position: fixed; top: 0; left: 0; border-right: 1px solid var(--card-border); }
         .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid var(--card-border); margin-bottom: 20px; }
         .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; color: var(--text-primary); text-transform: uppercase; }
-        .sidebar-logo span b { color: var(--accent); font-weight: 600; }
+        .sidebar-logo span b { color: var(--accent); }
         .sidebar-label { font-size: 10px; font-weight: 500; letter-spacing: 1.5px; color: var(--text-muted); text-transform: uppercase; padding: 0 24px; margin-bottom: 8px; }
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; font-size: 13.5px; font-weight: 500; color: var(--text-secondary); text-decoration: none; transition: all 0.18s ease; border-left: 3px solid transparent; }
-        .nav-item:hover { color: var(--text-primary); background-color: rgba(255,255,255,0.04); }
-        .nav-item.active { color: var(--accent); background-color: var(--accent-dim); border-left-color: var(--accent); }
+        .nav-item:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); }
+        .nav-item.active { color: var(--accent); background: var(--accent-dim); border-left-color: var(--accent); }
         .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
         .sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--card-border); }
-        .btn-logout { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px; background: transparent; border: 1px solid var(--card-border); border-radius: 7px; color: var(--text-secondary); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.18s ease; }
-        .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: rgba(224,92,92,0.07); }
-
+        .btn-logout { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px; background: transparent; border: 1px solid var(--card-border); border-radius: 7px; color: var(--text-secondary); font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; text-decoration: none; transition: all 0.18s ease; }
+        .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
         .main { margin-left: 220px; flex: 1; padding: 36px 40px; }
         .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .topbar h2 { font-size: 22px; font-weight: 600; }
-        .topbar-badge { background: var(--accent-dim); border: 1px solid rgba(201,168,76,0.3); color: var(--accent); font-size: 12px; font-weight: 500; padding: 6px 14px; border-radius: 20px; font-family: 'DM Mono', monospace; }
-        .page-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 32px; }
-
-        .form-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 28px; max-width: 560px; }
-        .section-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; }
-
-        .field { margin-bottom: 20px; }
-        .field-row { display: flex; align-items: center; gap: 16px; }
-        .field-label { font-size: 13px; font-weight: 500; color: var(--text-primary); width: 160px; flex-shrink: 0; }
-        .field-select { flex: 1; padding: 10px 14px; background: #16162a; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.18s; cursor: pointer; }
-        .field-select:focus { border-color: var(--accent); }
-
-        .divider { border: none; border-top: 1px solid var(--card-border); margin: 24px 0; }
-
-        /* Confirmación tipo checkbox personalizado */
-        .confirm-box { display: flex; align-items: center; gap: 14px; padding: 16px; background: var(--danger-dim); border: 1px solid var(--danger-border); border-radius: 10px; cursor: pointer; user-select: none; transition: background 0.18s; }
-        .confirm-box:hover { background: rgba(224,92,92,0.15); }
-        .confirm-box input[type="checkbox"] { display: none; }
-        .checkmark { width: 20px; height: 20px; border: 2px solid var(--danger); border-radius: 5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.18s; }
-        .checkmark.checked { background: var(--danger); }
-        .checkmark.checked::after { content: '✓'; color: white; font-size: 13px; font-weight: 700; }
-        .confirm-text { font-size: 13px; color: var(--danger); font-weight: 500; }
-
-        .btn-eliminar { width: 100%; margin-top: 20px; padding: 13px; background: var(--danger); border: none; border-radius: 8px; color: white; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s ease; opacity: 0.4; pointer-events: none; }
-        .btn-eliminar.activo { opacity: 1; pointer-events: all; }
-        .btn-eliminar.activo:hover { background: #c94a4a; box-shadow: 0 4px 16px rgba(224,92,92,0.3); }
-
-        .page-footer { margin-top: 28px; font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+        .topbar-badge { background: var(--accent-dim); border: 1px solid rgba(201,168,76,0.3); color: var(--accent); font-size: 12px; padding: 6px 14px; border-radius: 20px; font-family: 'DM Mono', monospace; }
+        .page-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 36px; }
+        .btn-back { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: transparent; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-secondary); font-size: 13px; font-family: 'DM Sans', sans-serif; text-decoration: none; margin-bottom: 24px; transition: all 0.18s; }
+        .btn-back:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+        .product-list { max-width: 500px; }
+        .product-item { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; text-decoration: none; transition: all 0.18s; }
+        .product-item:hover { border-color: var(--danger); background: rgba(224,92,92,0.05); }
+        .product-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+        .product-price { font-size: 13px; color: var(--accent); font-family: 'DM Mono', monospace; }
+        .confirm-card { background: var(--card-bg); border: 1px solid var(--danger); border-radius: 10px; padding: 28px; max-width: 500px; }
+        .confirm-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .confirm-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
+        .btn-danger { width: 100%; padding: 12px; background: var(--danger); border: none; border-radius: 8px; color: white; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: opacity 0.18s; }
+        .btn-danger:hover { opacity: 0.85; }
     </style>
 </head>
 <body>
-
     <aside class="sidebar">
         <div class="sidebar-logo"><span>REST<b>AU</b>RANTS</span></div>
         <p class="sidebar-label">Menú</p>
         <a href="/menu-admin/" class="nav-item"><span class="nav-icon">⊞</span> Dashboard</a>
-        <a href="/alimentos-bebidas/" class="nav-item active"><span class="nav-icon">🍽️</span> Alimentos / Bebidas</a>
+        <a href="{% url 'lista_alimentos' %}" class="nav-item active"><span class="nav-icon">🍽️</span> Alimentos / Bebidas</a>
         <a href="/atender-mesa/" class="nav-item"><span class="nav-icon">🪑</span> Atender Mesa</a>
         <a href="/promociones/" class="nav-item"><span class="nav-icon">🎁</span> Promociones</a>
         <a href="/metricas/" class="nav-item"><span class="nav-icon">📊</span> Métricas</a>
@@ -83,71 +52,37 @@
             <a href="/" class="btn-logout"><span>⇠</span> Cerrar Sesión</a>
         </div>
     </aside>
-
     <main class="main">
         <div class="topbar">
             <h2>Eliminar Alimento / Bebida</h2>
             <div class="topbar-badge">Panel Administrador</div>
         </div>
-        <p class="page-subtitle">Selecciona el platillo que deseas eliminar del catálogo</p>
 
-        <div class="form-card">
-            <p class="section-label">Platillo a eliminar</p>
-            <div class="field">
-                <div class="field-row">
-                    <span class="field-label">Selecciona platillo</span>
-                    <select class="field-select" id="platillo-select" onchange="resetConfirm()">
-                        <option value="" disabled selected>— Elige un platillo —</option>
-                        <!-- Se llenará con datos del backend -->
-                        <option value="1">Chilaquiles verdes — $135</option>
-                        <option value="2">Limonada — $40</option>
-                        <option value="3">Pieza de pan — $40</option>
-                    </select>
-                </div>
+        {% if not alimento %}
+            <!-- Paso 1: Seleccionar qué producto eliminar -->
+            <p class="page-subtitle">Selecciona el producto que deseas eliminar</p>
+            <a href="{% url 'lista_alimentos' %}" class="btn-back">⇠ Regresar</a>
+            <div class="product-list">
+                {% for item in alimentos %}
+                <a href="{% url 'eliminar_alimento' item.id_alimentosbebidas %}" class="product-item">
+                    <span class="product-name">{{ item.nombre }}</span>
+                    <span class="product-price">${{ item.costo }}</span>
+                </a>
+                {% endfor %}
             </div>
-
-            <hr class="divider" />
-
-            <!-- Confirmación -->
-            <p class="section-label">Confirmación</p>
-            <label class="confirm-box" onclick="toggleConfirm()">
-                <input type="checkbox" id="confirmar-check" />
-                <div class="checkmark" id="checkmark"></div>
-                <span class="confirm-text">¿Estás seguro de eliminar este platillo?</span>
-            </label>
-
-            <button class="btn-eliminar" id="btn-eliminar" onclick="eliminar()">Eliminar</button>
-        </div>
-
-        <div class="page-footer">Restaurants &copy; 2026 — Panel de Administración</div>
+        {% else %}
+            <!-- Paso 2: Confirmar eliminación -->
+            <p class="page-subtitle">Confirma que deseas eliminar este producto</p>
+            <a href="{% url 'eliminar_alimento' %}" class="btn-back">⇠ Regresar</a>
+            <div class="confirm-card">
+                <div class="confirm-title">¿Eliminar "{{ alimento.nombre }}"?</div>
+                <div class="confirm-desc">Esta acción no se puede deshacer. El producto será removido permanentemente del catálogo.</div>
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-danger">Sí, eliminar producto</button>
+                </form>
+            </div>
+        {% endif %}
     </main>
-
-    <script>
-        let confirmado = false;
-
-        function toggleConfirm() {
-            confirmado = !confirmado;
-            const checkmark = document.getElementById('checkmark');
-            const btn = document.getElementById('btn-eliminar');
-            checkmark.classList.toggle('checked', confirmado);
-            btn.classList.toggle('activo', confirmado);
-        }
-
-        function resetConfirm() {
-            confirmado = false;
-            document.getElementById('checkmark').classList.remove('checked');
-            document.getElementById('btn-eliminar').classList.remove('activo');
-        }
-
-        function eliminar() {
-            const platillo = document.getElementById('platillo-select').value;
-            if (!platillo || !confirmado) return;
-            // Aquí se conectará con el backend
-            alert('Platillo eliminado correctamente.');
-            document.getElementById('platillo-select').value = '';
-            resetConfirm();
-        }
-    </script>
-
 </body>
 </html>

@@ -6,7 +6,9 @@ class Alimentosbebidas(models.Model):
     descripcion = models.CharField(max_length=200)
     costo = models.DecimalField(max_digits=10, decimal_places=2)
     nombre = models.CharField(unique=True, max_length=50)
-
+    
+    def __str__(self):
+        return f"{self.nombre} - ${self.costo}"
     class Meta:
         managed = False
         db_table = 'alimentosbebidas'
