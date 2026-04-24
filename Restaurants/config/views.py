@@ -38,3 +38,18 @@ def modificar_alimento_view(request):
 
 def eliminar_alimento_view(request):
     return render(request, "eliminar_alimento.html")
+
+def agregar_promocion_view(request):
+    return render(request, "agregar_promocion.html")
+
+def consultar_promocion_view(request):
+    return render(request, "consultar_promocion.html")
+
+def editar_promocion_view(request):
+    return render(request, "editar_promocion.html")
+
+def eliminar_promocion_view(request):
+    return render(request, "eliminar_promocion.html")
+
+def configurar_restricciones_view(request):
+    return render(request, "configurar_restricciones.html")
