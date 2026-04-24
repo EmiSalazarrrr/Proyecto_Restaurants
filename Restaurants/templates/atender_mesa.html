@@ -399,86 +399,71 @@
 
         <div class="page-footer">Restaurants &copy; 2026 — Panel de Administración</div>
     </main>
+<script id="catalogo-data" type="application/json">
+[
+{% for a in alimentos %}
+    {"id": {{ a.id_alimentosbebidas }}, "nombre": "{{ a.nombre|escapejs }}", "precio": {{ a.costo|default:"0" }}}{% if not forloop.last %},{% endif %}
+{% endfor %}
+]
+</script>
+<script>
+    // Catálogo real desde Django
+    const catalogo = JSON.parse(document.getElementById('catalogo-data').textContent);
 
-    <script>
-        // Catálogo de ejemplo — se reemplazará con datos reales del backend
-        const catalogo = [
-            { nombre: "Chilaquiles verdes",  precio: 135 },
-            { nombre: "Chilaquiles rojos",   precio: 135 },
-            { nombre: "Enchiladas",          precio: 110 },
-            { nombre: "Tacos de canasta",    precio: 80  },
-            { nombre: "Limonada",            precio: 40  },
-            { nombre: "Agua de jamaica",     precio: 35  },
-            { nombre: "Pieza de pan",        precio: 40  },
-            { nombre: "Café americano",      precio: 55  },
-        ];
+    let filaId = 0;
 
-        let filaId = 0;
+    function agregarFila() {
+        filaId++;
+        const container = document.getElementById('filas-container');
 
-        function agregarFila() {
-            filaId++;
-            const container = document.getElementById('filas-container');
+        const opciones = catalogo.map(item =>
+            `<option value="${item.id}" data-precio="${item.precio}">${item.nombre}</option>`
+        ).join('');
 
-            const opciones = catalogo.map(item =>
-                `<option value="${item.precio}">${item.nombre}</option>`
-            ).join('');
+        const fila = document.createElement('div');
+        fila.className = 'platillo-row';
+        fila.id = `fila-${filaId}`;
+        const precioInicial = catalogo.length > 0 ? catalogo[0].precio.toFixed(2) : '0.00';
+        fila.innerHTML = `
+            <select class="platillo-select" name="producto_id[]" onchange="actualizarCosto(${filaId})">
+                ${opciones}
+            </select>
+            <input type="number" class="cantidad-input" name="cantidad[]"
+                value="1" min="1" max="99"
+                id="cant-${filaId}"
+                onchange="actualizarCosto(${filaId})"
+                oninput="actualizarCosto(${filaId})" />
+            <span class="costo-display" id="costo-${filaId}">$${catalogo[0].precio.toFixed(2)}</span>
+            <button type="button" class="btn-remove" onclick="eliminarFila(${filaId})">✕</button>
+        `;
+        container.appendChild(fila);
+        recalcularTotal();
+    }
 
-            const fila = document.createElement('div');
-            fila.className = 'platillo-row';
-            fila.id = `fila-${filaId}`;
-            fila.innerHTML = `
-                <select class="platillo-select" onchange="actualizarCosto(${filaId})">
-                    ${opciones}
-                </select>
-                <input
-                    type="number"
-                    class="cantidad-input"
-                    value="1"
-                    min="1"
-                    max="99"
-                    id="cant-${filaId}"
-                    onchange="actualizarCosto(${filaId})"
-                    oninput="actualizarCosto(${filaId})"
-                />
-                <span class="costo-display" id="costo-${filaId}">$${catalogo[0].precio}.00</span>
-                <button class="btn-remove" onclick="eliminarFila(${filaId})">✕</button>
-            `;
-            container.appendChild(fila);
-            recalcularTotal();
-        }
+    function actualizarCosto(id) {
+        const select = document.querySelector(`#fila-${id} .platillo-select`);
+        const cant = parseInt(document.getElementById(`cant-${id}`).value) || 1;
+        const precio = parseFloat(select.options[select.selectedIndex].dataset.precio);
+        document.getElementById(`costo-${id}`).textContent = `$${(precio * cant).toFixed(2)}`;
+        recalcularTotal();
+    }
 
-        function actualizarCosto(id) {
-            const select = document.querySelector(`#fila-${id} .platillo-select`);
-            const cant = parseInt(document.getElementById(`cant-${id}`).value) || 1;
-            const precio = parseFloat(select.value);
-            const subtotal = precio * cant;
-            document.getElementById(`costo-${id}`).textContent = `$${subtotal.toFixed(2)}`;
-            recalcularTotal();
-        }
+    function eliminarFila(id) {
+        const fila = document.getElementById(`fila-${id}`);
+        if (fila) fila.remove();
+        recalcularTotal();
+    }
 
-        function eliminarFila(id) {
-            const fila = document.getElementById(`fila-${id}`);
-            if (fila) fila.remove();
-            recalcularTotal();
-        }
+    function recalcularTotal() {
+        let total = 0;
+        document.querySelectorAll('.costo-display').forEach(el => {
+            total += parseFloat(el.textContent.replace('$', '')) || 0;
+        });
+        document.getElementById('total-display').textContent = `$${total.toFixed(2)}`;
+    }
 
-        function recalcularTotal() {
-            const costos = document.querySelectorAll('.costo-display');
-            let total = 0;
-            costos.forEach(el => {
-                total += parseFloat(el.textContent.replace('$', '')) || 0;
-            });
-            document.getElementById('total-display').textContent = `$${total.toFixed(2)}`;
-        }
-
-        function imprimirTicket() {
-            // Función de impresión — se implementará con el backend
-            alert('Funcionalidad de impresión pendiente de implementación.');
-        }
-
-        // Iniciar con una fila vacía
-        agregarFila();
-    </script>
+    agregarFila();
+</script>
 
 </body>
 </html>
