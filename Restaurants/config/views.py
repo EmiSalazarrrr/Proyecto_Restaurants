@@ -45,25 +45,6 @@ def metricas_view(request):
         .prefetch_related("detalleticket_set__id_productopedido__id_alimentosbebidas")
     )
 
-<<<<<<< HEAD
-def eliminar_alimento_view(request):
-    return render(request, "eliminar_alimento.html")
-
-def agregar_promocion_view(request):
-    return render(request, "agregar_promocion.html")
-
-def consultar_promocion_view(request):
-    return render(request, "consultar_promocion.html")
-
-def editar_promocion_view(request):
-    return render(request, "editar_promocion.html")
-
-def eliminar_promocion_view(request):
-    return render(request, "eliminar_promocion.html")
-
-def configurar_restricciones_view(request):
-    return render(request, "configurar_restricciones.html")
-=======
     resumen = tickets.aggregate(total_ventas=Sum("precio_final"))
     total_ventas = resumen["total_ventas"] or 0
     total_tickets = tickets.count()
@@ -95,4 +76,3 @@ def configurar_restricciones_view(request):
         "ventas_por_dia": list(reversed(ventas_por_dia)),
     }
     return render(request, "metricas.html", context)
->>>>>>> 4e94749f30b52dae6ab943fee42e8b79aa4c0d95
