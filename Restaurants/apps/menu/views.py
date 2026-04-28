@@ -1,12 +1,15 @@
 from django.shortcuts import redirect, render, get_object_or_404
 from .models import Alimentosbebidas
 from django.contrib import messages
+from apps.usuarios.views import login_required
 
 # Create your views here.
+@login_required(role="admin")
 def lista_alimentos(request):
     alimentos = Alimentosbebidas.objects.all()
     return render(request, 'alimentos_bebidas.html', {'alimentos': alimentos})
 
+@login_required(role="admin")
 def agregar_alimento(request):
     if request.method == 'POST':
         nombre = request.POST.get('nombre')
@@ -22,6 +25,7 @@ def agregar_alimento(request):
     return render(request, 'agregar_alimento.html')
 
 # Modificar alimento
+@login_required(role="admin")
 def modificar_alimento(request, id=None):      
     if id is None:
         alimentos = Alimentosbebidas.objects.all()
@@ -37,6 +41,7 @@ def modificar_alimento(request, id=None):
     return render(request, 'modificar_alimento.html', {'alimento': alimento})
 
 
+@login_required(role="admin")
 def eliminar_alimento(request, id=None):     
     if id is None:
         alimentos = Alimentosbebidas.objects.all()
