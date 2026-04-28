@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tickets | Restaurants</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f1a;
+            --sidebar-bg: #1a1a2e;
+            --card-bg: #1e1e32;
+            --card-border: #2a2a45;
+            --accent: #c9a84c;
+            --text-primary: #eeeef5;
+            --text-secondary: #8888aa;
+            --text-muted: #55556a;
+            --success: #4cc970;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { min-height: 100vh; display: flex; background: var(--bg); color: var(--text-primary); font-family: "DM Sans", sans-serif; }
+        .sidebar { width: 220px; background: var(--sidebar-bg); padding: 28px 0; position: fixed; inset: 0 auto 0 0; border-right: 1px solid var(--card-border); display: flex; flex-direction: column; }
+        .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid var(--card-border); margin-bottom: 20px; }
+        .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+        .sidebar-logo b { color: var(--accent); }
+        .nav-item { padding: 11px 24px; color: var(--text-secondary); text-decoration: none; border-left: 3px solid transparent; }
+        .nav-item.active, .nav-item:hover { color: var(--accent); background: rgba(201,168,76,0.08); border-left-color: var(--accent); }
+        .sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--card-border); }
+        .btn-logout { display: block; text-align: center; border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; }
+        main { margin-left: 220px; flex: 1; padding: 36px 40px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; }
+        .topbar p { color: var(--text-secondary); margin-top: 6px; }
+        .btn-primary { text-decoration: none; color: #11111a; background: var(--accent); padding: 12px 16px; border-radius: 10px; font-weight: 600; }
+        .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+        .card, .table-wrap { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; }
+        .card { padding: 20px; }
+        .label { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
+        .value { font: 600 26px "DM Mono", monospace; }
+        .alert { margin-bottom: 16px; padding: 12px 14px; border-radius: 10px; background: rgba(76,201,112,0.1); border: 1px solid rgba(76,201,112,0.24); color: #caf7d5; }
+        .table-wrap { overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 16px; text-align: left; vertical-align: top; }
+        th { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); background: rgba(255,255,255,0.03); }
+        tr + tr td { border-top: 1px solid rgba(255,255,255,0.06); }
+        .mono { font-family: "DM Mono", monospace; }
+        .muted { color: var(--text-secondary); }
+        .empty { padding: 32px 16px; color: var(--text-secondary); }
+        @media (max-width: 980px) { .stats { grid-template-columns: 1fr; } }
+        @media (max-width: 720px) {
+            body { display: block; }
+            .sidebar { position: static; width: 100%; min-height: auto; }
+            main { margin-left: 0; padding: 24px 16px; }
+            .topbar { flex-direction: column; align-items: flex-start; }
+            .table-wrap { overflow-x: auto; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-logo"><span>REST<b>AU</b>RANTS</span></div>
+        <a class="nav-item" href="{% url 'menu_admin' %}">Dashboard</a>
+        <a class="nav-item" href="/alimentos-bebidas/">Alimentos / Bebidas</a>
+        <a class="nav-item active" href="{% url 'atender_mesa' %}">Atender mesa</a>
+        <a class="nav-item" href="{% url 'promociones' %}">Promociones</a>
+        <a class="nav-item" href="{% url 'metricas' %}">Metricas</a>
+        <div class="sidebar-bottom">
+            <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
+        </div>
+    </aside>
+
+    <main>
+        <div class="topbar">
+            <div>
+                <h1>Tickets registrados</h1>
+                <p>Resumen de pedidos generados desde atender mesa.</p>
+            </div>
+            <a class="btn-primary" href="{% url 'atender_mesa' %}">Nuevo ticket</a>
+        </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <section class="stats">
+            <article class="card">
+                <div class="label">Total tickets</div>
+                <div class="value">{{ total_tickets }}</div>
+            </article>
+            <article class="card">
+                <div class="label">Ingresos acumulados</div>
+                <div class="value">${{ total_ingresos }}</div>
+            </article>
+            <article class="card">
+                <div class="label">Canjeados</div>
+                <div class="value">{{ total_canjeados }}</div>
+            </article>
+        </section>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ticket</th>
+                        <th>Cliente</th>
+                        <th>Productos</th>
+                        <th>Promocion</th>
+                        <th>Total</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ticket in tickets %}
+                        <tr>
+                            <td>
+                                <div class="mono">#{{ ticket.id_ticket }}</div>
+                                <div class="muted mono">{{ ticket.codigounico }}</div>
+                            </td>
+                            <td>
+                                {% if ticket.nombre_usuario %}
+                                    {{ ticket.nombre_usuario.nombre }} {{ ticket.nombre_usuario.apellido_paterno }}<br>
+                                    <span class="muted">@{{ ticket.nombre_usuario.nombre_usuario }}</span>
+                                {% else %}
+                                    <span class="muted">Sin cliente</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% for detalle in ticket.detalleticket_set.all %}
+                                    {% if detalle.id_productopedido and detalle.id_productopedido.id_alimentosbebidas %}
+                                        {{ detalle.id_productopedido.id_alimentosbebidas.nombre }}{% if not forloop.last %}, {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>{% if ticket.id_promocion %}{{ ticket.id_promocion.nombre }}{% else %}<span class="muted">Sin promocion</span>{% endif %}</td>
+                            <td class="mono">${{ ticket.precio_final }}</td>
+                            <td class="mono">{{ ticket.fecha|date:"d/m/Y H:i" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="empty">No hay tickets registrados todavia.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

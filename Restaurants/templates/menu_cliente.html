@@ -3,318 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú Cliente | Restaurants</title>
+    <title>Mi cuenta | Restaurants</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg: #0f0f1a;
+            --panel: rgba(255,255,255,0.06);
+            --border: rgba(255,255,255,0.10);
+            --accent: #c9a84c;
+            --text: #f1f1f6;
+            --muted: #9696b0;
         }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: linear-gradient(
-                135deg,
-                #0a0a1a 0%,
-                #1a1a3e 30%,
-                #0d2137 60%,
-                #1a3a2a 100%
-            );
-            animation: fadeIn 1s ease forwards;
+            font-family: "DM Sans", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top right, rgba(201,168,76,0.14), transparent 25%),
+                radial-gradient(circle at bottom left, rgba(51,102,153,0.14), transparent 25%),
+                linear-gradient(135deg, #0a0a16, #121225 40%, #112033);
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(24px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        
-        body::before {
-            content: '';
-            position: fixed;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(255,180,50,0.07) 0%, transparent 70%);
-            top: -100px;
-            right: -100px;
-            pointer-events: none;
-        }
-
-        body::after {
-            content: '';
-            position: fixed;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(30,100,150,0.12) 0%, transparent 70%);
-            bottom: -100px;
-            left: -100px;
-            pointer-events: none;
-        }
-
-        
+        header, main { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
         header {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            padding: 18px 40px;
+            padding: 28px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
-            z-index: 10;
+            gap: 16px;
         }
-
-        .header-logo {
-            font-size: 18px;
-            font-weight: 300;
-            color: white;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-
-        .header-logo span {
-            color: rgba(255,200,80,0.9);
-        }
-
-        .header-tag {
-            font-size: 11px;
-            color: rgba(255,255,255,0.35);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        /* CONTENIDO PRINCIPAL */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        /* BIENVENIDA */
-        .welcome {
-            text-align: center;
-            margin-bottom: 48px;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease 0.3s forwards;
-        }
-
-        .welcome-icon {
-            font-size: 48px;
-            display: block;
-            margin-bottom: 16px;
-            filter: drop-shadow(0 0 20px rgba(255,200,80,0.3));
-        }
-
-        .welcome h2 {
-            font-size: 28px;
-            font-weight: 200;
-            color: white;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-
-        .welcome-divider {
-            width: 40px;
-            height: 1px;
-            background: rgba(255,200,80,0.4);
-            margin: 12px auto;
-        }
-
-        .welcome p {
-            font-size: 13px;
-            color: rgba(255,255,255,0.4);
-            letter-spacing: 1px;
-            line-height: 1.8;
-        }
-
-        /* BOTONES DEL MENÚ */
-        .menu-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            width: 100%;
-            max-width: 380px;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease 0.5s forwards;
-        }
-
-        .menu-btn {
-            background: rgba(255,255,255,0.07);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 12px;
-            padding: 20px 24px;
-            font-size: 14px;
-            font-weight: 400;
-            color: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 18px;
+        .brand { letter-spacing: 0.18em; text-transform: uppercase; font-size: 14px; color: var(--accent); }
+        .top-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+        .link-btn {
             text-decoration: none;
-            letter-spacing: 0.5px;
-        }
-
-        .menu-btn:hover {
-            background: rgba(255,200,80,0.12);
-            border-color: rgba(255,200,80,0.4);
-            transform: translateX(6px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-        }
-
-        .menu-btn .icon-wrap {
-            width: 42px;
-            height: 42px;
-            background: rgba(255,200,80,0.1);
-            border: 1px solid rgba(255,200,80,0.2);
+            color: var(--text);
+            border: 1px solid var(--border);
             border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-            transition: all 0.3s;
+            padding: 10px 14px;
+            font-size: 14px;
         }
-
-        .menu-btn:hover .icon-wrap {
-            background: rgba(255,200,80,0.2);
-            border-color: rgba(255,200,80,0.5);
+        .hero { padding: 12px 0 28px; }
+        .hero h1 { font-size: clamp(30px, 5vw, 48px); margin-bottom: 10px; }
+        .hero p { color: var(--muted); max-width: 640px; line-height: 1.7; }
+        .stats, .content { display: grid; gap: 16px; }
+        .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 24px; }
+        .content { grid-template-columns: 1.1fr 0.9fr; padding-bottom: 40px; }
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            backdrop-filter: blur(12px);
         }
-
-        .menu-btn .btn-text {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .menu-btn .btn-title {
-            font-size: 15px;
-            font-weight: 500;
-            color: white;
-        }
-
-        .menu-btn .btn-desc {
-            font-size: 11px;
-            color: rgba(255,255,255,0.35);
-            letter-spacing: 0.5px;
-        }
-
-        .menu-btn .arrow {
-            margin-left: auto;
-            color: rgba(255,255,255,0.2);
-            font-size: 18px;
-            transition: all 0.3s;
-        }
-
-        .menu-btn:hover .arrow {
-            color: rgba(255,200,80,0.6);
-            transform: translateX(4px);
-        }
-
-        /* BOTÓN CERRAR SESIÓN */
-        .btn-cerrar {
-            margin-top: 24px;
-            width: 100%;
-            max-width: 380px;
-            padding: 14px;
-            background: transparent;
-            color: rgba(255,255,255,0.35);
-            border: 1px solid rgba(255,255,255,0.1);
+        .label { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+        .value { font: 600 28px "DM Mono", monospace; }
+        .sub { color: var(--muted); margin-top: 6px; font-size: 13px; }
+        .section-title { font-size: 18px; margin-bottom: 14px; }
+        .menu-grid { display: grid; gap: 12px; }
+        .menu-item, .ticket-item {
+            border: 1px solid var(--border);
             border-radius: 12px;
-            font-size: 12px;
-            font-weight: 400;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            text-align: center;
-            display: block;
-            opacity: 0;
-            animation: fadeInUp 0.8s ease 0.7s forwards;
+            padding: 16px;
+            background: rgba(255,255,255,0.03);
         }
-
-        .btn-cerrar:hover {
-            background: rgba(255,80,80,0.1);
-            border-color: rgba(255,80,80,0.3);
-            color: rgba(255,120,120,0.8);
-        }
-
-        /* FOOTER */
-        footer {
-            text-align: center;
-            padding: 20px;
-            font-size: 10px;
-            color: rgba(255,255,255,0.15);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            position: relative;
-            z-index: 1;
+        .menu-item-top, .ticket-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+        .price { color: var(--accent); font: 500 15px "DM Mono", monospace; }
+        .desc, .meta { color: var(--muted); font-size: 13px; line-height: 1.6; margin-top: 8px; }
+        .empty { color: var(--muted); font-size: 14px; }
+        @media (max-width: 860px) {
+            .stats, .content { grid-template-columns: 1fr; }
+            header { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
 <body>
-
     <header>
-        <div class="header-logo">Rest<span>aurants</span></div>
-        <span class="header-tag">Mi cuenta</span>
+        <div>
+            <div class="brand">Restaurants</div>
+            <h2>{{ cliente.nombre }} {{ cliente.apellido_paterno }}</h2>
+        </div>
+        <div class="top-actions">
+            <a class="link-btn" href="{% url 'historial' %}">Ver historial completo</a>
+            <a class="link-btn" href="{% url 'logout' %}">Cerrar sesion</a>
+        </div>
     </header>
 
-    <div class="main-content">
+    <main>
+        <section class="hero">
+            <h1>Tu menu y tus consumos, en una sola vista.</h1>
+            <p>Explora el catalogo disponible y revisa tus ultimos tickets sin salir de tu panel de cliente.</p>
+        </section>
 
-        <div class="welcome">
-            <span class="welcome-icon">🍽️</span>
-            <h2>Bienvenido</h2>
-            <div class="welcome-divider"></div>
-            <p>Gestiona tus consumos, historial<br>y recompensas desde aquí</p>
-        </div>
+        <section class="stats">
+            <article class="card">
+                <div class="label">Visitas registradas</div>
+                <div class="value">{{ total_visitas }}</div>
+                <div class="sub">Tickets asociados a tu cuenta</div>
+            </article>
+            <article class="card">
+                <div class="label">Total consumido</div>
+                <div class="value">${{ total_gastado }}</div>
+                <div class="sub">Monto historico acumulado</div>
+            </article>
+            <article class="card">
+                <div class="label">Productos probados</div>
+                <div class="value">{{ productos_distintos }}</div>
+                <div class="sub">Platillos o bebidas distintas</div>
+            </article>
+        </section>
 
-        <div class="menu-grid">
-            <a href="/agregar-ticket/" class="menu-btn">
-                <div class="icon-wrap">🎫</div>
-                <div class="btn-text">
-                    <span class="btn-title">Agregar Ticket</span>
-                    <span class="btn-desc">Registra tu código de compra</span>
+        <section class="content">
+            <article class="card">
+                <h3 class="section-title">Menu disponible</h3>
+                <div class="menu-grid">
+                    {% for alimento in alimentos %}
+                        <div class="menu-item">
+                            <div class="menu-item-top">
+                                <strong>{{ alimento.nombre }}</strong>
+                                <span class="price">${{ alimento.costo }}</span>
+                            </div>
+                            <p class="desc">{{ alimento.descripcion }}</p>
+                        </div>
+                    {% empty %}
+                        <p class="empty">No hay productos disponibles por ahora.</p>
+                    {% endfor %}
                 </div>
-                <span class="arrow">›</span>
-            </a>
+            </article>
 
-            <a href="/historial/" class="menu-btn">
-                <div class="icon-wrap">📋</div>
-                <div class="btn-text">
-                    <span class="btn-title">Ver Historial</span>
-                    <span class="btn-desc">Consulta tus consumos anteriores</span>
+            <article class="card">
+                <h3 class="section-title">Ultimos tickets</h3>
+                <div class="menu-grid">
+                    {% for ticket in tickets_recientes %}
+                        <div class="ticket-item">
+                            <div class="ticket-top">
+                                <strong>Ticket #{{ ticket.id_ticket }}</strong>
+                                <span class="price">${{ ticket.precio_final }}</span>
+                            </div>
+                            <p class="meta">{{ ticket.fecha|date:"d/m/Y H:i" }}</p>
+                            <p class="desc">
+                                {% for detalle in ticket.detalleticket_set.all %}
+                                    {% if detalle.id_productopedido and detalle.id_productopedido.id_alimentosbebidas %}
+                                        {{ detalle.id_productopedido.id_alimentosbebidas.nombre }}{% if not forloop.last %}, {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </p>
+                        </div>
+                    {% empty %}
+                        <p class="empty">Aun no tienes tickets registrados.</p>
+                    {% endfor %}
                 </div>
-                <span class="arrow">›</span>
-            </a>
-        </div>
-
-        <a href="/" class="btn-cerrar">Cerrar Sesión</a>
-
-    </div>
-
-    <footer>Restaurants &copy; 2026</footer>
-
+            </article>
+        </section>
+    </main>
 </body>
 </html>

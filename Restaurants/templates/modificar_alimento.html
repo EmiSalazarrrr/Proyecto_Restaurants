@@ -3,69 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modificar Alimento/Bebida | Restaurants</title>
+    <title>Modificar Alimento | Restaurants</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f0f1a;
-            --sidebar-bg: #1a1a2e;
-            --card-bg: #1e1e32;
-            --card-border: #2a2a45;
-            --accent: #c9a84c;
-            --accent-dim: rgba(201,168,76,0.12);
-            --text-primary: #eeeef5;
-            --text-secondary: #8888aa;
-            --text-muted: #55556a;
+            --bg: #0f0f1a; --sidebar-bg: #1a1a2e; --card-bg: #1e1e32;
+            --card-border: #2a2a45; --accent: #c9a84c; --accent-dim: rgba(201,168,76,0.12);
+            --text-primary: #eeeef5; --text-secondary: #8888aa; --text-muted: #55556a;
             --danger: #e05c5c;
-            --success: #4caf82;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; background-color: var(--bg); color: var(--text-primary); min-height: 100vh; display: flex; }
-
-        .sidebar { width: 220px; min-height: 100vh; background-color: var(--sidebar-bg); display: flex; flex-direction: column; padding: 28px 0; position: fixed; top: 0; left: 0; border-right: 1px solid var(--card-border); }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text-primary); min-height: 100vh; display: flex; }
+        .sidebar { width: 220px; min-height: 100vh; background: var(--sidebar-bg); display: flex; flex-direction: column; padding: 28px 0; position: fixed; top: 0; left: 0; border-right: 1px solid var(--card-border); }
         .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid var(--card-border); margin-bottom: 20px; }
         .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; color: var(--text-primary); text-transform: uppercase; }
-        .sidebar-logo span b { color: var(--accent); font-weight: 600; }
+        .sidebar-logo span b { color: var(--accent); }
         .sidebar-label { font-size: 10px; font-weight: 500; letter-spacing: 1.5px; color: var(--text-muted); text-transform: uppercase; padding: 0 24px; margin-bottom: 8px; }
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; font-size: 13.5px; font-weight: 500; color: var(--text-secondary); text-decoration: none; transition: all 0.18s ease; border-left: 3px solid transparent; }
-        .nav-item:hover { color: var(--text-primary); background-color: rgba(255,255,255,0.04); }
-        .nav-item.active { color: var(--accent); background-color: var(--accent-dim); border-left-color: var(--accent); }
+        .nav-item:hover { color: var(--text-primary); background: rgba(255,255,255,0.04); }
+        .nav-item.active { color: var(--accent); background: var(--accent-dim); border-left-color: var(--accent); }
         .nav-item .nav-icon { font-size: 16px; width: 20px; text-align: center; }
         .sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--card-border); }
-        .btn-logout { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px; background: transparent; border: 1px solid var(--card-border); border-radius: 7px; color: var(--text-secondary); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; text-decoration: none; transition: all 0.18s ease; }
-        .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: rgba(224,92,92,0.07); }
-
+        .btn-logout { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px; background: transparent; border: 1px solid var(--card-border); border-radius: 7px; color: var(--text-secondary); font-size: 13px; font-family: 'DM Sans', sans-serif; cursor: pointer; text-decoration: none; transition: all 0.18s ease; }
+        .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
         .main { margin-left: 220px; flex: 1; padding: 36px 40px; }
         .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
         .topbar h2 { font-size: 22px; font-weight: 600; }
-        .topbar-badge { background: var(--accent-dim); border: 1px solid rgba(201,168,76,0.3); color: var(--accent); font-size: 12px; font-weight: 500; padding: 6px 14px; border-radius: 20px; font-family: 'DM Mono', monospace; }
-        .page-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 32px; }
+        .topbar-badge { background: var(--accent-dim); border: 1px solid rgba(201,168,76,0.3); color: var(--accent); font-size: 12px; padding: 6px 14px; border-radius: 20px; font-family: 'DM Mono', monospace; }
+        .page-subtitle { font-size: 13px; color: var(--text-secondary); margin-bottom: 28px; }
+        .btn-back { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: transparent; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-secondary); font-size: 13px; font-family: 'DM Sans', sans-serif; text-decoration: none; margin-bottom: 24px; transition: all 0.18s; }
+        .btn-back:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+        .section-title { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 14px; }
 
-        .form-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 28px; max-width: 560px; }
-        .section-label { font-size: 11px; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; }
+        /* LISTA DE PRODUCTOS */
+        .product-list { max-width: 600px; }
+        .product-item { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; text-decoration: none; transition: all 0.18s; }
+        .product-item:hover { border-color: var(--accent); background: rgba(201,168,76,0.04); transform: translateX(2px); }
+        .product-info { display: flex; flex-direction: column; gap: 3px; }
+        .product-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
+        .product-desc { font-size: 12px; color: var(--text-secondary); }
+        .product-right { display: flex; align-items: center; gap: 16px; }
+        .product-price { font-size: 13px; color: var(--accent); font-family: 'DM Mono', monospace; }
+        .product-arrow { color: var(--text-muted); font-size: 16px; }
 
-        .field { margin-bottom: 20px; }
-        .field-row { display: flex; align-items: center; gap: 16px; }
-        .field-label { font-size: 13px; font-weight: 500; color: var(--text-primary); width: 130px; flex-shrink: 0; }
-        .field-input { flex: 1; padding: 10px 14px; background: #16162a; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.18s; }
-        .field-input:focus { border-color: var(--accent); }
-        .field-input::placeholder { color: var(--text-muted); }
-        .field-select { flex: 1; padding: 10px 14px; background: #16162a; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.18s; cursor: pointer; }
-        .field-select:focus { border-color: var(--accent); }
-        .field-input.precio { font-family: 'DM Mono', monospace; }
+        /* FORMULARIO */
+        .form-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 28px; max-width: 500px; }
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .form-input { width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); font-size: 14px; font-family: 'DM Sans', sans-serif; transition: border-color 0.18s; }
+        .form-input:focus { outline: none; border-color: var(--accent); }
+        .btn-submit { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 8px; color: #0f0f1a; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: opacity 0.18s; margin-top: 4px; }
+        .btn-submit:hover { opacity: 0.85; }
+        .page-footer { margin-top: 32px; font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
 
-        .divider { border: none; border-top: 1px solid var(--card-border); margin: 24px 0; }
-
-        .btn-modificar { width: 100%; padding: 13px; background: var(--accent); border: none; border-radius: 8px; color: #0f0f1a; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.2s ease; }
-        .btn-modificar:hover { background: #d4b55a; box-shadow: 0 4px 16px rgba(201,168,76,0.25); }
-
-        .msg-exito { display: none; margin-top: 14px; padding: 12px 16px; background: rgba(76,175,130,0.1); border: 1px solid rgba(76,175,130,0.3); border-radius: 8px; color: var(--success); font-size: 13px; text-align: center; }
-
-        .page-footer { margin-top: 28px; font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+        .empty-state { text-align: center; padding: 48px; color: var(--text-muted); font-size: 13px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; max-width: 600px; }
     </style>
 </head>
 <body>
-
     <aside class="sidebar">
         <div class="sidebar-logo"><span>REST<b>AU</b>RANTS</span></div>
         <p class="sidebar-label">Menú</p>
@@ -84,67 +78,56 @@
             <h2>Modificar Alimento / Bebida</h2>
             <div class="topbar-badge">Panel Administrador</div>
         </div>
-        <p class="page-subtitle">Selecciona el platillo y actualiza los campos que deseas cambiar</p>
 
-        <div class="form-card">
-            <!-- Selección del platillo -->
-            <p class="section-label">Platillo a modificar</p>
-            <div class="field">
-                <div class="field-row">
-                    <span class="field-label">Selecciona platillo</span>
-                    <select class="field-select" id="platillo-select">
-                        <option value="" disabled selected>— Elige un platillo —</option>
-                        <!-- Se llenará con datos del backend -->
-                        <option value="1">Chilaquiles verdes — $135</option>
-                        <option value="2">Limonada — $40</option>
-                        <option value="3">Pieza de pan — $40</option>
-                    </select>
-                </div>
+        {% if not alimento %}
+            <!-- PASO 1: Seleccionar producto -->
+            <p class="page-subtitle">Selecciona el producto que deseas editar</p>
+            <a href="/alimentos-bebidas/" class="btn-back">⇠ Regresar</a>
+
+            <p class="section-title">Productos disponibles</p>
+            <div class="product-list">
+                {% for item in alimentos %}
+                <a href="{% url 'modificar_alimento_id' item.id_alimentosbebidas %}" class="product-item">
+                    <div class="product-info">
+                        <span class="product-name">{{ item.nombre }}</span>
+                        <span class="product-desc">{{ item.descripcion }}</span>
+                    </div>
+                    <div class="product-right">
+                        <span class="product-price">${{ item.costo }}</span>
+                        <span class="product-arrow">›</span>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="empty-state">No hay productos registrados aún.</div>
+                {% endfor %}
             </div>
 
-            <hr class="divider" />
+        {% else %}
+            <!-- PASO 2: Editar producto seleccionado -->
+            <p class="page-subtitle">Edita los datos del producto <strong style="color: var(--accent)">{{ alimento.nombre }}</strong></p>
+            <a href="{% url 'modificar_alimento' %}" class="btn-back">⇠ Regresar a la lista</a>
 
-            <!-- Nuevos valores -->
-            <p class="section-label">Nuevos valores</p>
-            <div class="field">
-                <div class="field-row">
-                    <span class="field-label">Nombre</span>
-                    <input type="text" class="field-input" id="nuevo-nombre" placeholder="Nuevo nombre" />
-                </div>
+            <div class="form-card">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" name="nombre" class="form-input" value="{{ alimento.nombre }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descripción</label>
+                        <input type="text" name="descripcion" class="form-input" value="{{ alimento.descripcion }}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Costo</label>
+                        <input type="number" name="costo" step="0.01" class="form-input" value="{{ alimento.costo }}" required>
+                    </div>
+                    <button type="submit" class="btn-submit">💾 Guardar cambios</button>
+                </form>
             </div>
-            <div class="field">
-                <div class="field-row">
-                    <span class="field-label">Descripción</span>
-                    <input type="text" class="field-input" id="nueva-desc" placeholder="Nueva descripción" />
-                </div>
-            </div>
-            <div class="field">
-                <div class="field-row">
-                    <span class="field-label">Precio</span>
-                    <input type="number" class="field-input precio" id="nuevo-precio" placeholder="0.00" min="0" step="0.01" />
-                </div>
-            </div>
-
-            <hr class="divider" />
-
-            <button class="btn-modificar" onclick="modificar()">Modificar</button>
-            <div class="msg-exito" id="msg-exito">✓ Platillo modificado correctamente</div>
-        </div>
+        {% endif %}
 
         <div class="page-footer">Restaurants &copy; 2026 — Panel de Administración</div>
     </main>
-
-    <script>
-        function modificar() {
-            const platillo = document.getElementById('platillo-select').value;
-            if (!platillo) {
-                alert('Por favor selecciona un platillo.');
-                return;
-            }
-            // Aquí se conectará con el backend
-            document.getElementById('msg-exito').style.display = 'block';
-        }
-    </script>
-
 </body>
 </html>
