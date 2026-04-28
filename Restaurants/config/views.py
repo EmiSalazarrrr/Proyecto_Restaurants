@@ -1,40 +1,78 @@
+from datetime import datetime
+
+from django.db.models import Count, Sum
+from django.db.models.functions import TruncDate
 from django.shortcuts import render
+from django.utils import timezone
 
-def login_view(request):
-    return render(request, 'login.html')
+from apps.menu.models import Alimentosbebidas
+from apps.pedidos.models import Ticket
+from apps.promociones.models import Promocion
+from apps.usuarios.views import login_required
 
-def registro_view(request):
-    return render(request, 'registro.html')
 
+@login_required(role="admin")
 def menu_admin_view(request):
-    return render(request, 'menu_admin.html')
+    hoy = timezone.localdate()
+    tickets_hoy = Ticket.objects.filter(fecha__date=hoy)
+    ventas_hoy = tickets_hoy.aggregate(total=Sum("precio_final"))["total"] or 0
+    clientes_hoy = tickets_hoy.values("nombre_usuario").distinct().count()
+    promociones_activas = Promocion.objects.count()
 
-def menu_cliente_view(request):
-    return render(request, 'menu_cliente.html')
+    context = {
+        "ventas_hoy": ventas_hoy,
+        "tickets_hoy": tickets_hoy.count(),
+        "clientes_hoy": clientes_hoy,
+        "promociones_activas": promociones_activas,
+    }
+    return render(request, "menu_admin.html", context)
 
-def agregar_ticket_view(request):
-    return render(request, 'agregar_ticket.html')
 
-def historial_view(request):
-    return render(request, 'historial.html')
-
-def alimentos_bebidas_view(request):
-    return render(request, 'alimentos_bebidas.html')
-
-def atender_mesa_view(request):
-    return render(request, 'atender_mesa.html')
-
-def promociones_view(request):
-    return render(request, 'promociones.html')
-
+@login_required(role="admin")
 def metricas_view(request):
-    return render(request, "metricas.html")
+    fecha_param = request.GET.get("fecha")
+    fecha_consulta = timezone.localdate()
 
-def agregar_alimento_view(request):
-    return render(request, "agregar_alimento.html")
+    if fecha_param:
+        try:
+            fecha_consulta = datetime.strptime(fecha_param, "%Y-%m-%d").date()
+        except ValueError:
+            fecha_consulta = timezone.localdate()
 
-def modificar_alimento_view(request):
-    return render(request, "modificar_alimento.html")
+    tickets = (
+        Ticket.objects.filter(fecha__date=fecha_consulta)
+        .select_related("nombre_usuario", "id_promocion")
+        .prefetch_related("detalleticket_set__id_productopedido__id_alimentosbebidas")
+    )
 
-def eliminar_alimento_view(request):
-    return render(request, "eliminar_alimento.html")
+    resumen = tickets.aggregate(total_ventas=Sum("precio_final"))
+    total_ventas = resumen["total_ventas"] or 0
+    total_tickets = tickets.count()
+    clientes_unicos = tickets.values("nombre_usuario").distinct().count()
+    promedio = (total_ventas / total_tickets) if total_tickets else 0
+
+    top_producto = (
+        Alimentosbebidas.objects.filter(productopedido__detalleticket__id_ticket__fecha__date=fecha_consulta)
+        .values("nombre")
+        .annotate(total=Count("productopedido"))
+        .order_by("-total", "nombre")
+        .first()
+    )
+
+    ventas_por_dia = (
+        Ticket.objects.annotate(dia=TruncDate("fecha"))
+        .values("dia")
+        .annotate(total=Sum("precio_final"))
+        .order_by("-dia")[:7]
+    )
+
+    context = {
+        "fecha_consulta": fecha_consulta,
+        "total_ventas": total_ventas,
+        "total_tickets": total_tickets,
+        "clientes_unicos": clientes_unicos,
+        "promedio_ticket": promedio,
+        "top_producto": top_producto,
+        "ventas_por_dia": list(reversed(ventas_por_dia)),
+    }
+    return render(request, "metricas.html", context)
