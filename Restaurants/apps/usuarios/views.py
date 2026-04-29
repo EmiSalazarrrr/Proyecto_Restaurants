@@ -128,9 +128,7 @@ def registro_view(request):
             messages.error(request, "Ese numero de celular ya esta registrado.")
             return render(request, "registro.html", {"form_data": data})
 
-        perfil_cliente = Perfiles.objects.filter(tipo_de_usuario__iexact="Cliente").first()
-        if not perfil_cliente:
-            perfil_cliente = Perfiles.objects.order_by("id_tipo_de_usuario").first()
+        perfil_cliente, _ = Perfiles.objects.get_or_create(tipo_de_usuario="Cliente")
 
         cliente = Cliente.objects.create(
             nombre_usuario=nombre_usuario,

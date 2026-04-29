@@ -138,8 +138,8 @@
                     </div>
                     <div>
                         <label for="restriccion">Restriccion</label>
-                        <select id="restriccion" name="restriccion" required>
-                            <option value="">Selecciona una restriccion</option>
+                        <select id="restriccion" name="restriccion">
+                            <option value="" {% if promocion_editar and not promocion_editar.id_restriccion %}selected{% endif %}>Sin restriccion</option>
                             {% for restriccion in restricciones %}
                                 <option value="{{ restriccion.id_restriccion }}" {% if promocion_editar and promocion_editar.id_restriccion_id == restriccion.id_restriccion %}selected{% endif %}>
                                     {{ restriccion.nombre }} - minimo {{ restriccion.consumo_minimo_para_aplicar }}
@@ -195,7 +195,13 @@
                                 <td>{{ promocion.nombre }}</td>
                                 <td>{{ promocion.descripcion }}</td>
                                 <td class="mono">{{ promocion.porcentaje_a_reducir }}%</td>
-                                <td>{{ promocion.id_restriccion.nombre }} ({{ promocion.id_restriccion.consumo_minimo_para_aplicar }})</td>
+                                <td>
+                                    {% if promocion.id_restriccion %}
+                                        {{ promocion.id_restriccion.nombre }} ({{ promocion.id_restriccion.consumo_minimo_para_aplicar }})
+                                    {% else %}
+                                        <span class="muted">Sin restriccion</span>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <span class="status-badge {% if not promocion.activo %}inactive{% endif %}">
                                         {% if promocion.activo %}Activa{% else %}Inactiva{% endif %}

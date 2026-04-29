@@ -48,7 +48,7 @@ def promociones_view(request):
             porcentaje = _parse_decimal(request.POST.get("porcentaje"))
             restriccion_id = request.POST.get("restriccion")
 
-            if not all([nombre, descripcion, porcentaje is not None, restriccion_id]):
+            if not all([nombre, descripcion, porcentaje is not None]):
                 messages.error(request, "Completa todos los campos de la promocion.")
                 return redirect("promociones")
 
@@ -56,7 +56,9 @@ def promociones_view(request):
                 messages.error(request, "El porcentaje debe estar entre 0 y 100.")
                 return redirect("promociones")
 
-            restriccion = get_object_or_404(Restricciones, pk=restriccion_id)
+            restriccion = None
+            if restriccion_id:
+                restriccion = get_object_or_404(Restricciones, pk=restriccion_id)
 
             if action == "create_promocion":
                 if Promocion.objects.filter(nombre__iexact=nombre).exists():

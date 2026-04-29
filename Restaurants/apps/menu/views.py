@@ -1,7 +1,20 @@
-from django.shortcuts import redirect, render, get_object_or_404
-from .models import Alimentosbebidas
+from decimal import Decimal, InvalidOperation
+
 from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
+
 from apps.usuarios.views import login_required
+
+from .models import Alimentosbebidas
+
+
+def _parse_costo(value):
+    try:
+        costo = Decimal(value)
+    except (TypeError, InvalidOperation):
+        return None
+    return costo if costo >= 0 else None
+
 
 # Create your views here.
 @login_required(role="admin")
@@ -12,13 +25,25 @@ def lista_alimentos(request):
 @login_required(role="admin")
 def agregar_alimento(request):
     if request.method == 'POST':
-        nombre = request.POST.get('nombre')
-        descripcion = request.POST.get('descripcion')
+        nombre = (request.POST.get('nombre') or '').strip()
+        descripcion = (request.POST.get('descripcion') or '').strip()
         costo = request.POST.get('costo')
+        costo_decimal = _parse_costo(costo)
+
+        if not all([nombre, descripcion, costo_decimal is not None]):
+            messages.error(request, 'Completa los datos con un costo valido mayor o igual a 0.')
+            return render(request, 'agregar_alimento.html', {
+                'form_data': {
+                    'nombre': nombre,
+                    'descripcion': descripcion,
+                    'costo': costo or '',
+                }
+            })
+
         Alimentosbebidas.objects.create(
             nombre=nombre,
             descripcion=descripcion,
-            costo=costo,
+            costo=costo_decimal,
             activo=True,
         )
         messages.success(request, 'Alimento agregado exitosamente.')
@@ -33,9 +58,17 @@ def modificar_alimento(request, id=None):
         return render(request, 'modificar_alimento.html', {'alimentos': alimentos})
     alimento = get_object_or_404(Alimentosbebidas, id_alimentosbebidas=id)
     if request.method == 'POST':
-        alimento.nombre = request.POST.get('nombre')
-        alimento.descripcion = request.POST.get('descripcion')
-        alimento.costo = request.POST.get('costo')
+        nombre = (request.POST.get('nombre') or '').strip()
+        descripcion = (request.POST.get('descripcion') or '').strip()
+        costo_decimal = _parse_costo(request.POST.get('costo'))
+
+        if not all([nombre, descripcion, costo_decimal is not None]):
+            messages.error(request, 'Completa los datos con un costo valido mayor o igual a 0.')
+            return render(request, 'modificar_alimento.html', {'alimento': alimento})
+
+        alimento.nombre = nombre
+        alimento.descripcion = descripcion
+        alimento.costo = costo_decimal
         alimento.save()
         messages.success(request, 'Alimento modificado correctamente')
         return redirect('lista_alimentos')

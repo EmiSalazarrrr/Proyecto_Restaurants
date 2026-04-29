@@ -57,6 +57,9 @@
         .page-footer { margin-top: 32px; font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
 
         .empty-state { text-align: center; padding: 48px; color: var(--text-muted); font-size: 13px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; max-width: 600px; }
+        .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; }
+        .alert-success { background: rgba(76,201,112,0.1); border: 1px solid rgba(76,201,112,0.3); color: #4cc970; }
+        .alert-error { background: rgba(224,92,92,0.1); border: 1px solid rgba(224,92,92,0.3); color: #ffb8b8; }
     </style>
 </head>
 <body>
@@ -78,6 +81,12 @@
             <h2>Modificar Alimento / Bebida</h2>
             <div class="topbar-badge">Panel Administrador</div>
         </div>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags == 'error' %}alert-error{% else %}alert-success{% endif %}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
 
         {% if not alimento %}
             <!-- PASO 1: Seleccionar producto -->
@@ -120,7 +129,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Costo</label>
-                        <input type="number" name="costo" step="0.01" class="form-input" value="{{ alimento.costo }}" required>
+                        <input type="number" name="costo" min="0" step="0.01" class="form-input" value="{{ alimento.costo }}" required>
                     </div>
                     <button type="submit" class="btn-submit">💾 Guardar cambios</button>
                 </form>

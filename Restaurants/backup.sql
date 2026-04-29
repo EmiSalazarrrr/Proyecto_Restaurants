@@ -46,8 +46,10 @@ CREATE TABLE IF NOT EXISTS `cliente` (
 
 -- Volcando estructura para tabla restaurants.detalleticket
 CREATE TABLE IF NOT EXISTS `detalleticket` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_ticket` int(11) DEFAULT NULL,
   `id_productopedido` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `fk_ticket_detalleticket` (`id_ticket`),
   KEY `fk_productopedido_detalleticket` (`id_productopedido`),
   CONSTRAINT `fk_productopedido_detalleticket` FOREIGN KEY (`id_productopedido`) REFERENCES `productopedido` (`id_productopedido`) ON DELETE CASCADE ON UPDATE CASCADE,
