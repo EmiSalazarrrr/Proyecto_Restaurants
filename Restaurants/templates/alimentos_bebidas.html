@@ -302,6 +302,22 @@
 
         .btn-edit:hover { border-color: var(--accent); color: var(--accent); }
 
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--success-dim);
+            color: var(--success);
+        }
+
+        .status-badge.inactive {
+            background: var(--danger-dim);
+            color: var(--danger);
+        }
+
         .btn-delete {
             padding: 5px 12px;
             background: transparent;
@@ -314,7 +330,7 @@
             transition: all 0.15s;
         }
 
-        .btn-delete:hover { border-color: var(--danger); color: var(--danger); }
+        .btn-delete:hover { border-color: var(--accent); color: var(--accent); }
 
         .empty-state {
             text-align: center;
@@ -360,7 +376,7 @@
         <a href="/promociones/" class="nav-item"><span class="nav-icon">🎁</span> Promociones</a>
         <a href="/metricas/" class="nav-item"><span class="nav-icon">📊</span> Métricas</a>
         <div class="sidebar-bottom">
-            <a href="/" class="btn-logout"><span>⇠</span> Cerrar Sesión</a>
+            <a href="{% url 'logout' %}" class="btn-logout"><span>⇠</span> Cerrar Sesión</a>
         </div>
     </aside>
 
@@ -387,11 +403,11 @@
                 </div>
                 <span class="action-arrow">›</span>
             </a>
-            <a href="{% url 'eliminar_alimento' %}" class="action-card danger">
-                <div class="action-icon">🗑️</div>
+            <a href="{% url 'eliminar_alimento' %}" class="action-card">
+                <div class="action-icon">⚙</div>
                 <div class="action-info">
-                    <div class="action-title">Eliminar</div>
-                    <div class="action-desc">Quita un elemento del catálogo</div>
+                    <div class="action-title">Cambiar estado</div>
+                    <div class="action-desc">Activa o inactiva un producto del catálogo</div>
                 </div>
                 <span class="action-arrow">›</span>
             </a>
@@ -427,6 +443,7 @@
                     <th>Nombre</th>
                     <th>Descripción</th>
                     <th>Precio</th>
+                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -438,15 +455,20 @@
                     <td><span class="desc-text">{{ alimento.descripcion }}</span></td>
                     <td><span class="price-tag">${{ alimento.costo }}</span></td>
                     <td>
+                        <span class="status-badge {% if not alimento.activo %}inactive{% endif %}">
+                            {% if alimento.activo %}Activo{% else %}Inactivo{% endif %}
+                        </span>
+                    </td>
+                    <td>
                         <div class="row-actions">
                             <a href="{% url 'modificar_alimento_id' alimento.id_alimentosbebidas %}" class="btn-edit">✏️ Editar</a>
-                            <a href="{% url 'eliminar_alimento_id' alimento.id_alimentosbebidas %}" class="btn-delete">🗑️ Eliminar</a>
+                            <a href="{% url 'eliminar_alimento_id' alimento.id_alimentosbebidas %}" class="btn-delete">Cambiar estado</a>
                         </div>
                     </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5">
+                    <td colspan="6">
                         <div class="empty-state">
                             <div class="empty-icon">🍽️</div>
                             No hay productos en el catálogo aún.<br>Usa el botón <strong>Agregar</strong> para añadir el primero.

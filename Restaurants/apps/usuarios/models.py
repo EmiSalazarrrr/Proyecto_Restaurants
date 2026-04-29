@@ -20,7 +20,7 @@ class Cliente(models.Model):
     nombre = models.CharField(max_length=30)
     apellido_paterno = models.CharField(db_column='apellido_Paterno', max_length=30)
     apellido_materno = models.CharField(max_length=30, blank=True, null=True)
-    contrase_a = models.CharField(db_column='contrase??a', max_length=255)
+    contrase_a = models.CharField(db_column='contraseña', max_length=255)
     id_tipo_de_usuario = models.ForeignKey(Perfiles, models.DO_NOTHING, db_column='id_tipo_de_usuario', blank=True, null=True)
 
     def __str__(self):

@@ -17,7 +17,7 @@ def menu_admin_view(request):
     tickets_hoy = Ticket.objects.filter(fecha__date=hoy)
     ventas_hoy = tickets_hoy.aggregate(total=Sum("precio_final"))["total"] or 0
     clientes_hoy = tickets_hoy.values("nombre_usuario").distinct().count()
-    promociones_activas = Promocion.objects.count()
+    promociones_activas = Promocion.objects.filter(activo=True).count()
 
     context = {
         "ventas_hoy": ventas_hoy,

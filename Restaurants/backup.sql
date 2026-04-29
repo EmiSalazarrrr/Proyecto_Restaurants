@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS `alimentosbebidas` (
   `descripcion` varchar(200) NOT NULL,
   `costo` decimal(10,2) NOT NULL,
   `nombre` varchar(50) NOT NULL,
+  `activo` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id_alimentosbebidas`),
   UNIQUE KEY `nombre` (`nombre`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -45,8 +46,10 @@ CREATE TABLE IF NOT EXISTS `cliente` (
 
 -- Volcando estructura para tabla restaurants.detalleticket
 CREATE TABLE IF NOT EXISTS `detalleticket` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_ticket` int(11) DEFAULT NULL,
   `id_productopedido` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
   KEY `fk_ticket_detalleticket` (`id_ticket`),
   KEY `fk_productopedido_detalleticket` (`id_productopedido`),
   CONSTRAINT `fk_productopedido_detalleticket` FOREIGN KEY (`id_productopedido`) REFERENCES `productopedido` (`id_productopedido`) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -82,6 +85,7 @@ CREATE TABLE IF NOT EXISTS `promocion` (
   `descripcion` varchar(200) NOT NULL,
   `porcentaje_a_reducir` decimal(5,2) NOT NULL,
   `id_restriccion` int(11) DEFAULT NULL,
+  `activo` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id_promocion`),
   UNIQUE KEY `nombre` (`nombre`),
   KEY `fk_restriccion_promocion` (`id_restriccion`),

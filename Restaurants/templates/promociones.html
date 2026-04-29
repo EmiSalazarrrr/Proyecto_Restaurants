@@ -17,6 +17,7 @@
             --text-muted: #55556a;
             --success: #4cc970;
             --danger: #f07a7a;
+            --danger-dim: rgba(240,122,122,0.12);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { min-height: 100vh; display: flex; font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--text-primary); }
@@ -24,10 +25,12 @@
         .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid var(--card-border); margin-bottom: 20px; }
         .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
         .sidebar-logo b { color: var(--accent); }
-        .nav-item { padding: 11px 24px; color: var(--text-secondary); text-decoration: none; border-left: 3px solid transparent; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; color: var(--text-secondary); text-decoration: none; border-left: 3px solid transparent; }
         .nav-item.active, .nav-item:hover { color: var(--accent); background: rgba(201,168,76,0.08); border-left-color: var(--accent); }
+        .nav-icon { width: 20px; text-align: center; }
         .sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--card-border); }
         .btn-logout { display: block; border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; text-align: center; }
+        .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
         main { margin-left: 220px; flex: 1; padding: 36px 40px; }
         .topbar { margin-bottom: 20px; }
         .topbar p { color: var(--text-secondary); margin-top: 6px; }
@@ -72,6 +75,9 @@
         .mini-actions { display: flex; gap: 8px; flex-wrap: wrap; }
         .mini-btn { padding: 8px 10px; border-radius: 8px; font-size: 12px; }
         .mini-btn.delete { background: rgba(240,122,122,0.14); color: #ffd0d0; }
+        .mini-btn.activate { background: rgba(76,201,112,0.12); color: #baf3c7; }
+        .status-badge { display: inline-flex; padding: 5px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: rgba(76,201,112,0.12); color: #baf3c7; }
+        .status-badge.inactive { background: rgba(240,122,122,0.14); color: #ffd0d0; }
         @media (max-width: 980px) { .grid { grid-template-columns: 1fr; } }
         @media (max-width: 720px) {
             body { display: block; }
@@ -84,11 +90,11 @@
 <body>
     <aside class="sidebar">
         <div class="sidebar-logo"><span>REST<b>AU</b>RANTS</span></div>
-        <a class="nav-item" href="{% url 'menu_admin' %}">Dashboard</a>
-        <a class="nav-item" href="/alimentos-bebidas/">Alimentos / Bebidas</a>
-        <a class="nav-item" href="{% url 'atender_mesa' %}">Atender mesa</a>
-        <a class="nav-item active" href="{% url 'promociones' %}">Promociones</a>
-        <a class="nav-item" href="{% url 'metricas' %}">Metricas</a>
+        <a class="nav-item" href="{% url 'menu_admin' %}"><span class="nav-icon">⊞</span>Dashboard</a>
+        <a class="nav-item" href="/alimentos-bebidas/"><span class="nav-icon">🍽️</span>Alimentos / Bebidas</a>
+        <a class="nav-item" href="{% url 'atender_mesa' %}"><span class="nav-icon">🪑</span>Atender mesa</a>
+        <a class="nav-item active" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
+        <a class="nav-item" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
         <div class="sidebar-bottom">
             <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
         </div>
@@ -132,8 +138,8 @@
                     </div>
                     <div>
                         <label for="restriccion">Restriccion</label>
-                        <select id="restriccion" name="restriccion" required>
-                            <option value="">Selecciona una restriccion</option>
+                        <select id="restriccion" name="restriccion">
+                            <option value="" {% if promocion_editar and not promocion_editar.id_restriccion %}selected{% endif %}>Sin restriccion</option>
                             {% for restriccion in restricciones %}
                                 <option value="{{ restriccion.id_restriccion }}" {% if promocion_editar and promocion_editar.id_restriccion_id == restriccion.id_restriccion %}selected{% endif %}>
                                     {{ restriccion.nombre }} - minimo {{ restriccion.consumo_minimo_para_aplicar }}
@@ -179,6 +185,7 @@
                             <th>Descripcion</th>
                             <th>Descuento</th>
                             <th>Restriccion</th>
+                            <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -188,22 +195,35 @@
                                 <td>{{ promocion.nombre }}</td>
                                 <td>{{ promocion.descripcion }}</td>
                                 <td class="mono">{{ promocion.porcentaje_a_reducir }}%</td>
-                                <td>{{ promocion.id_restriccion.nombre }} ({{ promocion.id_restriccion.consumo_minimo_para_aplicar }})</td>
+                                <td>
+                                    {% if promocion.id_restriccion %}
+                                        {{ promocion.id_restriccion.nombre }} ({{ promocion.id_restriccion.consumo_minimo_para_aplicar }})
+                                    {% else %}
+                                        <span class="muted">Sin restriccion</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="status-badge {% if not promocion.activo %}inactive{% endif %}">
+                                        {% if promocion.activo %}Activa{% else %}Inactiva{% endif %}
+                                    </span>
+                                </td>
                                 <td>
                                     <div class="mini-actions">
                                         <a class="btn-link mini-btn" href="{% url 'promociones' %}?editar={{ promocion.id_promocion }}">Editar</a>
                                         <form class="inline-form" method="post">
                                             {% csrf_token %}
-                                            <input type="hidden" name="action" value="delete_promocion">
+                                            <input type="hidden" name="action" value="toggle_promocion">
                                             <input type="hidden" name="promocion_id" value="{{ promocion.id_promocion }}">
-                                            <button class="mini-btn delete" type="submit">Eliminar</button>
+                                            <button class="mini-btn {% if promocion.activo %}delete{% else %}activate{% endif %}" type="submit">
+                                                {% if promocion.activo %}Inactivar{% else %}Activar{% endif %}
+                                            </button>
                                         </form>
                                     </div>
                                 </td>
                             </tr>
                         {% empty %}
                             <tr>
-                                <td colspan="5">No hay promociones registradas.</td>
+                                <td colspan="6">No hay promociones registradas.</td>
                             </tr>
                         {% endfor %}
                     </tbody>

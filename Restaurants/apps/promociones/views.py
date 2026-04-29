@@ -23,14 +23,21 @@ def promociones_view(request):
         if action == "create_restriccion":
             nombre = (request.POST.get("restriccion_nombre") or "").strip()
             minimo = request.POST.get("consumo_minimo") or "0"
+            try:
+                minimo_int = max(int(minimo), 0)
+            except (TypeError, ValueError):
+                minimo_int = None
+
             if not nombre:
                 messages.error(request, "El nombre de la restriccion es obligatorio.")
+            elif minimo_int is None:
+                messages.error(request, "El consumo minimo debe ser un numero entero.")
             elif Restricciones.objects.filter(nombre__iexact=nombre).exists():
                 messages.error(request, "Ya existe una restriccion con ese nombre.")
             else:
                 Restricciones.objects.create(
                     nombre=nombre,
-                    consumo_minimo_para_aplicar=max(int(minimo), 0),
+                    consumo_minimo_para_aplicar=minimo_int,
                 )
                 messages.success(request, "Restriccion creada correctamente.")
             return redirect("promociones")
@@ -41,11 +48,17 @@ def promociones_view(request):
             porcentaje = _parse_decimal(request.POST.get("porcentaje"))
             restriccion_id = request.POST.get("restriccion")
 
-            if not all([nombre, descripcion, porcentaje is not None, restriccion_id]):
+            if not all([nombre, descripcion, porcentaje is not None]):
                 messages.error(request, "Completa todos los campos de la promocion.")
                 return redirect("promociones")
 
-            restriccion = get_object_or_404(Restricciones, pk=restriccion_id)
+            if porcentaje < 0 or porcentaje > 100:
+                messages.error(request, "El porcentaje debe estar entre 0 y 100.")
+                return redirect("promociones")
+
+            restriccion = None
+            if restriccion_id:
+                restriccion = get_object_or_404(Restricciones, pk=restriccion_id)
 
             if action == "create_promocion":
                 if Promocion.objects.filter(nombre__iexact=nombre).exists():
@@ -56,6 +69,7 @@ def promociones_view(request):
                         descripcion=descripcion,
                         porcentaje_a_reducir=porcentaje,
                         id_restriccion=restriccion,
+                        activo=True,
                     )
                     messages.success(request, "Promocion creada correctamente.")
                 return redirect("promociones")
@@ -72,13 +86,15 @@ def promociones_view(request):
                 messages.success(request, "Promocion actualizada correctamente.")
             return redirect("promociones")
 
-        if action == "delete_promocion":
+        if action == "toggle_promocion":
             promocion = get_object_or_404(Promocion, pk=request.POST.get("promocion_id"))
-            promocion.delete()
-            messages.success(request, "Promocion eliminada correctamente.")
+            promocion.activo = not promocion.activo
+            promocion.save(update_fields=["activo"])
+            estado = "activada" if promocion.activo else "inactivada"
+            messages.success(request, f"Promocion {estado} correctamente.")
             return redirect("promociones")
 
-    promociones = Promocion.objects.select_related("id_restriccion").order_by("nombre")
+    promociones = Promocion.objects.select_related("id_restriccion").order_by("-activo", "nombre")
     restricciones = Restricciones.objects.order_by("consumo_minimo_para_aplicar", "nombre")
     editar_id = request.GET.get("editar")
     promocion_editar = None
