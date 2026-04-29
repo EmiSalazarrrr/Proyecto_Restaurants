@@ -16,6 +16,8 @@
             --text-primary: #eeeef5;
             --text-secondary: #8888aa;
             --text-muted: #55556a;
+            --danger: #e05c5c;
+            --danger-dim: rgba(224,92,92,0.1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--text-primary); display: flex; min-height: 100vh; }
@@ -24,10 +26,12 @@
         .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
         .sidebar-logo b { color: var(--accent); }
         .sidebar-label { padding: 0 24px; margin-bottom: 8px; color: var(--text-muted); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
-        .nav-item { padding: 11px 24px; color: var(--text-secondary); text-decoration: none; border-left: 3px solid transparent; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; color: var(--text-secondary); text-decoration: none; border-left: 3px solid transparent; }
         .nav-item.active, .nav-item:hover { color: var(--accent); background: var(--accent-dim); border-left-color: var(--accent); }
+        .nav-icon { width: 20px; text-align: center; }
         .sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--card-border); }
         .btn-logout { display: block; text-decoration: none; color: var(--text-secondary); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 14px; text-align: center; }
+        .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
         .main { margin-left: 220px; flex: 1; padding: 36px 40px; }
         .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; gap: 16px; }
         .topbar h2 { font-size: 26px; }
@@ -62,11 +66,11 @@
     <aside class="sidebar">
         <div class="sidebar-logo"><span>REST<b>AU</b>RANTS</span></div>
         <p class="sidebar-label">Panel</p>
-        <a class="nav-item active" href="{% url 'menu_admin' %}">Dashboard</a>
-        <a class="nav-item" href="/alimentos-bebidas/">Alimentos / Bebidas</a>
-        <a class="nav-item" href="{% url 'atender_mesa' %}">Atender mesa</a>
-        <a class="nav-item" href="{% url 'promociones' %}">Promociones</a>
-        <a class="nav-item" href="{% url 'metricas' %}">Metricas</a>
+        <a class="nav-item active" href="{% url 'menu_admin' %}"><span class="nav-icon">⊞</span>Dashboard</a>
+        <a class="nav-item" href="/alimentos-bebidas/"><span class="nav-icon">🍽️</span>Alimentos / Bebidas</a>
+        <a class="nav-item" href="{% url 'atender_mesa' %}"><span class="nav-icon">🪑</span>Atender mesa</a>
+        <a class="nav-item" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
+        <a class="nav-item" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
         <div class="sidebar-bottom">
             <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
         </div>

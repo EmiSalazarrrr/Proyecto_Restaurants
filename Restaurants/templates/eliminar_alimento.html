@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Eliminar Alimento | Restaurants</title>
+    <title>Cambiar Estado | Restaurants</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #0f0f1a; --sidebar-bg: #1a1a2e; --card-bg: #1e1e32; --card-border: #2a2a45; --accent: #c9a84c; --accent-dim: rgba(201,168,76,0.12); --text-primary: #eeeef5; --text-secondary: #8888aa; --text-muted: #55556a; --danger: #e05c5c; }
@@ -29,13 +29,14 @@
         .btn-back:hover { border-color: var(--text-secondary); color: var(--text-primary); }
         .product-list { max-width: 500px; }
         .product-item { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; text-decoration: none; transition: all 0.18s; }
-        .product-item:hover { border-color: var(--danger); background: rgba(224,92,92,0.05); }
+        .product-item:hover { border-color: var(--accent); background: rgba(201,168,76,0.05); }
         .product-name { font-size: 14px; font-weight: 500; color: var(--text-primary); }
         .product-price { font-size: 13px; color: var(--accent); font-family: 'DM Mono', monospace; }
-        .confirm-card { background: var(--card-bg); border: 1px solid var(--danger); border-radius: 10px; padding: 28px; max-width: 500px; }
+        .status-pill { font-size: 12px; color: var(--text-secondary); border: 1px solid var(--card-border); border-radius: 999px; padding: 4px 10px; }
+        .confirm-card { background: var(--card-bg); border: 1px solid var(--accent); border-radius: 10px; padding: 28px; max-width: 500px; }
         .confirm-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
         .confirm-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
-        .btn-danger { width: 100%; padding: 12px; background: var(--danger); border: none; border-radius: 8px; color: white; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: opacity 0.18s; }
+        .btn-danger { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 8px; color: #11111a; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: opacity 0.18s; }
         .btn-danger:hover { opacity: 0.85; }
     </style>
 </head>
@@ -49,37 +50,43 @@
         <a href="/promociones/" class="nav-item"><span class="nav-icon">🎁</span> Promociones</a>
         <a href="/metricas/" class="nav-item"><span class="nav-icon">📊</span> Métricas</a>
         <div class="sidebar-bottom">
-            <a href="/" class="btn-logout"><span>⇠</span> Cerrar Sesión</a>
+            <a href="{% url 'logout' %}" class="btn-logout"><span>⇠</span> Cerrar Sesión</a>
         </div>
     </aside>
     <main class="main">
         <div class="topbar">
-            <h2>Eliminar Alimento / Bebida</h2>
+            <h2>Estado de Alimento / Bebida</h2>
             <div class="topbar-badge">Panel Administrador</div>
         </div>
 
         {% if not alimento %}
-            <!-- Paso 1: Seleccionar qué producto eliminar -->
-            <p class="page-subtitle">Selecciona el producto que deseas eliminar</p>
+            <!-- Paso 1: Seleccionar qué producto activar o inactivar -->
+            <p class="page-subtitle">Selecciona el producto al que deseas cambiar el estado</p>
             <a href="{% url 'lista_alimentos' %}" class="btn-back">⇠ Regresar</a>
             <div class="product-list">
                 {% for item in alimentos %}
-                <a href="{% url 'eliminar_alimento' item.id_alimentosbebidas %}" class="product-item">
+                <a href="{% url 'eliminar_alimento_id' item.id_alimentosbebidas %}" class="product-item">
                     <span class="product-name">{{ item.nombre }}</span>
-                    <span class="product-price">${{ item.costo }}</span>
+                    <span class="status-pill">{% if item.activo %}Activo{% else %}Inactivo{% endif %}</span>
                 </a>
                 {% endfor %}
             </div>
         {% else %}
-            <!-- Paso 2: Confirmar eliminación -->
-            <p class="page-subtitle">Confirma que deseas eliminar este producto</p>
+            <!-- Paso 2: Confirmar cambio de estado -->
+            <p class="page-subtitle">Confirma el cambio de estado de este producto</p>
             <a href="{% url 'eliminar_alimento' %}" class="btn-back">⇠ Regresar</a>
             <div class="confirm-card">
-                <div class="confirm-title">¿Eliminar "{{ alimento.nombre }}"?</div>
-                <div class="confirm-desc">Esta acción no se puede deshacer. El producto será removido permanentemente del catálogo.</div>
+                <div class="confirm-title">
+                    ¿{% if alimento.activo %}Inactivar{% else %}Activar{% endif %} "{{ alimento.nombre }}"?
+                </div>
+                <div class="confirm-desc">
+                    El producto no se eliminará. Si queda inactivo, dejará de aparecer al atender mesa, pero se conservará su historial.
+                </div>
                 <form method="POST">
                     {% csrf_token %}
-                    <button type="submit" class="btn-danger">Sí, eliminar producto</button>
+                    <button type="submit" class="btn-danger">
+                        Sí, {% if alimento.activo %}inactivar{% else %}activar{% endif %} producto
+                    </button>
                 </form>
             </div>
         {% endif %}

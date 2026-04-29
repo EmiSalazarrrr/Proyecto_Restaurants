@@ -22,7 +22,7 @@ def _generar_codigo_unico():
 
 
 def _promocion_aplicable(cliente, total_productos):
-    promociones = Promocion.objects.select_related("id_restriccion").all()
+    promociones = Promocion.objects.filter(activo=True).select_related("id_restriccion")
     compras_previas = Ticket.objects.filter(nombre_usuario=cliente).count()
     elegibles = []
 
@@ -47,7 +47,7 @@ def _promocion_aplicable(cliente, total_productos):
 
 @login_required(role="admin")
 def atender_mesa(request):
-    alimentos = Alimentosbebidas.objects.order_by("nombre")
+    alimentos = Alimentosbebidas.objects.filter(activo=True).order_by("nombre")
     clientes = Cliente.objects.filter(id_tipo_de_usuario__tipo_de_usuario__iexact="Cliente").order_by("nombre")
     return render(
         request,
@@ -85,7 +85,7 @@ def guardar_ticket(request):
         if not producto_id:
             continue
         try:
-            alimento = Alimentosbebidas.objects.get(id_alimentosbebidas=producto_id)
+            alimento = Alimentosbebidas.objects.get(id_alimentosbebidas=producto_id, activo=True)
             cantidad_int = max(int(cantidad), 1)
         except (Alimentosbebidas.DoesNotExist, TypeError, ValueError):
             continue

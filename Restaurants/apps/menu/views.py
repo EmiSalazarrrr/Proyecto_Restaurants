@@ -6,7 +6,7 @@ from apps.usuarios.views import login_required
 # Create your views here.
 @login_required(role="admin")
 def lista_alimentos(request):
-    alimentos = Alimentosbebidas.objects.all()
+    alimentos = Alimentosbebidas.objects.order_by("-activo", "nombre")
     return render(request, 'alimentos_bebidas.html', {'alimentos': alimentos})
 
 @login_required(role="admin")
@@ -18,7 +18,8 @@ def agregar_alimento(request):
         Alimentosbebidas.objects.create(
             nombre=nombre,
             descripcion=descripcion,
-            costo=costo
+            costo=costo,
+            activo=True,
         )
         messages.success(request, 'Alimento agregado exitosamente.')
         return redirect('lista_alimentos')
@@ -44,12 +45,14 @@ def modificar_alimento(request, id=None):
 @login_required(role="admin")
 def eliminar_alimento(request, id=None):     
     if id is None:
-        alimentos = Alimentosbebidas.objects.all()
+        alimentos = Alimentosbebidas.objects.order_by("-activo", "nombre")
         return render(request, 'eliminar_alimento.html', {'alimentos': alimentos})
     
     alimento = get_object_or_404(Alimentosbebidas, id_alimentosbebidas=id)
     if request.method == 'POST':
-        alimento.delete()
-        messages.success(request, 'Alimento eliminado correctamente')
+        alimento.activo = not alimento.activo
+        alimento.save(update_fields=["activo"])
+        estado = "activado" if alimento.activo else "inactivado"
+        messages.success(request, f'Alimento {estado} correctamente')
         return redirect('lista_alimentos')
     return render(request, 'eliminar_alimento.html', {'alimento': alimento})

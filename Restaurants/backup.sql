@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS `alimentosbebidas` (
   `descripcion` varchar(200) NOT NULL,
   `costo` decimal(10,2) NOT NULL,
   `nombre` varchar(50) NOT NULL,
+  `activo` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id_alimentosbebidas`),
   UNIQUE KEY `nombre` (`nombre`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -82,6 +83,7 @@ CREATE TABLE IF NOT EXISTS `promocion` (
   `descripcion` varchar(200) NOT NULL,
   `porcentaje_a_reducir` decimal(5,2) NOT NULL,
   `id_restriccion` int(11) DEFAULT NULL,
+  `activo` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id_promocion`),
   UNIQUE KEY `nombre` (`nombre`),
   KEY `fk_restriccion_promocion` (`id_restriccion`),

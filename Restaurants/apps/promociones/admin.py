@@ -11,8 +11,9 @@ class RestriccionesAdmin(admin.ModelAdmin):
 
 @admin.register(Promocion)
 class PromocionAdmin(admin.ModelAdmin):
-    list_display =('id_promocion','nombre','descripcion','porcentaje_a_reducir','id_restriccion')
+    list_display =('id_promocion','nombre','descripcion','porcentaje_a_reducir','id_restriccion','activo')
     search_fields = ('nombre','descripcion',)
-    list_filter = ('id_restriccion',)
+    list_filter = ('activo','id_restriccion',)
+    list_editable = ('activo',)
     ordering = ('nombre',)
     list_per_page = 20
