@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
@@ -101,9 +102,17 @@ def promociones_view(request):
     if editar_id:
         promocion_editar = Promocion.objects.filter(pk=editar_id).select_related("id_restriccion").first()
 
+    activas = sum(1 for p in promociones if p.activo)
+    inactivas = len(promociones) - activas
+
     context = {
         "promociones": promociones,
         "restricciones": restricciones,
         "promocion_editar": promocion_editar,
+        "chart_donut": json.dumps({
+            "labels": ["Activas", "Inactivas"],
+            "data": [activas, inactivas],
+            "colors": ["#4cc970", "#f07a7a"],
+        }),
     }
     return render(request, "promociones.html", context)

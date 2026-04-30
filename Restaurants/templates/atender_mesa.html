@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atender mesa | Restaurants</title>
+    <title>Atender Mesa | Restaurants</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -12,204 +12,434 @@
             --card-bg: #1e1e32;
             --card-border: #2a2a45;
             --accent: #c9a84c;
+            --accent-dim: rgba(201,168,76,0.12);
             --text-primary: #eeeef5;
             --text-secondary: #8888aa;
             --text-muted: #55556a;
+            --success: #4cc970;
+            --success-dim: rgba(76,201,112,0.1);
             --danger: #f07a7a;
             --danger-dim: rgba(240,122,122,0.1);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { min-height: 100vh; display: flex; background: var(--bg); color: var(--text-primary); font-family: "DM Sans", sans-serif; }
+
+        /* ── Sidebar ── */
         .sidebar { width: 220px; background: var(--sidebar-bg); padding: 28px 0; position: fixed; inset: 0 auto 0 0; border-right: 1px solid var(--card-border); display: flex; flex-direction: column; }
         .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid var(--card-border); margin-bottom: 20px; }
         .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
         .sidebar-logo b { color: var(--accent); }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; color: var(--text-secondary); text-decoration: none; border-left: 3px solid transparent; }
-        .nav-item.active, .nav-item:hover { color: var(--accent); background: rgba(201,168,76,0.08); border-left-color: var(--accent); }
+        .sidebar-label { padding: 0 24px; margin-bottom: 8px; color: var(--text-muted); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; color: var(--text-secondary); text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
+        .nav-item.active, .nav-item:hover { color: var(--accent); background: var(--accent-dim); border-left-color: var(--accent); }
         .nav-icon { width: 20px; text-align: center; }
         .sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--card-border); }
-        .btn-logout { display: block; text-align: center; border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; }
+        .btn-logout { display: block; text-decoration: none; color: var(--text-secondary); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 14px; text-align: center; transition: all 0.15s; }
         .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
-        main { margin-left: 220px; flex: 1; padding: 36px 40px; }
-        .topbar { margin-bottom: 20px; }
-        .topbar p { color: var(--text-secondary); margin-top: 6px; }
-        .alert { margin-bottom: 16px; padding: 12px 14px; border-radius: 10px; background: rgba(240,122,122,0.1); border: 1px solid rgba(240,122,122,0.22); color: #ffd0d0; }
-        .alert.success { background: rgba(76,201,112,0.1); border-color: rgba(76,201,112,0.22); color: #caf7d5; }
-        .layout { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; }
-        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 22px; }
+
+        /* ── Main ── */
+        .main { margin-left: 220px; flex: 1; padding: 36px 40px; }
+
+        /* ── Animations ── */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes rowSlideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .anim { opacity: 0; animation: fadeInUp 0.5s ease forwards; }
+        .d1 { animation-delay: 0.05s; } .d2 { animation-delay: 0.1s; }
+        .d3 { animation-delay: 0.15s; } .d4 { animation-delay: 0.2s; }
+        .d5 { animation-delay: 0.25s; }
+
+        /* ── Topbar ── */
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; gap: 16px; }
+        .topbar h2 { font-size: 26px; }
+        .topbar p { color: var(--text-secondary); margin-top: 4px; }
+        .badge { background: var(--accent-dim); border: 1px solid rgba(201,168,76,0.35); color: var(--accent); border-radius: 999px; padding: 6px 14px; font: 500 12px "DM Mono", monospace; }
+
+        /* ── Alerts ── */
+        .alert { margin-bottom: 18px; padding: 12px 16px; border-radius: 10px; font-size: 13px; }
+        .alert.error   { background: var(--danger-dim);  border: 1px solid rgba(240,122,122,0.22); color: #ffd0d0; }
+        .alert.success { background: var(--success-dim); border: 1px solid rgba(76,201,112,0.22);  color: #caf7d5; }
+
+        /* ── Layout ── */
+        .layout { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; align-items: start; }
+
+        /* ── Cards ── */
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 24px; }
+        .card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 18px; }
+
+        /* ── Form fields ── */
         label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 8px; }
-        select, input {
+        select, input[type="number"], input[type="text"] {
             width: 100%;
             background: #16162a;
             border: 1px solid var(--card-border);
             border-radius: 10px;
             padding: 12px 14px;
             color: var(--text-primary);
-            font: inherit;
+            font: 14px "DM Sans", sans-serif;
+            transition: border-color 0.15s;
         }
-        .row { display: grid; grid-template-columns: 1fr 120px 120px 44px; gap: 10px; align-items: end; margin-top: 12px; }
-        .ghost-btn, .primary-btn, .remove-btn {
+        select:focus, input:focus { outline: none; border-color: rgba(201,168,76,0.55); }
+
+        /* ── Product row ── */
+        .rows-header { display: grid; grid-template-columns: 1fr 110px 110px 44px; gap: 10px; margin-top: 22px; margin-bottom: 6px; }
+        .rows-header span { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); padding: 0 2px; }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 110px 110px 44px;
+            gap: 10px;
+            align-items: center;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.025);
+            border: 1px solid rgba(255,255,255,0.06);
             border-radius: 10px;
-            padding: 12px 16px;
+            margin-bottom: 8px;
+            animation: rowSlideIn 0.3s ease forwards;
+        }
+        .row select, .row input { margin: 0; }
+        .row input[disabled] {
+            background: transparent;
+            border-color: transparent;
+            color: var(--accent);
+            font-family: "DM Mono", monospace;
+            padding-left: 2px;
+            cursor: default;
+        }
+
+        /* ── Buttons ── */
+        .ghost-btn {
+            width: 100%;
+            margin-top: 12px;
+            padding: 11px 16px;
+            border: 1px dashed rgba(201,168,76,0.35);
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 10px;
+            font: 500 13px "DM Sans", sans-serif;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .ghost-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+        .primary-btn {
+            width: 100%;
+            margin-top: 18px;
+            padding: 13px 16px;
+            border: none;
+            background: var(--accent);
+            color: #11111a;
+            border-radius: 10px;
             font: 600 14px "DM Sans", sans-serif;
             cursor: pointer;
+            transition: opacity 0.15s, transform 0.15s;
+            position: relative;
+            overflow: hidden;
         }
-        .ghost-btn { width: 100%; border: 1px dashed var(--card-border); background: transparent; color: var(--text-secondary); margin-top: 14px; }
-        .primary-btn { width: 100%; border: none; background: var(--accent); color: #11111a; margin-top: 18px; }
-        .remove-btn { width: 44px; height: 44px; border: 1px solid rgba(240,122,122,0.25); background: rgba(240,122,122,0.1); color: var(--danger); padding: 0; }
-        .summary-item { display: flex; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .primary-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.10), transparent 60%);
+            pointer-events: none;
+        }
+        .primary-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .primary-btn:active { transform: translateY(0); }
+
+        .remove-btn {
+            width: 44px;
+            height: 44px;
+            border: 1px solid rgba(240,122,122,0.3);
+            background: rgba(240,122,122,0.08);
+            color: var(--danger);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.15s;
+            display: grid;
+            place-items: center;
+            flex-shrink: 0;
+        }
+        .remove-btn:hover { background: rgba(240,122,122,0.18); border-color: rgba(240,122,122,0.6); }
+
+        /* ── Summary card ── */
+        .summary-list { display: grid; gap: 0; }
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
         .summary-item:last-child { border-bottom: none; }
-        .mono { font-family: "DM Mono", monospace; }
-        .muted { color: var(--text-secondary); }
+        .summary-label { color: var(--text-secondary); font-size: 13px; }
+        .summary-value { font: 500 15px "DM Mono", monospace; transition: color 0.3s; }
+        .summary-value.highlight { color: var(--accent); }
+        .summary-value.big { font-size: 22px; font-weight: 600; color: var(--accent); }
+
+        /* Promo indicator */
+        .promo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--success-dim);
+            border: 1px solid rgba(76,201,112,0.25);
+            color: var(--success);
+            border-radius: 999px;
+            padding: 4px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-top: 16px;
+            width: 100%;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .promo-badge.visible { opacity: 1; transform: translateY(0); }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 32px 0 16px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+        .empty-icon { font-size: 28px; margin-bottom: 8px; }
+
+        /* ── Quick link ── */
+        .quick-link { display: block; text-align: center; margin-top: 14px; color: var(--text-secondary); font-size: 13px; text-decoration: none; transition: color 0.15s; }
+        .quick-link:hover { color: var(--accent); }
+
+        /* ── Responsive ── */
         @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
         @media (max-width: 720px) {
             body { display: block; }
             .sidebar { position: static; width: 100%; min-height: auto; }
-            main { margin-left: 0; padding: 24px 16px; }
+            .main { margin-left: 0; padding: 24px 16px; }
             .row { grid-template-columns: 1fr; }
+            .rows-header { display: none; }
             .remove-btn { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="sidebar-logo"><span>REST<b>AU</b>RANTS</span></div>
-        <a class="nav-item" href="{% url 'menu_admin' %}"><span class="nav-icon">⊞</span>Dashboard</a>
-        <a class="nav-item" href="/alimentos-bebidas/"><span class="nav-icon">🍽️</span>Alimentos / Bebidas</a>
-        <a class="nav-item active" href="{% url 'atender_mesa' %}"><span class="nav-icon">🪑</span>Atender mesa</a>
-        <a class="nav-item" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
-        <a class="nav-item" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
-        <div class="sidebar-bottom">
-            <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
+<aside class="sidebar">
+    <div class="sidebar-logo"><span>REST<b>AU</b>RANTS</span></div>
+    <p class="sidebar-label">Panel</p>
+    <a class="nav-item" href="{% url 'menu_admin' %}"><span class="nav-icon">⊞</span>Dashboard</a>
+    <a class="nav-item" href="/alimentos-bebidas/"><span class="nav-icon">🍽️</span>Alimentos / Bebidas</a>
+    <a class="nav-item active" href="{% url 'atender_mesa' %}"><span class="nav-icon">🪑</span>Atender mesa</a>
+    <a class="nav-item" href="{% url 'lista_tickets' %}"><span class="nav-icon">🎫</span>Tickets</a>
+    <a class="nav-item" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
+    <a class="nav-item" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
+    <div class="sidebar-bottom">
+        <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
+    </div>
+</aside>
+
+<main class="main">
+    <div class="topbar anim d1">
+        <div>
+            <h2>Atender mesa</h2>
+            <p>Selecciona cliente y productos — la mejor promocion se aplica automaticamente.</p>
         </div>
-    </aside>
+        <div class="badge">Nuevo ticket</div>
+    </div>
 
-    <main>
-        <div class="topbar">
-            <h1>Atender mesa</h1>
-            <p>Crea tickets con multiples productos y aplica la mejor promocion elegible automaticamente.</p>
-        </div>
-
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert {% if message.tags == 'success' %}success{% endif %}">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-
-        <form method="post" action="{% url 'guardar_ticket' %}">
-            {% csrf_token %}
-            <div class="layout">
-                <section class="card">
-                    <div>
-                        <label for="cliente">Cliente</label>
-                        <select id="cliente" name="cliente" required>
-                            <option value="">Selecciona un cliente</option>
-                            {% for cliente in clientes %}
-                                <option value="{{ cliente.nombre_usuario }}">{{ cliente.nombre }} {{ cliente.apellido_paterno }} - @{{ cliente.nombre_usuario }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <div id="filas-container"></div>
-
-                    <button class="ghost-btn" type="button" onclick="agregarFila()">Agregar platillo</button>
-                    <button class="primary-btn" type="submit">Guardar ticket</button>
-                </section>
-
-                <aside class="card">
-                    <h3 style="margin-bottom: 14px;">Resumen</h3>
-                    <div class="summary-item">
-                        <span class="muted">Productos</span>
-                        <strong class="mono" id="total-productos">0</strong>
-                    </div>
-                    <div class="summary-item">
-                        <span class="muted">Subtotal</span>
-                        <strong class="mono" id="subtotal">$0.00</strong>
-                    </div>
-                    <div class="summary-item">
-                        <span class="muted">Promocion</span>
-                        <strong class="mono">Automatica</strong>
-                    </div>
-                    <div class="summary-item">
-                        <span class="muted">Ruta sugerida</span>
-                        <a href="{% url 'lista_tickets' %}" style="color: var(--accent); text-decoration: none;">Ver tickets</a>
-                    </div>
-                </aside>
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}success{% else %}error{% endif %} anim d1">
+                {{ message }}
             </div>
-        </form>
-    </main>
+        {% endfor %}
+    {% endif %}
 
-    <script id="catalogo-data" type="application/json">
-    [
-    {% for a in alimentos %}
-        {"id": {{ a.id_alimentosbebidas }}, "nombre": "{{ a.nombre|escapejs }}", "precio": {{ a.costo|default:"0" }}}{% if not forloop.last %},{% endif %}
-    {% endfor %}
-    ]
-    </script>
-    <script>
-        const catalogo = JSON.parse(document.getElementById("catalogo-data").textContent);
-        let filaId = 0;
+    <form method="post" action="{% url 'guardar_ticket' %}">
+        {% csrf_token %}
+        <div class="layout">
 
-        function opcionesHtml() {
-            return catalogo.map(item => (
-                `<option value="${item.id}" data-precio="${item.precio}">${item.nombre}</option>`
-            )).join("");
-        }
+            <!-- Formulario -->
+            <section class="card anim d2">
+                <p class="card-title">Datos del pedido</p>
 
-        function agregarFila() {
-            filaId += 1;
-            const fila = document.createElement("div");
-            fila.className = "row";
-            fila.id = `fila-${filaId}`;
-            const primerPrecio = catalogo.length ? Number(catalogo[0].precio).toFixed(2) : "0.00";
-            fila.innerHTML = `
                 <div>
-                    <label>Producto</label>
-                    <select name="producto_id[]" onchange="recalcular()">${opcionesHtml()}</select>
+                    <label for="cliente">Cliente</label>
+                    <select id="cliente" name="cliente" required onchange="updateClienteBadge(this)">
+                        <option value="">Selecciona un cliente…</option>
+                        {% for c in clientes %}
+                            <option value="{{ c.nombre_usuario }}">{{ c.nombre }} {{ c.apellido_paterno }} — @{{ c.nombre_usuario }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-                <div>
-                    <label>Cantidad</label>
-                    <input name="cantidad[]" type="number" min="1" value="1" oninput="recalcular()">
-                </div>
-                <div>
-                    <label>Importe</label>
-                    <input type="text" value="$${primerPrecio}" disabled>
-                </div>
-                <button type="button" class="remove-btn" onclick="eliminarFila(${filaId})">X</button>
-            `;
-            document.getElementById("filas-container").appendChild(fila);
-            recalcular();
-        }
 
-        function eliminarFila(id) {
-            const fila = document.getElementById(`fila-${id}`);
-            if (fila) {
-                fila.remove();
-                recalcular();
+                <!-- Cabecera de columnas -->
+                <div class="rows-header">
+                    <span>Producto</span>
+                    <span>Cantidad</span>
+                    <span>Importe</span>
+                    <span></span>
+                </div>
+
+                <!-- Filas dinámicas -->
+                <div id="filas-container">
+                    <div class="empty-state" id="empty-hint">
+                        <div class="empty-icon">🍽️</div>
+                        Agrega platillos con el botón de abajo
+                    </div>
+                </div>
+
+                <button class="ghost-btn" type="button" onclick="agregarFila()">
+                    <span>＋</span> Agregar platillo
+                </button>
+                <button class="primary-btn" type="submit">Guardar ticket</button>
+            </section>
+
+            <!-- Resumen -->
+            <aside class="card anim d3" style="position: sticky; top: 24px;">
+                <p class="card-title">Resumen del pedido</p>
+
+                <div class="summary-list">
+                    <div class="summary-item">
+                        <span class="summary-label">Piezas</span>
+                        <span class="summary-value" id="total-productos">0</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Subtotal</span>
+                        <span class="summary-value highlight" id="subtotal">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Promocion</span>
+                        <span class="summary-value" style="font-size: 12px; color: var(--text-muted);">Automatica al guardar</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Cliente</span>
+                        <span class="summary-value" id="cliente-badge" style="font-size: 12px; color: var(--text-muted);">—</span>
+                    </div>
+                </div>
+
+                <div class="promo-badge" id="promo-hint">
+                    🎁 Se verificara elegibilidad al guardar
+                </div>
+
+                <a class="quick-link" href="{% url 'lista_tickets' %}">Ver todos los tickets →</a>
+            </aside>
+        </div>
+    </form>
+</main>
+
+<script id="catalogo-data" type="application/json">
+[{% for a in alimentos %}{"id": {{ a.id_alimentosbebidas }}, "nombre": "{{ a.nombre|escapejs }}", "precio": {{ a.costo|default:"0" }}}{% if not forloop.last %},{% endif %}{% endfor %}]
+</script>
+
+<script>
+    const catalogo = JSON.parse(document.getElementById("catalogo-data").textContent);
+    let filaId = 0;
+
+    function opcionesHtml() {
+        return catalogo.map(item =>
+            `<option value="${item.id}" data-precio="${item.precio}">${item.nombre}</option>`
+        ).join("");
+    }
+
+    function agregarFila() {
+        const empty = document.getElementById('empty-hint');
+        if (empty) empty.remove();
+
+        filaId++;
+        const fila = document.createElement("div");
+        fila.className = "row";
+        fila.id = `fila-${filaId}`;
+        const primerPrecio = catalogo.length ? Number(catalogo[0].precio).toFixed(2) : "0.00";
+        fila.innerHTML = `
+            <div>
+                <select name="producto_id[]" onchange="recalcular()">${opcionesHtml()}</select>
+            </div>
+            <div>
+                <input name="cantidad[]" type="number" min="1" value="1" oninput="recalcular()">
+            </div>
+            <div>
+                <input type="text" value="$${primerPrecio}" disabled>
+            </div>
+            <button type="button" class="remove-btn" onclick="eliminarFila(${filaId})" title="Quitar">✕</button>
+        `;
+        document.getElementById("filas-container").appendChild(fila);
+        recalcular();
+    }
+
+    function eliminarFila(id) {
+        const fila = document.getElementById(`fila-${id}`);
+        if (!fila) return;
+        fila.style.opacity = '0';
+        fila.style.transform = 'translateX(-10px)';
+        fila.style.transition = 'opacity 0.2s, transform 0.2s';
+        setTimeout(() => {
+            fila.remove();
+            // Show empty hint if no rows left
+            const container = document.getElementById('filas-container');
+            if (!container.querySelector('.row')) {
+                const hint = document.createElement('div');
+                hint.className = 'empty-state';
+                hint.id = 'empty-hint';
+                hint.innerHTML = '<div class="empty-icon">🍽️</div>Agrega platillos con el botón de abajo';
+                container.appendChild(hint);
             }
+            recalcular();
+        }, 200);
+    }
+
+    function recalcular() {
+        let subtotal = 0, totalPiezas = 0;
+
+        document.querySelectorAll("#filas-container .row").forEach(fila => {
+            const select   = fila.querySelector('select[name="producto_id[]"]');
+            const cantidad = fila.querySelector('input[name="cantidad[]"]');
+            const importe  = fila.querySelector('input[disabled]');
+            const precio   = Number(select.options[select.selectedIndex]?.dataset.precio || 0);
+            const cant     = Number(cantidad.value || 0);
+            const imp      = precio * cant;
+            subtotal    += imp;
+            totalPiezas += cant;
+            importe.value = `$${imp.toFixed(2)}`;
+        });
+
+        document.getElementById("subtotal").textContent       = `$${subtotal.toFixed(2)}`;
+        document.getElementById("total-productos").textContent = totalPiezas;
+
+        // Show promo hint when there are products
+        const badge = document.getElementById('promo-hint');
+        if (totalPiezas > 0) {
+            badge.classList.add('visible');
+        } else {
+            badge.classList.remove('visible');
         }
+    }
 
-        function recalcular() {
-            let subtotal = 0;
-            let totalProductos = 0;
-
-            document.querySelectorAll("#filas-container .row").forEach((fila) => {
-                const select = fila.querySelector('select[name="producto_id[]"]');
-                const cantidadInput = fila.querySelector('input[name="cantidad[]"]');
-                const importeInput = fila.querySelector('input[disabled]');
-                const precio = Number(select.options[select.selectedIndex]?.dataset.precio || 0);
-                const cantidad = Number(cantidadInput.value || 0);
-                const importe = precio * cantidad;
-                subtotal += importe;
-                totalProductos += cantidad;
-                importeInput.value = `$${importe.toFixed(2)}`;
-            });
-
-            document.getElementById("subtotal").textContent = `$${subtotal.toFixed(2)}`;
-            document.getElementById("total-productos").textContent = totalProductos;
+    function updateClienteBadge(select) {
+        const val = select.value;
+        const badge = document.getElementById('cliente-badge');
+        if (val) {
+            const text = select.options[select.selectedIndex].text.split('—')[1]?.trim() || val;
+            badge.textContent = text;
+            badge.style.color = 'var(--text-primary)';
+        } else {
+            badge.textContent = '—';
+            badge.style.color = 'var(--text-muted)';
         }
+    }
 
-        agregarFila();
-    </script>
+    // Start with one empty row
+    agregarFila();
+</script>
 </body>
 </html>
