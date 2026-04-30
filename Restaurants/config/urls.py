@@ -23,6 +23,7 @@ urlpatterns = [
     path('tickets/<int:id_ticket>/modificar/', pedidos_views.modificar_ticket, name='modificar_ticket'),
     path('tickets/<int:id_ticket>/cancelar/', pedidos_views.cancelar_ticket, name='cancelar_ticket'),
     path('canjear-ticket/', pedidos_views.canjear_ticket, name='canjear_ticket'),
+    path('tickets/<int:id_ticket>/confirmacion/', pedidos_views.confirmacion_canje, name='confirmacion_canje'),
     path('promociones/', promociones_views.promociones_view, name='promociones'),
     path('metricas/', views.metricas_view, name='metricas'),
 ]

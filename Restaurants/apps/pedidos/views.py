@@ -240,6 +240,9 @@ def modificar_ticket(request, id_ticket):
             ticket.codigounico = _generar_codigo_unico()
         elif not nueva_promocion:
             ticket.codigounico = None
+        # Clear stale prefetch cache so calcular_total reads the newly added detalletickets from DB
+        if hasattr(ticket, '_prefetched_objects_cache'):
+            ticket._prefetched_objects_cache = {}
         ticket.precio_final = ticket.calcular_total()
         ticket.save(update_fields=["precio_final", "id_promocion", "codigounico"])
 
@@ -317,10 +320,44 @@ def canjear_ticket(request):
 
         ticket.canjeado = 1
         ticket.save(update_fields=["canjeado"])
-        promo_nombre = ticket.id_promocion.nombre if ticket.id_promocion else "—"
-        messages.success(request, f"¡Ticket canjeado exitosamente! Promoción aplicada: {promo_nombre}.")
+        return redirect("confirmacion_canje", id_ticket=ticket.id_ticket)
 
     return render(request, "agregar_ticket.html")
+
+
+@login_required(role="cliente")
+def confirmacion_canje(request, id_ticket):
+    ticket = get_object_or_404(
+        Ticket.objects
+        .select_related("nombre_usuario", "id_promocion")
+        .prefetch_related("detalleticket_set__id_productopedido__id_alimentosbebidas"),
+        id_ticket=id_ticket,
+        canjeado=1,
+    )
+
+    agrupados = defaultdict(lambda: {
+        "nombre": "", "precio_unitario": Decimal("0"), "cantidad": 0, "importe": Decimal("0"),
+    })
+    for detalle in ticket.detalleticket_set.all():
+        if not detalle.id_productopedido or not detalle.id_productopedido.id_alimentosbebidas:
+            continue
+        alimento = detalle.id_productopedido.id_alimentosbebidas
+        key = alimento.id_alimentosbebidas
+        agrupados[key]["nombre"] = alimento.nombre
+        agrupados[key]["precio_unitario"] = alimento.costo
+        agrupados[key]["cantidad"] += 1
+        agrupados[key]["importe"] += alimento.costo
+
+    lineas = list(agrupados.values())
+    subtotal = sum(l["importe"] for l in lineas)
+    descuento_amount = (subtotal - ticket.precio_final) if subtotal > ticket.precio_final else Decimal("0")
+
+    return render(request, "confirmacion_canje.html", {
+        "ticket": ticket,
+        "lineas": lineas,
+        "subtotal": subtotal,
+        "descuento_amount": descuento_amount,
+    })
 
 
 @login_required(role="admin")
