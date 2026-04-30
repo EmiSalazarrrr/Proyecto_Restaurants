@@ -83,6 +83,7 @@
             <h2>{{ cliente.nombre }} {{ cliente.apellido_paterno }}</h2>
         </div>
         <div class="top-actions">
+            <a class="link-btn" href="{% url 'canjear_ticket' %}">Canjear ticket</a>
             <a class="link-btn" href="{% url 'historial' %}">Ver historial completo</a>
             <a class="link-btn" href="{% url 'logout' %}">Cerrar sesion</a>
         </div>

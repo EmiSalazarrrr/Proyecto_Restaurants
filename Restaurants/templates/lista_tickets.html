@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tickets | Restaurants</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
             --bg: #0f0f1a;
@@ -16,11 +17,14 @@
             --text-secondary: #8888aa;
             --text-muted: #55556a;
             --success: #4cc970;
+            --warning: #c9a84c;
             --danger: #f07a7a;
             --danger-dim: rgba(240,122,122,0.1);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { min-height: 100vh; display: flex; background: var(--bg); color: var(--text-primary); font-family: "DM Sans", sans-serif; }
+
+        /* ── Sidebar ── */
         .sidebar { width: 220px; background: var(--sidebar-bg); padding: 28px 0; position: fixed; inset: 0 auto 0 0; border-right: 1px solid var(--card-border); display: flex; flex-direction: column; }
         .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid var(--card-border); margin-bottom: 20px; }
         .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
@@ -31,123 +35,350 @@
         .sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--card-border); }
         .btn-logout { display: block; text-align: center; border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; }
         .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
+
+        /* ── Main ── */
         main { margin-left: 220px; flex: 1; padding: 36px 40px; }
         .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 20px; }
         .topbar p { color: var(--text-secondary); margin-top: 6px; }
-        .btn-primary { text-decoration: none; color: #11111a; background: var(--accent); padding: 12px 16px; border-radius: 10px; font-weight: 600; }
-        .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
-        .card, .table-wrap { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; }
-        .card { padding: 20px; }
+        .btn-primary { text-decoration: none; color: #11111a; background: var(--accent); padding: 12px 16px; border-radius: 10px; font-weight: 600; white-space: nowrap; }
+
+        /* ── Alerts ── */
+        .alert { margin-bottom: 16px; padding: 12px 14px; border-radius: 10px; }
+        .alert-success { background: rgba(76,201,112,0.1); border: 1px solid rgba(76,201,112,0.24); color: #caf7d5; }
+        .alert-error { background: rgba(240,122,122,0.1); border: 1px solid rgba(240,122,122,0.24); color: #ffd5d5; }
+
+        /* ── Filters ── */
+        .filter-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filter-btn { padding: 8px 16px; border-radius: 8px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-secondary); cursor: pointer; font-size: 13px; font-family: "DM Sans", sans-serif; text-decoration: none; transition: all 0.15s; }
+        .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .filter-btn.active { background: rgba(201,168,76,0.15); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+        .filter-sep { width: 1px; height: 28px; background: var(--card-border); margin: 0 4px; }
+        .date-inputs { display: flex; align-items: center; gap: 8px; }
+        .date-input { padding: 7px 10px; border-radius: 8px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-primary); font-size: 13px; font-family: "DM Mono", monospace; }
+        .date-input:focus { outline: none; border-color: var(--accent); }
+        .btn-apply { padding: 7px 14px; border-radius: 8px; border: none; background: var(--accent); color: #11111a; font-size: 13px; font-weight: 600; cursor: pointer; font-family: "DM Sans", sans-serif; }
+
+        /* ── Dashboard row ── */
+        .dashboard-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 260px; gap: 16px; margin-bottom: 20px; align-items: start; }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 20px; }
         .label { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
         .value { font: 600 26px "DM Mono", monospace; }
-        .alert { margin-bottom: 16px; padding: 12px 14px; border-radius: 10px; background: rgba(76,201,112,0.1); border: 1px solid rgba(76,201,112,0.24); color: #caf7d5; }
-        .table-wrap { overflow: hidden; }
+        .value.green { color: var(--success); }
+        .value.yellow { color: var(--warning); }
+        .value.red { color: var(--danger); }
+        .chart-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; align-items: center; }
+        .chart-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; align-self: flex-start; }
+        .chart-empty { color: var(--text-muted); font-size: 12px; padding: 30px 0; }
+
+        /* ── Table ── */
+        .table-wrap { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; overflow: hidden; }
         table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 14px 16px; text-align: left; vertical-align: top; }
+        th, td { padding: 13px 16px; text-align: left; vertical-align: middle; }
         th { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); background: rgba(255,255,255,0.03); }
-        tr + tr td { border-top: 1px solid rgba(255,255,255,0.06); }
+        tr.ticket-row + tr.ticket-row td { border-top: 1px solid rgba(255,255,255,0.06); }
+        tr.ticket-row td { border-top: 1px solid rgba(255,255,255,0.06); }
+        tr.ticket-row:first-child td { border-top: none; }
         .mono { font-family: "DM Mono", monospace; }
-        .muted { color: var(--text-secondary); }
-        .empty { padding: 32px 16px; color: var(--text-secondary); }
-        @media (max-width: 980px) { .stats { grid-template-columns: 1fr; } }
-        @media (max-width: 720px) {
+        .muted { color: var(--text-secondary); font-size: 12px; }
+        .empty { padding: 40px 16px; color: var(--text-secondary); text-align: center; }
+
+        /* ── Status badges ── */
+        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; white-space: nowrap; }
+        .badge-pendiente { background: rgba(201,168,76,0.12); color: #e0b84c; border: 1px solid rgba(201,168,76,0.25); }
+        .badge-canjeado  { background: rgba(76,201,112,0.12); color: #4cc970; border: 1px solid rgba(76,201,112,0.25); }
+        .badge-expirado  { background: rgba(240,122,122,0.12); color: #f07a7a; border: 1px solid rgba(240,122,122,0.25); }
+        .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+        /* ── Products badge + expandable ── */
+        .productos-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--card-border); font-size: 12px; color: var(--text-secondary); cursor: pointer; user-select: none; transition: all 0.15s; }
+        .productos-badge:hover { border-color: var(--accent); color: var(--accent); background: rgba(201,168,76,0.06); }
+        .productos-expand { display: none; }
+        .productos-expand td { border-top: none !important; background: rgba(255,255,255,0.02); padding: 12px 16px 16px 32px; }
+        .productos-list { display: flex; flex-wrap: wrap; gap: 6px; }
+        .producto-item { padding: 4px 10px; background: rgba(255,255,255,0.04); border: 1px solid var(--card-border); border-radius: 6px; font-size: 12px; color: var(--text-secondary); }
+        .producto-item b { color: var(--text-primary); }
+
+        /* ── Action buttons ── */
+        .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+        .btn-action { display: inline-block; padding: 5px 11px; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; border: 1px solid; cursor: pointer; font-family: "DM Sans", sans-serif; transition: opacity 0.15s; white-space: nowrap; background: transparent; }
+        .btn-imprimir  { color: var(--accent); border-color: rgba(201,168,76,0.3); }
+        .btn-imprimir:hover  { background: rgba(201,168,76,0.1); }
+        .btn-modificar { color: #7eb3ff; border-color: rgba(126,179,255,0.3); }
+        .btn-modificar:hover { background: rgba(126,179,255,0.08); }
+        .btn-cancelar  { color: var(--danger); border-color: rgba(240,122,122,0.3); }
+        .btn-cancelar:hover  { background: rgba(240,122,122,0.08); }
+        .btn-cancelar-form { display: contents; }
+
+        /* ── Responsive ── */
+        @media (max-width: 1200px) { .dashboard-row { grid-template-columns: 1fr 1fr; } .chart-card { grid-column: span 2; } }
+        @media (max-width: 980px)  { .dashboard-row { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 720px)  {
             body { display: block; }
             .sidebar { position: static; width: 100%; min-height: auto; }
             main { margin-left: 0; padding: 24px 16px; }
             .topbar { flex-direction: column; align-items: flex-start; }
             .table-wrap { overflow-x: auto; }
+            .dashboard-row { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="sidebar-logo"><span>REST<b>AU</b>RANTS</span></div>
-        <a class="nav-item" href="{% url 'menu_admin' %}"><span class="nav-icon">⊞</span>Dashboard</a>
-        <a class="nav-item" href="/alimentos-bebidas/"><span class="nav-icon">🍽️</span>Alimentos / Bebidas</a>
-        <a class="nav-item active" href="{% url 'atender_mesa' %}"><span class="nav-icon">🪑</span>Atender mesa</a>
-        <a class="nav-item" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
-        <a class="nav-item" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
-        <div class="sidebar-bottom">
-            <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
-        </div>
-    </aside>
+<aside class="sidebar">
+    <div class="sidebar-logo"><span>REST<b>AU</b>RANTS</span></div>
+    <a class="nav-item" href="{% url 'menu_admin' %}"><span class="nav-icon">⊞</span>Dashboard</a>
+    <a class="nav-item" href="/alimentos-bebidas/"><span class="nav-icon">🍽️</span>Alimentos / Bebidas</a>
+    <a class="nav-item active" href="{% url 'lista_tickets' %}"><span class="nav-icon">🪑</span>Tickets</a>
+    <a class="nav-item" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
+    <a class="nav-item" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
+    <div class="sidebar-bottom">
+        <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
+    </div>
+</aside>
 
-    <main>
-        <div class="topbar">
-            <div>
-                <h1>Tickets registrados</h1>
-                <p>Resumen de pedidos generados desde atender mesa.</p>
+<main>
+    <div class="topbar">
+        <div>
+            <h1>Tickets registrados</h1>
+            <p>
+                {% if periodo == "hoy" %}Hoy &mdash; {{ today|date:"d/m/Y" }}
+                {% elif periodo == "semana" %}Esta semana
+                {% elif periodo == "mes" %}Este mes
+                {% elif periodo == "anio" %}Este año
+                {% elif periodo == "fecha" %}{{ desde|date:"d/m/Y" }}
+                {% elif periodo == "rango" %}{{ desde|date:"d/m/Y" }} &mdash; {{ hasta|date:"d/m/Y" }}
+                {% endif %}
+            </p>
+        </div>
+        <a class="btn-primary" href="{% url 'atender_mesa' %}">+ Nuevo ticket</a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if 'exitosamente' in message.message or 'canjeado' in message.message or 'actualizado' in message.message %}alert-success{% else %}alert-error{% endif %}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Filtros -->
+    <form method="GET" action="{% url 'lista_tickets' %}" id="filter-form">
+        <div class="filter-bar">
+            <a href="?periodo=hoy"    class="filter-btn {% if periodo == 'hoy' %}active{% endif %}">Hoy</a>
+            <a href="?periodo=semana" class="filter-btn {% if periodo == 'semana' %}active{% endif %}">Semana</a>
+            <a href="?periodo=mes"    class="filter-btn {% if periodo == 'mes' %}active{% endif %}">Mes</a>
+            <a href="?periodo=anio"   class="filter-btn {% if periodo == 'anio' %}active{% endif %}">Año</a>
+            <div class="filter-sep"></div>
+            <div class="date-inputs">
+                <input type="date" name="fecha" class="date-input" placeholder="Fecha"
+                    value="{{ fecha_str }}" title="Día específico"
+                    onchange="this.form.submit()">
             </div>
-            <a class="btn-primary" href="{% url 'atender_mesa' %}">Nuevo ticket</a>
+            <div class="filter-sep"></div>
+            <div class="date-inputs" id="rango-inputs">
+                <input type="date" name="desde" id="desde-input" class="date-input" value="{{ desde_str }}" title="Desde">
+                <span style="color:var(--text-muted);font-size:12px;">—</span>
+                <input type="date" name="hasta" id="hasta-input" class="date-input" value="{{ hasta_str }}" title="Hasta">
+                <input type="hidden" name="periodo" value="rango">
+                <button type="submit" class="btn-apply">Aplicar</button>
+            </div>
         </div>
+    </form>
 
-        {% if messages %}
-            {% for message in messages %}
-                <div class="alert">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
+    <!-- Stats + Gráfica -->
+    <div class="dashboard-row">
+        <article class="card">
+            <div class="label">Total tickets</div>
+            <div class="value">{{ total_tickets }}</div>
+        </article>
+        <article class="card">
+            <div class="label">Ingresos acumulados</div>
+            <div class="value">${{ total_ingresos }}</div>
+        </article>
+        <article class="card">
+            <div class="label">Canjeados</div>
+            <div class="value green">{{ total_canjeados }}</div>
+        </article>
+        <article class="card">
+            <div class="label">Expirados</div>
+            <div class="value red">{{ total_expirados }}</div>
+        </article>
+        <div class="chart-card">
+            <div class="chart-title">Distribución de canje</div>
+            {% if total_tickets > 0 %}
+                <canvas id="canjeChart" width="220" height="180"></canvas>
+            {% else %}
+                <div class="chart-empty">Sin datos para el periodo</div>
+            {% endif %}
+        </div>
+    </div>
 
-        <section class="stats">
-            <article class="card">
-                <div class="label">Total tickets</div>
-                <div class="value">{{ total_tickets }}</div>
-            </article>
-            <article class="card">
-                <div class="label">Ingresos acumulados</div>
-                <div class="value">${{ total_ingresos }}</div>
-            </article>
-            <article class="card">
-                <div class="label">Canjeados</div>
-                <div class="value">{{ total_canjeados }}</div>
-            </article>
-        </section>
-
-        <div class="table-wrap">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Ticket</th>
-                        <th>Cliente</th>
-                        <th>Productos</th>
-                        <th>Promocion</th>
-                        <th>Total</th>
-                        <th>Fecha</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for ticket in tickets %}
-                        <tr>
-                            <td>
-                                <div class="mono">#{{ ticket.id_ticket }}</div>
-                                <div class="muted mono">{{ ticket.codigounico }}</div>
-                            </td>
-                            <td>
-                                {% if ticket.nombre_usuario %}
-                                    {{ ticket.nombre_usuario.nombre }} {{ ticket.nombre_usuario.apellido_paterno }}<br>
-                                    <span class="muted">@{{ ticket.nombre_usuario.nombre_usuario }}</span>
-                                {% else %}
-                                    <span class="muted">Sin cliente</span>
+    <!-- Tabla -->
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Ticket</th>
+                    <th>Cliente</th>
+                    <th>Productos</th>
+                    <th>Promocion</th>
+                    <th>Total</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket, estado in tickets_con_estado %}
+                <tr class="ticket-row">
+                    <td>
+                        <div class="mono" style="font-size:13px;">#{{ ticket.id_ticket }}</div>
+                        {% if ticket.codigounico %}
+                            <div class="muted mono">TK-{{ ticket.codigounico }}</div>
+                        {% else %}
+                            <div class="muted" style="font-size:11px;">Sin código</div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if ticket.nombre_usuario %}
+                            <div>{{ ticket.nombre_usuario.nombre }} {{ ticket.nombre_usuario.apellido_paterno }}</div>
+                            <div class="muted">@{{ ticket.nombre_usuario.nombre_usuario }}</div>
+                        {% else %}
+                            <span class="muted">Sin cliente</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% with detalles=ticket.detalleticket_set.all %}
+                        {% if detalles %}
+                            <span class="productos-badge" onclick="toggleProductos({{ ticket.id_ticket }})">
+                                <span>{{ detalles|length }} producto{% if detalles|length != 1 %}s{% endif %}</span>
+                                <span style="font-size:9px;">▾</span>
+                            </span>
+                        {% else %}
+                            <span class="muted">—</span>
+                        {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td>
+                        {% if ticket.id_promocion %}
+                            <div style="font-size:13px;">{{ ticket.id_promocion.nombre }}</div>
+                            <div class="muted">-{{ ticket.id_promocion.porcentaje_a_reducir }}%</div>
+                        {% else %}
+                            <span class="muted">Sin promocion</span>
+                        {% endif %}
+                    </td>
+                    <td class="mono">${{ ticket.precio_final }}</td>
+                    <td class="mono" style="font-size:12px;">{{ ticket.fecha|date:"d/m/Y" }}<br><span class="muted">{{ ticket.fecha|date:"H:i" }}</span></td>
+                    <td>
+                        {% if estado == "canjeado" %}
+                            <span class="badge badge-canjeado"><span class="badge-dot"></span>Canjeado</span>
+                        {% elif estado == "expirado" %}
+                            <span class="badge badge-expirado"><span class="badge-dot"></span>Expirado</span>
+                        {% else %}
+                            <span class="badge badge-pendiente"><span class="badge-dot"></span>Pendiente</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a href="{% url 'imprimir_ticket' ticket.id_ticket %}" target="_blank" class="btn-action btn-imprimir">Imprimir</a>
+                            {% if estado == "pendiente" %}
+                                <a href="{% url 'modificar_ticket' ticket.id_ticket %}" class="btn-action btn-modificar">Modificar</a>
+                                <form method="POST" action="{% url 'cancelar_ticket' ticket.id_ticket %}" class="btn-cancelar-form" onsubmit="return confirm('¿Cancelar el ticket #{{ ticket.id_ticket }}? Esta acción no se puede deshacer.')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-action btn-cancelar">Cancelar</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                <tr class="productos-expand" id="expand-{{ ticket.id_ticket }}">
+                    <td colspan="8">
+                        <div class="productos-list">
+                            {% for detalle in ticket.detalleticket_set.all %}
+                                {% if detalle.id_productopedido and detalle.id_productopedido.id_alimentosbebidas %}
+                                    <span class="producto-item">
+                                        <b>{{ detalle.id_productopedido.id_alimentosbebidas.nombre }}</b>
+                                        <span style="color:var(--text-muted)"> ${{ detalle.id_productopedido.id_alimentosbebidas.costo }}</span>
+                                    </span>
                                 {% endif %}
-                            </td>
-                            <td>
-                                {% for detalle in ticket.detalleticket_set.all %}
-                                    {% if detalle.id_productopedido and detalle.id_productopedido.id_alimentosbebidas %}
-                                        {{ detalle.id_productopedido.id_alimentosbebidas.nombre }}{% if not forloop.last %}, {% endif %}
-                                    {% endif %}
-                                {% endfor %}
-                            </td>
-                            <td>{% if ticket.id_promocion %}{{ ticket.id_promocion.nombre }}{% else %}<span class="muted">Sin promocion</span>{% endif %}</td>
-                            <td class="mono">${{ ticket.precio_final }}</td>
-                            <td class="mono">{{ ticket.fecha|date:"d/m/Y H:i" }}</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="6" class="empty">No hay tickets registrados todavia.</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </main>
+                            {% endfor %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="empty">No hay tickets registrados para este periodo.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<script>
+    // Expandir/colapsar productos
+    function toggleProductos(ticketId) {
+        const row = document.getElementById('expand-' + ticketId);
+        row.style.display = row.style.display === 'table-row' ? 'none' : 'table-row';
+    }
+
+    // Gráfica Chart.js
+    {% if total_tickets > 0 %}
+    const chartData = {{ chart_data|safe }};
+    const ctx = document.getElementById('canjeChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: chartData.labels,
+            datasets: [{
+                data: chartData.data,
+                backgroundColor: chartData.colors,
+                borderColor: '#1e1e32',
+                borderWidth: 3,
+                hoverOffset: 6,
+            }]
+        },
+        options: {
+            responsive: false,
+            cutout: '65%',
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        color: '#8888aa',
+                        font: { size: 11, family: 'DM Sans' },
+                        padding: 12,
+                        boxWidth: 10,
+                        boxHeight: 10,
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) {
+                            const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                            const pct = total > 0 ? Math.round(ctx.parsed / total * 100) : 0;
+                            return ` ${ctx.label}: ${ctx.parsed} (${pct}%)`;
+                        }
+                    }
+                }
+            }
+        },
+        plugins: [{
+            id: 'centerText',
+            afterDraw(chart) {
+                const { ctx, chartArea: { width, height, left, top } } = chart;
+                const total = chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                ctx.save();
+                ctx.font = 'bold 22px DM Mono, monospace';
+                ctx.fillStyle = '#eeeef5';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(total, left + width / 2, top + height / 2 - 8);
+                ctx.font = '11px DM Sans, sans-serif';
+                ctx.fillStyle = '#55556a';
+                ctx.fillText('total', left + width / 2, top + height / 2 + 14);
+                ctx.restore();
+            }
+        }]
+    });
+    {% endif %}
+</script>
 </body>
 </html>

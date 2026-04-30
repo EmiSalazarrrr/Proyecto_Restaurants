@@ -215,20 +215,37 @@
     <div class="main-content">
         <div class="card">
             <span class="card-icon">🎫</span>
-            <h2 class="card-title">Agregar Ticket</h2>
+            <h2 class="card-title">Canjear Ticket</h2>
             <div class="card-divider"></div>
-            <p class="card-subtitle">Ingresa el código único que aparece<br>en tu ticket de compra</p>
 
-            <label class="field-label" for="codigo">Código del ticket</label>
-            <input
-                type="text"
-                id="codigo"
-                class="code-input"
-                placeholder="ABC-123456"
-                maxlength="20"
-            />
+            {% if messages %}
+                {% for message in messages %}
+                    <div style="margin-bottom:20px;padding:12px 14px;border-radius:10px;font-size:13px;text-align:center;
+                        {% if 'exitosamente' in message.message %}
+                            background:rgba(76,201,112,0.12);border:1px solid rgba(76,201,112,0.25);color:#a0f0b8;
+                        {% else %}
+                            background:rgba(240,122,122,0.12);border:1px solid rgba(240,122,122,0.25);color:#ffc0c0;
+                        {% endif %}
+                    ">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
 
-            <button class="btn-agregar">Agregar Ticket</button>
+            <p class="card-subtitle">Ingresa el número de tu ticket de compra<br>para canjear tu promoción</p>
+
+            <form method="POST" action="{% url 'canjear_ticket' %}">
+                {% csrf_token %}
+                <label class="field-label" for="codigo">Código del ticket</label>
+                <input
+                    type="text"
+                    id="codigo"
+                    name="codigo"
+                    class="code-input"
+                    placeholder="123456"
+                    maxlength="10"
+                    autocomplete="off"
+                />
+                <button type="submit" class="btn-agregar">Canjear Ticket</button>
+            </form>
 
             <div class="secondary-btns">
                 <a href="/menu-cliente/" class="btn-secondary">← Regresar al menú</a>

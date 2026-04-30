@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket TK-{{ ticket.codigounico }} | Restaurants</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #e8e8e8;
+            font-family: "DM Mono", "Courier New", monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 36px 20px 60px;
+            min-height: 100vh;
+        }
+
+        .print-bar {
+            width: 400px;
+            max-width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .print-bar a {
+            color: #555;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        .print-bar a:hover { text-decoration: underline; }
+        .btn-print {
+            background: #c9a84c;
+            color: #111;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            font-family: inherit;
+            letter-spacing: 0.5px;
+        }
+        .btn-print:hover { background: #b8942e; }
+
+        .receipt {
+            background: #fff;
+            width: 400px;
+            max-width: 100%;
+            padding: 36px 32px 28px;
+            box-shadow: 0 6px 28px rgba(0,0,0,0.14);
+            border-radius: 4px;
+        }
+
+        /* ── Logo ── */
+        .logo { text-align: center; margin-bottom: 22px; }
+        .logo-icon { font-size: 36px; line-height: 1; margin-bottom: 6px; }
+        .logo-name {
+            font-size: 22px;
+            font-weight: 500;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+        }
+        .logo-name b { color: #c9a84c; }
+        .logo-sub { font-size: 10px; color: #999; letter-spacing: 2px; margin-top: 3px; }
+
+        /* ── Dividers ── */
+        .divider       { border: none; border-top: 1px dashed #ccc; margin: 16px 0; }
+        .divider-solid { border: none; border-top: 2px solid #111; margin: 16px 0; }
+
+        /* ── Info block ── */
+        .info-block { font-size: 11px; color: #444; line-height: 2; }
+        .info-row   { display: flex; justify-content: space-between; gap: 8px; }
+        .info-row span:last-child { text-align: right; font-weight: 500; color: #111; }
+
+        /* ── Section title ── */
+        .section-title {
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        /* ── Items table ── */
+        table.items { width: 100%; border-collapse: collapse; font-size: 11px; }
+        table.items th {
+            font-size: 9px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #bbb;
+            padding: 0 0 6px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            font-weight: 400;
+        }
+        table.items th.right,
+        table.items td.right { text-align: right; }
+        table.items th.center,
+        table.items td.center { text-align: center; }
+
+        table.items td {
+            padding: 8px 0 6px;
+            border-bottom: 1px dotted #eee;
+            vertical-align: top;
+            color: #222;
+        }
+        .item-name { font-weight: 500; }
+        .item-desc { font-size: 9px; color: #999; margin-top: 2px; line-height: 1.4; }
+
+        /* ── Totals ── */
+        .totals { font-size: 12px; }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 4px 0;
+            color: #333;
+        }
+        .total-row.discount { color: #2e9e50; }
+        .total-row.iva      { color: #999; font-size: 10px; }
+        .total-row.final    {
+            font-weight: 500;
+            font-size: 16px;
+            color: #111;
+            border-top: 2px solid #111;
+            margin-top: 8px;
+            padding-top: 10px;
+        }
+
+        /* ── Footer ── */
+        .footer { text-align: center; font-size: 10px; color: #aaa; line-height: 2; margin-top: 4px; }
+        .promo-badge {
+            display: inline-block;
+            background: #f5f0e0;
+            color: #b8942e;
+            border: 1px solid #e8d99a;
+            border-radius: 4px;
+            padding: 3px 10px;
+            font-size: 10px;
+            margin-bottom: 10px;
+        }
+        .verification-code {
+            font-size: 20px;
+            font-weight: 500;
+            color: #111;
+            letter-spacing: 5px;
+            margin: 4px 0 8px;
+        }
+
+        /* ── Print ── */
+        @media print {
+            body { background: white; padding: 0; display: block; }
+            .receipt { box-shadow: none; width: 100%; max-width: 400px; margin: 0 auto; }
+            .print-bar { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="print-bar">
+        <a href="{% url 'lista_tickets' %}">&larr; Volver a tickets</a>
+        <button class="btn-print" onclick="window.print()">Imprimir / Guardar PDF</button>
+    </div>
+
+    <div class="receipt">
+
+        <!-- Logo -->
+        <div class="logo">
+            <div class="logo-icon">🍽</div>
+            <div class="logo-name">REST<b>AU</b>RANTS</div>
+            <div class="logo-sub">Sistema de gestión</div>
+        </div>
+
+        <hr class="divider-solid">
+
+        <!-- Información del ticket -->
+        <div class="info-block">
+            <div class="info-row"><span>No. Ticket</span>   <span>#{{ ticket.id_ticket }}</span></div>
+            <div class="info-row"><span>Código</span>       <span>TK-{{ ticket.codigounico }}</span></div>
+            <div class="info-row"><span>Fecha emisión</span><span>{{ ticket.fecha|date:"d/m/Y" }}</span></div>
+            <div class="info-row"><span>Hora</span>         <span>{{ ticket.fecha|date:"H:i" }} hrs</span></div>
+            <div class="info-row"><span>Cliente</span>
+                <span>
+                    {% if ticket.nombre_usuario %}
+                        {{ ticket.nombre_usuario.nombre }} {{ ticket.nombre_usuario.apellido_paterno }}
+                    {% else %}
+                        Sin cliente
+                    {% endif %}
+                </span>
+            </div>
+            <div class="info-row"><span>Atendido por</span>
+                <span>{{ admin.nombre }} {{ admin.apellido_paterno }}</span>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Detalle de productos -->
+        <div class="section-title">Detalle del pedido</div>
+        <table class="items">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th class="center">Cant.</th>
+                    <th class="right">P.Unit</th>
+                    <th class="right">Importe</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for linea in lineas %}
+                <tr>
+                    <td>
+                        <div class="item-name">{{ linea.nombre }}</div>
+                        {% if linea.descripcion %}
+                        <div class="item-desc">{{ linea.descripcion }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="center">{{ linea.cantidad }}</td>
+                    <td class="right">${{ linea.precio_unitario }}</td>
+                    <td class="right">${{ linea.importe }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <hr class="divider">
+
+        <!-- Información financiera -->
+        <div class="totals">
+            <div class="total-row">
+                <span>Subtotal&nbsp;({{ total_piezas }}&nbsp;producto{% if total_piezas != 1 %}s{% endif %})</span>
+                <span>${{ subtotal }}</span>
+            </div>
+
+            {% if descuento_amount > 0 %}
+            <div class="total-row discount">
+                <span>Descuento &mdash; {{ ticket.id_promocion.nombre }}&nbsp;({{ ticket.id_promocion.porcentaje_a_reducir }}%)</span>
+                <span>-${{ descuento_amount }}</span>
+            </div>
+            {% endif %}
+
+            <div class="total-row iva">
+                <span>IVA&nbsp;16%&nbsp;(incluido)</span>
+                <span>${{ iva_amount }}</span>
+            </div>
+
+            <div class="total-row final">
+                <span>TOTAL A PAGAR</span>
+                <span>${{ ticket.precio_final }}</span>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <!-- Footer -->
+        <div class="footer">
+            {% if ticket.id_promocion %}
+            <div>
+                <span class="promo-badge">&#10003;&nbsp;Promoción: {{ ticket.id_promocion.nombre }}</span>
+            </div>
+            {% endif %}
+            <div>Código de verificación</div>
+            <div class="verification-code">TK-{{ ticket.codigounico }}</div>
+            <div>Gracias por su visita</div>
+            <div>Conserve este comprobante</div>
+        </div>
+
+    </div>
+
+</body>
+</html>
