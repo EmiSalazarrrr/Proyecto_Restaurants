@@ -8,146 +8,377 @@
     <style>
         :root {
             --bg: #0f0f1a;
-            --card: #18182b;
-            --border: #2c2c45;
+            --card-bg: rgba(18,18,34,0.95);
+            --card-border: rgba(255,255,255,0.10);
+            --input-bg: rgba(255,255,255,0.05);
+            --input-border: rgba(255,255,255,0.11);
             --accent: #c9a84c;
-            --text: #f4f4f8;
-            --muted: #9898b2;
+            --accent-dim: rgba(201,168,76,0.13);
+            --text: #f3f3f8;
+            --muted: #9090b0;
+            --success: #4cc970;
             --danger: #f07a7a;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
             min-height: 100vh;
             font-family: "DM Sans", sans-serif;
             background:
-                radial-gradient(circle at top right, rgba(201,168,76,0.14), transparent 22%),
-                radial-gradient(circle at bottom left, rgba(56,92,150,0.14), transparent 26%),
-                linear-gradient(135deg, #0a0a16, #121225 40%, #132338);
+                radial-gradient(ellipse at 80% 5%,  rgba(201,168,76,0.14), transparent 30%),
+                radial-gradient(ellipse at 5%  90%, rgba(51,90,160,0.18),  transparent 32%),
+                radial-gradient(ellipse at 95% 80%, rgba(90,40,130,0.10),  transparent 28%),
+                linear-gradient(135deg, #09091a, #111224 45%, #0d1c2e);
             color: var(--text);
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 32px 16px;
+            padding: 40px 16px;
         }
+
+        /* ─── Floating orbs ─── */
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::before {
+            width: 600px; height: 600px;
+            top: -180px; right: -180px;
+            background: radial-gradient(circle, rgba(201,168,76,0.06), transparent 65%);
+            animation: orbDrift 10s ease-in-out infinite;
+        }
+        body::after {
+            width: 500px; height: 500px;
+            bottom: -150px; left: -150px;
+            background: radial-gradient(circle, rgba(60,100,200,0.07), transparent 65%);
+            animation: orbDrift 13s ease-in-out infinite reverse;
+        }
+        @keyframes orbDrift {
+            0%, 100% { transform: translate(0, 0); }
+            50%       { transform: translate(24px, 20px); }
+        }
+
+        /* ─── Brand header ─── */
+        .brand-wrap {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            margin-bottom: 28px;
+            animation: brandIn 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.15s both;
+        }
+        @keyframes brandIn {
+            from { opacity: 0; transform: translateY(-14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .brand-tag {
+            display: inline-block;
+            font-size: 11px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--accent);
+            font-family: "DM Mono", monospace;
+            border: 1px solid rgba(201,168,76,0.35);
+            border-radius: 999px;
+            padding: 5px 16px;
+            margin-bottom: 12px;
+        }
+        .brand-wrap h1 {
+            font-size: clamp(26px, 4vw, 36px);
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        .brand-wrap p {
+            color: var(--muted);
+            font-size: 14px;
+            margin-top: 6px;
+        }
+
+        /* ─── Card ─── */
         .card {
-            width: min(720px, 100%);
-            background: rgba(24,24,43,0.94);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            backdrop-filter: blur(14px);
+            position: relative;
+            z-index: 1;
+            width: min(740px, 100%);
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 36px 40px 40px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 32px 80px rgba(0,0,0,0.45), 0 0 0 1px rgba(201,168,76,0.06);
+
+            /* Card reveals slowly: fades in + rises + slight scale */
+            animation: cardReveal 1.0s cubic-bezier(0.22, 0.61, 0.36, 1) 0.5s both;
         }
-        h1 { font-size: 28px; margin-bottom: 8px; }
-        .subtitle { color: var(--muted); margin-bottom: 24px; }
+        @keyframes cardReveal {
+            from { opacity: 0; transform: translateY(32px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0)   scale(1); }
+        }
+
+        /* Accent left bar */
+        .card::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 20%; bottom: 20%;
+            width: 3px;
+            background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+            border-radius: 0 2px 2px 0;
+            opacity: 0;
+            animation: barReveal 0.6s ease 1.3s forwards;
+        }
+        @keyframes barReveal {
+            to { opacity: 0.7; }
+        }
+
+        /* ─── Card header ─── */
+        .card-header {
+            margin-bottom: 28px;
+            padding-bottom: 22px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            animation: sectionIn 0.5s ease 0.9s both;
+        }
+        @keyframes sectionIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .card-eyebrow {
+            font-size: 10px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--accent);
+            font-family: "DM Mono", monospace;
+            margin-bottom: 10px;
+        }
+        .card-header h2 {
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin-bottom: 6px;
+        }
+        .card-header p { color: var(--muted); font-size: 13.5px; line-height: 1.6; }
+
+        /* ─── Alert ─── */
         .alert {
-            padding: 12px 14px;
+            padding: 12px 16px;
             border-radius: 10px;
-            margin-bottom: 16px;
-            background: rgba(240,122,122,0.12);
-            border: 1px solid rgba(240,122,122,0.22);
-            color: #ffd8d8;
+            margin-bottom: 20px;
+            font-size: 13px;
+            animation: sectionIn 0.4s ease 0.85s both;
         }
-        form {
+        .alert.error   { background: rgba(240,122,122,0.10); border: 1px solid rgba(240,122,122,0.22); color: #ffd5d5; }
+        .alert.success { background: rgba(76,201,112,0.10);  border: 1px solid rgba(76,201,112,0.22);  color: #c0f0cc; }
+
+        /* ─── Form ─── */
+        .form-grid {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 16px;
+            gap: 18px 20px;
         }
         .full { grid-column: 1 / -1; }
+
+        .field { display: flex; flex-direction: column; gap: 8px; }
+
+        /* Stagger each field */
+        .field:nth-child(1)  { animation: fieldIn 0.45s ease 1.05s both; }
+        .field:nth-child(2)  { animation: fieldIn 0.45s ease 1.15s both; }
+        .field:nth-child(3)  { animation: fieldIn 0.45s ease 1.25s both; }
+        .field:nth-child(4)  { animation: fieldIn 0.45s ease 1.35s both; }
+        .field:nth-child(5)  { animation: fieldIn 0.45s ease 1.45s both; }
+        .field:nth-child(6)  { animation: fieldIn 0.45s ease 1.55s both; }
+        .field:nth-child(7)  { animation: fieldIn 0.45s ease 1.65s both; }
+        .field:nth-child(8)  { animation: fieldIn 0.45s ease 1.80s both; }
+        @keyframes fieldIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
         label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 11px;
+            font-size: 10.5px;
             letter-spacing: 0.16em;
             text-transform: uppercase;
             color: var(--muted);
+            font-weight: 500;
         }
+        .optional-tag {
+            font-size: 10px;
+            color: var(--muted);
+            opacity: 0.6;
+            text-transform: none;
+            letter-spacing: 0;
+            margin-left: 4px;
+        }
+
         input {
-            width: 100%;
-            padding: 14px 16px;
+            padding: 13px 16px;
             border-radius: 10px;
-            border: 1px solid var(--border);
-            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--input-border);
+            background: var(--input-bg);
             color: var(--text);
-            font: inherit;
+            font: 14px "DM Sans", sans-serif;
+            transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
         }
         input:focus {
             outline: none;
-            border-color: rgba(201,168,76,0.65);
+            border-color: rgba(201,168,76,0.55);
+            background: rgba(201,168,76,0.04);
+            box-shadow: 0 0 0 3px rgba(201,168,76,0.08);
         }
-        .actions {
+        input::placeholder { color: rgba(144,144,176,0.5); }
+
+        /* Password strength indicator */
+        .pw-hint {
+            font-size: 11px;
+            color: var(--muted);
+            opacity: 0.7;
+            margin-top: -4px;
+        }
+
+        /* ─── Actions ─── */
+        .form-actions {
             grid-column: 1 / -1;
             display: flex;
             gap: 12px;
             align-items: center;
             flex-wrap: wrap;
-            margin-top: 8px;
+            margin-top: 6px;
+            animation: fieldIn 0.45s ease 1.95s both;
         }
-        button, .link-back {
-            border-radius: 10px;
-            padding: 14px 18px;
-            font: 600 14px "DM Sans", sans-serif;
-            text-decoration: none;
-        }
-        button {
+
+        .btn-primary {
+            flex: 1;
+            min-width: 160px;
+            padding: 14px 20px;
             border: none;
+            border-radius: 10px;
             background: var(--accent);
-            color: #151521;
+            color: #12121d;
+            font: 600 14px "DM Sans", sans-serif;
             cursor: pointer;
+            transition: opacity 0.15s, transform 0.15s;
+            position: relative;
+            overflow: hidden;
         }
-        .link-back {
-            border: 1px solid var(--border);
-            color: var(--text);
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent 60%);
+            pointer-events: none;
         }
-        @media (max-width: 720px) {
-            form { grid-template-columns: 1fr; }
-            .full, .actions { grid-column: auto; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-back {
+            padding: 13px 18px;
+            border: 1px solid var(--card-border);
+            border-radius: 10px;
+            color: var(--muted);
+            font: 14px "DM Sans", sans-serif;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-back:hover { border-color: rgba(201,168,76,0.4); color: var(--accent); }
+
+        /* ─── Divider section ─── */
+        .section-divider {
+            grid-column: 1 / -1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: fieldIn 0.45s ease 1.42s both;
+        }
+        .section-divider hr { flex: 1; border: none; border-top: 1px solid rgba(255,255,255,0.08); }
+        .section-divider span { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 640px) {
+            .card { padding: 28px 22px 32px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .full, .form-actions { grid-column: auto; }
+            .btn-primary { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <div class="card">
+    <!-- Brand header -->
+    <div class="brand-wrap">
+        <div class="brand-tag">Restaurants</div>
         <h1>Crear cuenta</h1>
-        <p class="subtitle">Registra un cliente nuevo para consultar menu e historial.</p>
+        <p>Registra un cliente nuevo para acceder al menu e historial.</p>
+    </div>
+
+    <!-- Card -->
+    <div class="card">
+        <div class="card-header">
+            <p class="card-eyebrow">Nuevo cliente</p>
+            <h2>Datos de registro</h2>
+            <p>Completa los campos para crear una cuenta de cliente. Los campos marcados como opcionales pueden dejarse en blanco.</p>
+        </div>
 
         {% if messages %}
             {% for message in messages %}
-                <div class="alert">{{ message }}</div>
+                <div class="alert {{ message.tags|default:'error' }}">{{ message }}</div>
             {% endfor %}
         {% endif %}
 
         <form method="post">
             {% csrf_token %}
-            <div>
-                <label for="nombre">Nombre</label>
-                <input id="nombre" name="nombre" type="text" value="{{ form_data.nombre|default:'' }}" required>
-            </div>
-            <div>
-                <label for="apellido_paterno">Apellido paterno</label>
-                <input id="apellido_paterno" name="apellido_paterno" type="text" value="{{ form_data.apellido_paterno|default:'' }}" required>
-            </div>
-            <div>
-                <label for="apellido_materno">Apellido materno</label>
-                <input id="apellido_materno" name="apellido_materno" type="text" value="{{ form_data.apellido_materno|default:'' }}">
-            </div>
-            <div>
-                <label for="numero_celular">Numero celular</label>
-                <input id="numero_celular" name="numero_celular" type="tel" value="{{ form_data.numero_celular|default:'' }}" required>
-            </div>
-            <div class="full">
-                <label for="nombre_usuario">Nombre de usuario</label>
-                <input id="nombre_usuario" name="nombre_usuario" type="text" value="{{ form_data.nombre_usuario|default:'' }}" required>
-            </div>
-            <div>
-                <label for="password">Contrasena</label>
-                <input id="password" name="password" type="password" required>
-            </div>
-            <div>
-                <label for="password_confirm">Confirmar contrasena</label>
-                <input id="password_confirm" name="password_confirm" type="password" required>
-            </div>
-            <div class="actions">
-                <button type="submit">Registrar cuenta</button>
-                <a class="link-back" href="{% url 'login' %}">Volver al inicio</a>
+            <div class="form-grid">
+                <!-- Nombres -->
+                <div class="field">
+                    <label for="nombre">Nombre</label>
+                    <input id="nombre" name="nombre" type="text"
+                           value="{{ form_data.nombre|default:'' }}"
+                           placeholder="Ej. Juan" required>
+                </div>
+                <div class="field">
+                    <label for="apellido_paterno">Apellido paterno</label>
+                    <input id="apellido_paterno" name="apellido_paterno" type="text"
+                           value="{{ form_data.apellido_paterno|default:'' }}"
+                           placeholder="Ej. Garcia" required>
+                </div>
+                <div class="field">
+                    <label for="apellido_materno">Apellido materno<span class="optional-tag">(opcional)</span></label>
+                    <input id="apellido_materno" name="apellido_materno" type="text"
+                           value="{{ form_data.apellido_materno|default:'' }}"
+                           placeholder="Ej. Lopez">
+                </div>
+                <div class="field">
+                    <label for="numero_celular">Numero celular</label>
+                    <input id="numero_celular" name="numero_celular" type="tel"
+                           value="{{ form_data.numero_celular|default:'' }}"
+                           placeholder="Ej. 5512345678" required>
+                </div>
+
+                <div class="section-divider">
+                    <hr><span>Acceso</span><hr>
+                </div>
+
+                <div class="field full">
+                    <label for="nombre_usuario">Nombre de usuario</label>
+                    <input id="nombre_usuario" name="nombre_usuario" type="text"
+                           value="{{ form_data.nombre_usuario|default:'' }}"
+                           placeholder="Ej. juangarcia01" required>
+                </div>
+                <div class="field">
+                    <label for="password">Contrasena</label>
+                    <input id="password" name="password" type="password"
+                           placeholder="Min. 6 caracteres" required>
+                </div>
+                <div class="field">
+                    <label for="password_confirm">Confirmar contrasena</label>
+                    <input id="password_confirm" name="password_confirm" type="password"
+                           placeholder="Repite la contrasena" required>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn-primary" type="submit">Registrar cuenta</button>
+                    <a class="btn-back" href="{% url 'login' %}">Volver al inicio</a>
+                </div>
             </div>
         </form>
     </div>

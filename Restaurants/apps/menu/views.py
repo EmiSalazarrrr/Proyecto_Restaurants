@@ -1,6 +1,7 @@
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.usuarios.views import login_required
@@ -20,7 +21,22 @@ def _parse_costo(value):
 @login_required(role="admin")
 def lista_alimentos(request):
     alimentos = Alimentosbebidas.objects.order_by("-activo", "nombre")
-    return render(request, 'alimentos_bebidas.html', {'alimentos': alimentos})
+
+    top_productos = list(
+        Alimentosbebidas.objects.filter(activo=True)
+        .annotate(veces=Count("productopedido"))
+        .filter(veces__gt=0)
+        .order_by("-veces")[:5]
+    )
+    max_veces = top_productos[0].veces if top_productos else 1
+    sin_movimiento = Alimentosbebidas.objects.filter(activo=True, productopedido__isnull=True).count()
+
+    return render(request, 'alimentos_bebidas.html', {
+        'alimentos': alimentos,
+        'top_productos': top_productos,
+        'max_veces': max_veces,
+        'sin_movimiento': sin_movimiento,
+    })
 
 @login_required(role="admin")
 def agregar_alimento(request):

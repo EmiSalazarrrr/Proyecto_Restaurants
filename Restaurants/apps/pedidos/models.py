@@ -26,7 +26,7 @@ class Ticket(models.Model):
     canjeado = models.IntegerField(blank=True, null=True)
     id_promocion = models.ForeignKey(Promocion, models.DO_NOTHING, db_column='id_promocion', blank=True, null=True)
     nombre_usuario = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='nombre_usuario', blank=True, null=True)
-    codigounico = models.IntegerField(unique=True)
+    codigounico = models.IntegerField(unique=True, null=True, blank=True)
 
     def calcular_total(self):
         total = sum(detalle.id_productopedido.id_alimentosbebidas.costo for detalle in self.detalleticket_set.all())
