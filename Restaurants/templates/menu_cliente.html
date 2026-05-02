@@ -27,30 +27,31 @@
                 radial-gradient(ellipse at 80% 0%,   rgba(201,168,76,0.13), transparent 30%),
                 radial-gradient(ellipse at 5%  90%, rgba(51,90,160,0.16),  transparent 30%),
                 linear-gradient(135deg, #0a0a16, #121225 45%, #0d1c2e);
+            padding-bottom: 40px;
         }
 
-        /* ── Layout ── */
-        .wrap { width: min(1160px, calc(100% - 32px)); margin: 0 auto; }
+        .wrap { width: min(1160px, 100%); margin: 0 auto; padding: 0 16px; }
 
         /* ── Header ── */
         header {
-            padding: 28px 0 22px;
+            padding: 24px 0 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
             border-bottom: 1px solid var(--border);
-            margin-bottom: 32px;
+            margin-bottom: 22px;
             animation: fadeDown 0.6s ease both;
+            flex-wrap: wrap;
         }
         @keyframes fadeDown {
             from { opacity: 0; transform: translateY(-12px); }
             to   { opacity: 1; transform: translateY(0); }
         }
-        .brand { font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent); font-family: "DM Mono", monospace; margin-bottom: 6px; }
-        .greeting { font-size: 22px; font-weight: 600; }
+        .brand { font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent); font-family: "DM Mono", monospace; margin-bottom: 5px; }
+        .greeting { font-size: 20px; font-weight: 600; line-height: 1.2; }
         .greeting span { color: var(--accent); }
-        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .header-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
         .hbtn {
             text-decoration: none;
             color: var(--muted);
@@ -60,6 +61,8 @@
             font-size: 13px;
             transition: all 0.15s;
             white-space: nowrap;
+            text-align: center;
+            display: inline-block;
         }
         .hbtn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
         .hbtn.accent { background: var(--accent-dim); border-color: rgba(201,168,76,0.35); color: var(--accent); }
@@ -71,26 +74,27 @@
             to   { opacity: 1; transform: translateY(0); }
         }
         .anim { opacity: 0; animation: fadeInUp 0.5s ease forwards; }
-        .d1 { animation-delay: 0.1s; } .d2 { animation-delay: 0.18s; }
+        .d1 { animation-delay: 0.10s; } .d2 { animation-delay: 0.18s; }
         .d3 { animation-delay: 0.26s; } .d4 { animation-delay: 0.34s; }
         .d5 { animation-delay: 0.42s; } .d6 { animation-delay: 0.50s; }
 
-        /* ── Date filter bar ── */
+        /* ── Filter bar ── */
         .filter-bar {
             background: var(--panel);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 14px 18px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
             backdrop-filter: blur(12px);
         }
         .filter-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); white-space: nowrap; }
         .filter-date {
-            padding: 8px 13px;
+            flex: 1; min-width: 130px;
+            padding: 8px 12px;
             background: rgba(255,255,255,0.05);
             border: 1px solid var(--border);
             border-radius: 8px;
@@ -101,119 +105,167 @@
         .filter-btn {
             padding: 8px 16px;
             background: var(--accent);
-            border: none;
-            border-radius: 8px;
-            color: #12121d;
-            font: 600 13px "DM Sans", sans-serif;
-            cursor: pointer;
-            transition: opacity 0.15s;
+            border: none; border-radius: 8px;
+            color: #12121d; font: 600 13px "DM Sans", sans-serif;
+            cursor: pointer; transition: opacity 0.15s; white-space: nowrap;
         }
         .filter-btn:hover { opacity: 0.88; }
         .filter-clear {
-            padding: 8px 14px;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--muted);
-            font: 13px "DM Sans", sans-serif;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.15s;
+            padding: 8px 12px;
+            background: transparent; border: 1px solid var(--border); border-radius: 8px;
+            color: var(--muted); font: 13px "DM Sans", sans-serif;
+            cursor: pointer; text-decoration: none; transition: all 0.15s; white-space: nowrap;
         }
         .filter-clear:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
         .filter-active-tag {
-            font: 500 11px "DM Mono", monospace;
-            color: var(--accent);
-            background: var(--accent-dim);
-            border: 1px solid rgba(201,168,76,0.3);
-            border-radius: 999px;
-            padding: 3px 10px;
+            font: 500 11px "DM Mono", monospace; color: var(--accent);
+            background: var(--accent-dim); border: 1px solid rgba(201,168,76,0.3);
+            border-radius: 999px; padding: 3px 10px;
         }
 
         /* ── Stats grid ── */
-        .stats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; margin-bottom: 28px; }
+        .stats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-bottom: 20px; }
         .stat-card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 22px;
-            backdrop-filter: blur(12px);
-            transition: border-color 0.2s, transform 0.2s;
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 18px 16px;
+            backdrop-filter: blur(12px); transition: border-color 0.2s, transform 0.2s;
         }
         .stat-card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-2px); }
-        .stat-label { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
-        .stat-value { font: 600 30px "DM Mono", monospace; }
-        .stat-sub { color: var(--muted); margin-top: 8px; font-size: 12px; }
+        .stat-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+        .stat-value { font: 600 26px "DM Mono", monospace; }
+        .stat-sub { color: var(--muted); margin-top: 6px; font-size: 11px; }
 
         /* ── Content grid ── */
-        .content { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px; padding-bottom: 48px; }
+        .content { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 16px; }
         .card {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 22px;
-            backdrop-filter: blur(12px);
+            background: var(--panel); border: 1px solid var(--border);
+            border-radius: 14px; padding: 20px; backdrop-filter: blur(12px);
         }
-        .card-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+        .card-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
 
         /* ── Menu list ── */
-        .menu-grid { display: grid; gap: 10px; max-height: 480px; overflow-y: auto; padding-right: 4px; }
+        .menu-grid { display: grid; gap: 9px; max-height: 460px; overflow-y: auto; padding-right: 4px; }
         .menu-grid::-webkit-scrollbar { width: 4px; }
         .menu-grid::-webkit-scrollbar-track { background: transparent; }
         .menu-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
         .menu-item {
-            border: 1px solid var(--border);
-            border-radius: 11px;
-            padding: 14px 16px;
-            background: rgba(255,255,255,0.02);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-            transition: border-color 0.15s;
+            border: 1px solid var(--border); border-radius: 11px;
+            padding: 12px 14px; background: rgba(255,255,255,0.02);
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 12px; transition: border-color 0.15s;
         }
         .menu-item:hover { border-color: rgba(201,168,76,0.25); }
-        .menu-name { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
-        .menu-desc { color: var(--muted); font-size: 12px; line-height: 1.5; }
-        .menu-price { font: 500 14px "DM Mono", monospace; color: var(--accent); white-space: nowrap; }
+        .menu-name { font-size: 13.5px; font-weight: 500; margin-bottom: 3px; }
+        .menu-desc { color: var(--muted); font-size: 11.5px; line-height: 1.45; }
+        .menu-price { font: 500 14px "DM Mono", monospace; color: var(--accent); white-space: nowrap; flex-shrink: 0; }
 
-        /* ── Tickets list ── */
+        /* ── Ticket items ── */
         .ticket-item {
-            border: 1px solid var(--border);
-            border-radius: 11px;
-            padding: 14px 16px;
-            background: rgba(255,255,255,0.02);
-            margin-bottom: 10px;
-            transition: border-color 0.15s;
+            border: 1px solid var(--border); border-radius: 11px;
+            padding: 13px 14px; background: rgba(255,255,255,0.02);
+            margin-bottom: 9px; transition: border-color 0.15s;
         }
         .ticket-item:last-child { margin-bottom: 0; }
         .ticket-item:hover { border-color: rgba(201,168,76,0.2); }
-        .ticket-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 6px; }
-        .ticket-id { font-size: 13px; font-weight: 600; }
-        .ticket-price { font: 600 15px "DM Mono", monospace; color: var(--accent); }
-        .ticket-date { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+        .ticket-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 4px; }
+        .ticket-id   { font-size: 13px; font-weight: 600; }
+        .ticket-price { font: 600 14px "DM Mono", monospace; color: var(--accent); }
+        .ticket-date { color: var(--muted); font-size: 11.5px; margin-bottom: 5px; }
         .ticket-products { color: var(--muted); font-size: 12px; line-height: 1.5; }
+        .badges { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
         .ticket-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 3px 9px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 600;
+            display: inline-flex; align-items: center;
+            padding: 3px 9px; border-radius: 999px;
+            font-size: 11px; font-weight: 600;
         }
-        .badge-canjeado { background: var(--success-dim); color: var(--success); border: 1px solid rgba(76,201,112,0.25); }
-        .badge-pendiente { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(201,168,76,0.3); }
-        .badge-expirado { background: rgba(240,122,122,0.1); color: var(--danger); border: 1px solid rgba(240,122,122,0.25); }
+        .badge-canjeado  { background: var(--success-dim); color: var(--success); border: 1px solid rgba(76,201,112,0.25); }
+        .badge-pendiente { background: var(--accent-dim);  color: var(--accent);  border: 1px solid rgba(201,168,76,0.3); }
+        .badge-expirado  { background: rgba(240,122,122,0.1); color: var(--danger); border: 1px solid rgba(240,122,122,0.25); }
 
         .empty { color: var(--muted); font-size: 13px; text-align: center; padding: 24px 0; }
+        .ver-mas { display: block; text-align: center; margin-top: 14px; color: var(--accent); font-size: 13px; text-decoration: none; }
+        .ver-mas:hover { text-decoration: underline; }
 
+        /* ════════════════════════════════
+           TABLET (≤ 900px)
+        ════════════════════════════════ */
         @media (max-width: 900px) {
-            .stats   { grid-template-columns: 1fr 1fr; }
             .content { grid-template-columns: 1fr; }
-            header   { flex-direction: column; align-items: flex-start; }
+            .menu-grid { max-height: 320px; }
         }
-        @media (max-width: 560px) {
-            .stats { grid-template-columns: 1fr; }
+
+        /* ════════════════════════════════
+           MÓVIL GRANDE (≤ 640px)
+        ════════════════════════════════ */
+        @media (max-width: 640px) {
+            .stats { grid-template-columns: 1fr 1fr 1fr; gap: 9px; }
+            .stat-card { padding: 13px 11px; }
+            .stat-value { font-size: 20px; }
+            .stat-label { font-size: 9px; }
+            .stat-sub { font-size: 10px; }
+
+            .header-actions {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 7px;
+            }
+        }
+
+        /* ════════════════════════════════
+           IPHONE (≤ 430px)
+        ════════════════════════════════ */
+        @media (max-width: 430px) {
+            .wrap { padding: 0 12px; }
+
+            /* Header */
+            header { padding: 16px 0 14px; margin-bottom: 16px; gap: 10px; }
+            .brand { font-size: 9px; margin-bottom: 3px; }
+            .greeting { font-size: 16px; }
+            .header-actions {
+                width: 100%;
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 6px;
+            }
+            .hbtn { font-size: 11px; padding: 8px 6px; border-radius: 9px; }
+
+            /* Filter */
+            .filter-bar { padding: 10px 12px; gap: 8px; margin-bottom: 14px; }
+            .filter-label { width: 100%; margin-bottom: 0; }
+            .filter-date { width: 100%; min-width: 0; }
+            .filter-btn, .filter-clear { flex: 1; text-align: center; font-size: 12px; }
+
+            /* Stats — horizontal cards */
+            .stats { grid-template-columns: 1fr; gap: 8px; margin-bottom: 14px; }
+            .stat-card {
+                display: flex; align-items: center; gap: 14px;
+                padding: 12px 14px;
+            }
+            .stat-label { margin-bottom: 0; min-width: 100px; font-size: 9.5px; }
+            .stat-value { font-size: 21px; }
+            .stat-sub { display: none; }
+
+            /* Content */
+            .content { gap: 12px; }
+            .card { padding: 14px 12px; border-radius: 12px; }
+            .card-title { font-size: 13px; margin-bottom: 12px; }
+
+            /* Menu */
+            .menu-grid { gap: 7px; max-height: 240px; }
+            .menu-item { padding: 10px 11px; border-radius: 10px; }
+            .menu-name { font-size: 13px; }
+            .menu-desc { font-size: 11px; }
+            .menu-price { font-size: 13px; }
+
+            /* Tickets */
+            .ticket-item { padding: 11px 11px; border-radius: 10px; margin-bottom: 8px; }
+            .ticket-id { font-size: 12.5px; }
+            .ticket-price { font-size: 13px; }
+            .ticket-date { font-size: 11px; }
+            .ticket-products { font-size: 11.5px; }
+            .ticket-badge { font-size: 10px; padding: 2px 8px; }
+            .badges { gap: 5px; }
         }
     </style>
 </head>
@@ -225,9 +277,9 @@
             <div class="greeting">Hola, <span>{{ cliente.nombre }} {{ cliente.apellido_paterno }}</span></div>
         </div>
         <div class="header-actions">
-            <a class="hbtn accent" href="{% url 'canjear_ticket' %}">🎫 Canjear ticket</a>
-            <a class="hbtn" href="{% url 'historial' %}">Historial completo</a>
-            <a class="hbtn" href="{% url 'logout' %}">Cerrar sesion</a>
+            <a class="hbtn accent" href="{% url 'canjear_ticket' %}">🎫 Canjear</a>
+            <a class="hbtn" href="{% url 'historial' %}">📋 Historial</a>
+            <a class="hbtn" href="{% url 'logout' %}">Salir</a>
         </div>
     </header>
 
@@ -246,26 +298,27 @@
     <!-- Stats -->
     <div class="stats">
         <article class="stat-card anim d2">
-            <div class="stat-label">Visitas registradas</div>
+            <div class="stat-label">Visitas</div>
             <div class="stat-value">{{ total_visitas }}</div>
-            <div class="stat-sub">{% if fecha_str %}En esa fecha{% else %}Total historico{% endif %}</div>
+            <div class="stat-sub">{% if fecha_str %}En esa fecha{% else %}Total histórico{% endif %}</div>
         </article>
         <article class="stat-card anim d3">
-            <div class="stat-label">Total consumido</div>
+            <div class="stat-label">Consumido</div>
             <div class="stat-value">${{ total_gastado }}</div>
-            <div class="stat-sub">{% if fecha_str %}Gasto de ese dia{% else %}Monto acumulado{% endif %}</div>
+            <div class="stat-sub">{% if fecha_str %}Ese día{% else %}Acumulado{% endif %}</div>
         </article>
         <article class="stat-card anim d4">
-            <div class="stat-label">Productos probados</div>
+            <div class="stat-label">Productos</div>
             <div class="stat-value">{{ productos_distintos }}</div>
-            <div class="stat-sub">{% if fecha_str %}Distintos ese dia{% else %}Distintos en total{% endif %}</div>
+            <div class="stat-sub">{% if fecha_str %}Ese día{% else %}Distintos{% endif %}</div>
         </article>
     </div>
 
     <!-- Content -->
     <div class="content">
+        <!-- Menú -->
         <article class="card anim d5">
-            <h3 class="card-title">Menu disponible</h3>
+            <h3 class="card-title">Menú disponible</h3>
             <div class="menu-grid">
                 {% for alimento in alimentos %}
                     <div class="menu-item">
@@ -276,15 +329,15 @@
                         <div class="menu-price">${{ alimento.costo }}</div>
                     </div>
                 {% empty %}
-                    <p class="empty">No hay productos disponibles por ahora.</p>
+                    <p class="empty">No hay productos disponibles.</p>
                 {% endfor %}
             </div>
         </article>
 
+        <!-- Tickets recientes -->
         <article class="card anim d6">
-            <h3 class="card-title">Ultimos 5 tickets</h3>
+            <h3 class="card-title">Últimos 5 tickets</h3>
             {% for ticket in tickets_recientes %}
-                {% with estado=ticket.canjeado %}
                 <div class="ticket-item">
                     <div class="ticket-top">
                         <span class="ticket-id">Ticket #{{ ticket.id_ticket }}</span>
@@ -298,27 +351,24 @@
                             {% endif %}
                         {% endfor %}
                     </div>
-                    <div style="margin-top: 8px;">
+                    <div class="badges">
                         {% if ticket.canjeado == 1 %}
-                            <span class="ticket-badge badge-canjeado">Canjeado</span>
+                            <span class="ticket-badge badge-canjeado">✓ Canjeado</span>
                         {% elif ticket.canjeado == -1 %}
                             <span class="ticket-badge badge-expirado">Cancelado</span>
                         {% else %}
                             <span class="ticket-badge badge-pendiente">Pendiente</span>
                         {% endif %}
                         {% if ticket.id_promocion %}
-                            <span class="ticket-badge badge-canjeado" style="margin-left: 6px;">🎁 {{ ticket.id_promocion.nombre }}</span>
+                            <span class="ticket-badge badge-canjeado">🎁 {{ ticket.id_promocion.nombre }}</span>
                         {% endif %}
                     </div>
                 </div>
-                {% endwith %}
             {% empty %}
-                <p class="empty">Aun no tienes tickets registrados.</p>
+                <p class="empty">Aún no tienes tickets registrados.</p>
             {% endfor %}
             {% if tickets_recientes %}
-                <div style="text-align:center; margin-top: 14px;">
-                    <a href="{% url 'historial' %}" style="color: var(--accent); font-size: 13px; text-decoration: none;">Ver historial completo →</a>
-                </div>
+                <a class="ver-mas" href="{% url 'historial' %}">Ver historial completo →</a>
             {% endif %}
         </article>
     </div>
