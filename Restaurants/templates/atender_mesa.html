@@ -15,7 +15,7 @@
             --accent-dim: rgba(201,168,76,0.12);
             --text-primary: #eeeef5;
             --text-secondary: #8888aa;
-            --text-muted: #55556a;
+            --text-muted: #7a7a9a;
             --success: #4cc970;
             --success-dim: rgba(76,201,112,0.1);
             --danger: #f07a7a;
@@ -85,6 +85,42 @@
             transition: border-color 0.15s;
         }
         select:focus, input:focus { outline: none; border-color: rgba(201,168,76,0.55); }
+
+        /* ── Custom quantity stepper ── */
+        .qty-wrap {
+            display: flex;
+            align-items: stretch;
+            width: 100%;
+        }
+        .qty-btn {
+            width: 36px;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qty-btn:first-child { border-radius: 10px 0 0 10px; border-right: none; }
+        .qty-btn:last-child  { border-radius: 0 10px 10px 0; border-left: none; }
+        .qty-btn:hover { background: var(--accent-dim); color: var(--accent); border-color: rgba(201,168,76,0.4); }
+        .qty-input {
+            flex: 1;
+            min-width: 0;
+            border-radius: 0 !important;
+            text-align: center;
+            border-left: none !important;
+            border-right: none !important;
+            padding: 12px 4px !important;
+            -moz-appearance: textfield;
+        }
+        .qty-input::-webkit-outer-spin-button,
+        .qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
         /* ── Product row ── */
         .rows-header { display: grid; grid-template-columns: 1fr 110px 110px 44px; gap: 10px; margin-top: 22px; margin-bottom: 6px; }
@@ -366,7 +402,11 @@
                 <select name="producto_id[]" onchange="recalcular()">${opcionesHtml()}</select>
             </div>
             <div>
-                <input name="cantidad[]" type="number" min="1" value="1" oninput="recalcular()">
+                <div class="qty-wrap">
+                    <button type="button" class="qty-btn" onclick="adjustQty(this,-1)">−</button>
+                    <input name="cantidad[]" type="number" min="1" value="1" class="qty-input" oninput="recalcular()">
+                    <button type="button" class="qty-btn" onclick="adjustQty(this,1)">＋</button>
+                </div>
             </div>
             <div>
                 <input type="text" value="$${primerPrecio}" disabled>
@@ -396,6 +436,13 @@
             }
             recalcular();
         }, 200);
+    }
+
+    function adjustQty(btn, delta) {
+        const input = btn.closest('.qty-wrap').querySelector('.qty-input');
+        const current = parseInt(input.value) || 1;
+        input.value = Math.max(1, current + delta);
+        recalcular();
     }
 
     function recalcular() {

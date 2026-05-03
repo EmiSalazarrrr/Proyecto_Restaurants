@@ -312,10 +312,8 @@
             <div class="stat-sub">Suma de precio final</div>
         </article>
         <article class="stat-card anim d4">
-            <div class="stat-label">Promedio</div>
-            <div class="stat-value">
-                ${% if total_consumos %}{{ monto_total|floatformat:2 }}{% else %}0.00{% endif %}
-            </div>
+            <div class="stat-label">Promedio por ticket</div>
+            <div class="stat-value">${{ promedio|floatformat:2 }}</div>
             <div class="stat-sub">Ingreso medio</div>
         </article>
     </div>

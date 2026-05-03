@@ -15,7 +15,7 @@
             --accent-dim: rgba(201,168,76,0.12);
             --text-primary: #eeeef5;
             --text-secondary: #8888aa;
-            --text-muted: #55556a;
+            --text-muted: #7a7a9a;
             --success: #4cc970;
             --success-dim: rgba(76,201,112,0.12);
             --danger: #e05c5c;
@@ -106,6 +106,14 @@
         /* Search bar inside table header */
         .table-search { padding: 9px 14px; background: #16162a; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); font: 13px "DM Sans", sans-serif; width: 220px; }
         .table-search:focus { outline: none; border-color: var(--accent); }
+
+        /* Pagination */
+        .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-top: 1px solid var(--card-border); }
+        .pag-info { font: 500 12px "DM Mono", monospace; color: var(--text-secondary); }
+        .pag-btns { display: flex; gap: 6px; }
+        .pag-btn { padding: 6px 14px; border-radius: 7px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-secondary); font: 13px "DM Sans", sans-serif; cursor: pointer; transition: all 0.15s; }
+        .pag-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+        .pag-btn:disabled { opacity: 0.3; cursor: default; }
 
         table { width: 100%; border-collapse: collapse; }
         th { padding: 11px 18px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px; text-align: left; background: rgba(42,42,69,0.4); }
@@ -299,6 +307,13 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <div class="pagination" id="cat-pagination" style="display:none;">
+                <span class="pag-info" id="pag-info-cat"></span>
+                <div class="pag-btns">
+                    <button class="pag-btn" id="pag-prev-cat">← Anterior</button>
+                    <button class="pag-btn" id="pag-next-cat">Siguiente →</button>
+                </div>
+            </div>
         </div>
     </div>
 </main>
@@ -330,18 +345,47 @@
         });
     }, 400);
 
-    // Table search
+    // Table search + pagination
     const catalogRows = Array.from(document.querySelectorAll('#catalog-tbody tr[data-name]'));
+    const CAT_PER_PAGE = 10;
+    let catPage = 1;
+    let catFiltered = [];
+    const catPag     = document.getElementById('cat-pagination');
+    const catInfo    = document.getElementById('pag-info-cat');
+    const catPrev    = document.getElementById('pag-prev-cat');
+    const catNext    = document.getElementById('pag-next-cat');
+
+    function renderCatPage() {
+        const start = (catPage - 1) * CAT_PER_PAGE;
+        const end   = start + CAT_PER_PAGE;
+        const pages = Math.ceil(catFiltered.length / CAT_PER_PAGE);
+        catalogRows.forEach(r => r.style.display = 'none');
+        catFiltered.forEach(function(r, i) { r.style.display = (i >= start && i < end) ? '' : 'none'; });
+        catInfo.textContent = catFiltered.length
+            ? 'Página ' + catPage + ' de ' + pages
+            : 'Sin resultados';
+        catPrev.disabled = catPage <= 1;
+        catNext.disabled = catPage >= pages;
+        catPag.style.display = catFiltered.length > CAT_PER_PAGE ? 'flex' : 'none';
+        document.getElementById('table-count').textContent = catFiltered.length + ' producto' + (catFiltered.length !== 1 ? 's' : '');
+    }
+
+    catPrev.addEventListener('click', function() { if (catPage > 1) { catPage--; renderCatPage(); } });
+    catNext.addEventListener('click', function() {
+        const pages = Math.ceil(catFiltered.length / CAT_PER_PAGE);
+        if (catPage < pages) { catPage++; renderCatPage(); }
+    });
+
     function filterTable() {
         const q = document.getElementById('search-input').value.toLowerCase();
-        let visible = 0;
-        catalogRows.forEach(row => {
-            const show = !q || row.dataset.name.includes(q) || row.dataset.desc.includes(q);
-            row.style.display = show ? '' : 'none';
-            if (show) visible++;
-        });
-        document.getElementById('table-count').textContent = visible + ' producto' + (visible !== 1 ? 's' : '');
+        catFiltered = catalogRows.filter(row =>
+            !q || row.dataset.name.includes(q) || row.dataset.desc.includes(q)
+        );
+        catPage = 1;
+        renderCatPage();
     }
+
+    filterTable(); // render inicial
 </script>
 </body>
 </html>
