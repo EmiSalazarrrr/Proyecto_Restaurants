@@ -118,6 +118,16 @@
         .pag-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
         .pag-btn:disabled { opacity: 0.3; cursor: default; }
 
+        /* ── Entrance animation ── */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .anim { opacity: 0; animation: fadeInUp 0.5s ease forwards; }
+        .d1 { animation-delay: 0.05s; } .d2 { animation-delay: 0.1s; }
+        .d3 { animation-delay: 0.15s; } .d4 { animation-delay: 0.2s; }
+        .d5 { animation-delay: 0.25s; } .d6 { animation-delay: 0.3s; }
+
         /* ── Responsive ── */
         @media (max-width: 1200px) { .dashboard-row { grid-template-columns: 1fr 1fr; } .chart-card { grid-column: span 2; } }
         @media (max-width: 980px)  { .dashboard-row { grid-template-columns: 1fr 1fr; } }
@@ -147,7 +157,7 @@
 </aside>
 
 <main>
-    <div class="topbar">
+    <div class="topbar anim d1">
         <div>
             <h1>Tickets registrados</h1>
             <p>
@@ -171,7 +181,7 @@
 
     <!-- Filtros -->
     <form method="GET" action="{% url 'lista_tickets' %}" id="filter-form">
-        <div class="filter-bar">
+        <div class="filter-bar anim d2">
             <a href="?periodo=hoy"    class="filter-btn {% if periodo == 'hoy' %}active{% endif %}">Hoy</a>
             <a href="?periodo=semana" class="filter-btn {% if periodo == 'semana' %}active{% endif %}">Semana</a>
             <a href="?periodo=mes"    class="filter-btn {% if periodo == 'mes' %}active{% endif %}">Mes</a>
@@ -194,7 +204,7 @@
     </form>
 
     <!-- Stats + Gráfica -->
-    <div class="dashboard-row">
+    <div class="dashboard-row anim d3">
         <article class="card">
             <div class="label">Total tickets</div>
             <div class="value">{{ total_tickets }}</div>
@@ -222,7 +232,7 @@
     </div>
 
     <!-- Tabla -->
-    <div class="table-wrap">
+    <div class="table-wrap anim d4">
         <table>
             <thead>
                 <tr>
