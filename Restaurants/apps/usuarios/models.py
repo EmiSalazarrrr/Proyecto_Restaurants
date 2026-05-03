@@ -8,7 +8,6 @@ class Perfiles(models.Model):
     def __str__(self):
         return self.tipo_de_usuario
     class Meta:
-        managed = False
         db_table = 'perfiles'
         verbose_name = 'Perfil'
         verbose_name_plural = 'Perfiles'
@@ -26,7 +25,6 @@ class Cliente(models.Model):
     def __str__(self):
         return f"{self.nombre_usuario} - {self.nombre} {self.apellido_paterno}"
     class Meta:
-        managed = False
         db_table = 'cliente'
         verbose_name = 'Cliente'
         verbose_name_plural = 'Clientes'

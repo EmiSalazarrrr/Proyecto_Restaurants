@@ -12,7 +12,6 @@ class Productopedido(models.Model):
         return f"{self.id_productopedido} - {self.id_alimentosbebidas.nombre}"
 
     class Meta:
-        managed = False
         db_table = 'productopedido'
         verbose_name = 'Producto Pedido'
         verbose_name_plural = 'Productos Pedidos'
@@ -38,7 +37,6 @@ class Ticket(models.Model):
     def __str__(self):
         return f"Ticket {self.id_ticket} - Usuario: {self.nombre_usuario.nombre_usuario} - Precio Final: {self.precio_final}"
     class Meta:
-        managed = False
         db_table = 'ticket'
         verbose_name = 'Ticket'
         verbose_name_plural = 'Tickets'
@@ -53,7 +51,6 @@ class Detalleticket(models.Model):
         return f"Detalle Ticket - Ticket ID: {self.id_ticket.id_ticket} - Producto Pedido ID: {self.id_productopedido.id_productopedido}"
 
     class Meta:
-        managed = False
         db_table = 'detalleticket'
         verbose_name = 'Detalle Ticket'
         verbose_name_plural = 'Detalles Tickets'

@@ -7,7 +7,6 @@ class Restricciones(models.Model):
     consumo_minimo_para_aplicar = models.IntegerField()
 
     class Meta:
-        managed = False
         db_table = 'restricciones'
         verbose_name = 'Restriccion'
         verbose_name_plural = 'Restricciones'
@@ -24,7 +23,6 @@ class Promocion(models.Model):
     def __str__(self):
         return f"{self.nombre} - {self.descripcion}"
     class Meta:
-        managed = False
         db_table = 'promocion'
         verbose_name = 'Promocion'
         verbose_name_plural = 'Promociones'
