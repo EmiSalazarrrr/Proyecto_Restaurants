@@ -1,4 +1,5 @@
 import hashlib
+from datetime import date as _date
 from functools import wraps
 
 from django.contrib import messages
@@ -157,28 +158,53 @@ def logout_view(request):
 @login_required(role="cliente")
 def menu_cliente_view(request):
     cliente = request.current_cliente
-    tickets = (
+    fecha_str = request.GET.get("fecha", "")
+    fecha_filtro = None
+
+    if fecha_str:
+        try:
+            fecha_filtro = _date.fromisoformat(fecha_str)
+        except ValueError:
+            fecha_str = ""
+
+    tickets_base = (
         Ticket.objects.filter(nombre_usuario=cliente)
         .select_related("id_promocion")
         .prefetch_related("detalleticket_set__id_productopedido__id_alimentosbebidas")
-        .order_by("-fecha")
     )
-    alimentos = Alimentosbebidas.objects.order_by("nombre")
-    total_gastado = tickets.aggregate(total=Sum("precio_final"))["total"] or 0
-    total_visitas = tickets.count()
-    productos_distintos = (
-        Alimentosbebidas.objects.filter(productopedido__detalleticket__id_ticket__nombre_usuario=cliente)
-        .distinct()
-        .count()
-    )
+
+    tickets_stats = tickets_base.filter(fecha__date=fecha_filtro) if fecha_filtro else tickets_base
+
+    alimentos = Alimentosbebidas.objects.filter(activo=True).order_by("nombre")
+    total_gastado = tickets_stats.aggregate(total=Sum("precio_final"))["total"] or 0
+    total_visitas = tickets_stats.count()
+
+    if fecha_filtro:
+        productos_distintos = (
+            Alimentosbebidas.objects.filter(
+                productopedido__detalleticket__id_ticket__nombre_usuario=cliente,
+                productopedido__detalleticket__id_ticket__fecha__date=fecha_filtro,
+            )
+            .distinct()
+            .count()
+        )
+    else:
+        productos_distintos = (
+            Alimentosbebidas.objects.filter(
+                productopedido__detalleticket__id_ticket__nombre_usuario=cliente
+            )
+            .distinct()
+            .count()
+        )
 
     context = {
         "cliente": cliente,
         "alimentos": alimentos,
-        "tickets_recientes": tickets[:5],
+        "tickets_recientes": tickets_base.order_by("-fecha")[:5],
         "total_gastado": total_gastado,
         "total_visitas": total_visitas,
         "productos_distintos": productos_distintos,
+        "fecha_str": fecha_str,
     }
     return render(request, "menu_cliente.html", context)
 
@@ -186,12 +212,24 @@ def menu_cliente_view(request):
 @login_required(role="cliente")
 def historial_view(request):
     cliente = request.current_cliente
+    fecha_str = request.GET.get("fecha", "")
+    fecha_filtro = None
+
+    if fecha_str:
+        try:
+            fecha_filtro = _date.fromisoformat(fecha_str)
+        except ValueError:
+            fecha_str = ""
+
     tickets = (
         Ticket.objects.filter(nombre_usuario=cliente)
         .select_related("id_promocion")
         .prefetch_related("detalleticket_set__id_productopedido__id_alimentosbebidas")
         .order_by("-fecha")
     )
+
+    if fecha_filtro:
+        tickets = tickets.filter(fecha__date=fecha_filtro)
 
     historial = []
     for ticket in tickets:
@@ -206,14 +244,12 @@ def historial_view(request):
             if detalle.id_productopedido and detalle.id_productopedido.id_alimentosbebidas
         )
         descuento = subtotal - ticket.precio_final
-        historial.append(
-            {
-                "ticket": ticket,
-                "productos": productos,
-                "subtotal": subtotal,
-                "descuento": descuento if descuento > 0 else 0,
-            }
-        )
+        historial.append({
+            "ticket": ticket,
+            "productos": productos,
+            "subtotal": subtotal,
+            "descuento": descuento if descuento > 0 else 0,
+        })
 
     resumen = tickets.aggregate(total=Sum("precio_final"))
     context = {
@@ -221,5 +257,6 @@ def historial_view(request):
         "historial": historial,
         "total_consumos": len(historial),
         "monto_total": resumen["total"] or 0,
+        "fecha_str": fecha_str,
     }
     return render(request, "historial.html", context)

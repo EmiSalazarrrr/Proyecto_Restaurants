@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modificar Ticket #{{ ticket.id_ticket }} | Restaurants</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f0f1a;
+            --sidebar-bg: #1a1a2e;
+            --card-bg: #1e1e32;
+            --card-border: #2a2a45;
+            --accent: #c9a84c;
+            --text-primary: #eeeef5;
+            --text-secondary: #8888aa;
+            --text-muted: #55556a;
+            --success: #4cc970;
+            --danger: #f07a7a;
+            --danger-dim: rgba(240,122,122,0.1);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { min-height: 100vh; display: flex; background: var(--bg); color: var(--text-primary); font-family: "DM Sans", sans-serif; }
+
+        .sidebar { width: 220px; background: var(--sidebar-bg); padding: 28px 0; position: fixed; inset: 0 auto 0 0; border-right: 1px solid var(--card-border); display: flex; flex-direction: column; }
+        .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid var(--card-border); margin-bottom: 20px; }
+        .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+        .sidebar-logo b { color: var(--accent); }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; color: var(--text-secondary); text-decoration: none; border-left: 3px solid transparent; }
+        .nav-item.active, .nav-item:hover { color: var(--accent); background: rgba(201,168,76,0.08); border-left-color: var(--accent); }
+        .nav-icon { width: 20px; text-align: center; }
+        .sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--card-border); }
+        .btn-logout { display: block; text-align: center; border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 14px; color: var(--text-secondary); text-decoration: none; }
+        .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
+
+        main { margin-left: 220px; flex: 1; padding: 36px 40px; max-width: 860px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+        .topbar a { color: var(--text-secondary); text-decoration: none; font-size: 13px; }
+        .topbar a:hover { color: var(--accent); }
+
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+        .card-title { font-size: 12px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+
+        /* Info del ticket */
+        .ticket-info { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .info-item .info-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+        .info-item .info-value { font-size: 14px; font-weight: 500; }
+        .info-item .info-value.mono { font-family: "DM Mono", monospace; }
+
+        /* Productos actuales */
+        .productos-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .productos-table th { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); padding: 0 0 10px; border-bottom: 1px solid var(--card-border); text-align: left; }
+        .productos-table th:last-child, .productos-table td:last-child { text-align: right; }
+        .productos-table td { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); color: var(--text-primary); }
+        .productos-table tr:last-child td { border-bottom: none; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; border-top: 1px solid var(--card-border); margin-top: 4px; }
+        .total-row span:first-child { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; }
+        .total-row span:last-child { font: 600 18px "DM Mono", monospace; }
+        .promo-note { font-size: 12px; color: var(--success); margin-top: 8px; }
+
+        /* Agregar productos */
+        .add-row { display: grid; grid-template-columns: 1fr 100px auto; gap: 10px; align-items: center; margin-bottom: 10px; }
+        select.field-input, input.field-input {
+            width: 100%; padding: 10px 12px;
+            background: rgba(255,255,255,0.05); border: 1px solid var(--card-border);
+            border-radius: 8px; color: var(--text-primary); font-size: 13px;
+            font-family: "DM Sans", sans-serif; outline: none;
+        }
+        select.field-input option { background: #1e1e32; }
+        select.field-input:focus, input.field-input:focus { border-color: var(--accent); }
+        input.field-input[type="number"] { font-family: "DM Mono", monospace; }
+        .btn-add-row { padding: 10px 14px; border-radius: 8px; border: 1px dashed var(--card-border); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 20px; line-height: 1; transition: all 0.15s; }
+        .btn-add-row:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-remove { padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(240,122,122,0.2); background: transparent; color: var(--danger); cursor: pointer; font-size: 14px; line-height: 1; transition: all 0.15s; }
+        .btn-remove:hover { background: rgba(240,122,122,0.08); }
+
+        /* Footer actions */
+        .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px; }
+        .btn-primary { padding: 12px 24px; border-radius: 10px; border: none; background: var(--accent); color: #11111a; font-size: 14px; font-weight: 600; cursor: pointer; font-family: "DM Sans", sans-serif; }
+        .btn-primary:hover { background: #b8942e; }
+        .btn-secondary { padding: 12px 24px; border-radius: 10px; border: 1px solid var(--card-border); background: transparent; color: var(--text-secondary); font-size: 14px; cursor: pointer; font-family: "DM Sans", sans-serif; text-decoration: none; display: inline-flex; align-items: center; }
+        .btn-secondary:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+
+        @media (max-width: 720px) {
+            body { display: block; }
+            .sidebar { position: static; width: 100%; min-height: auto; }
+            main { margin-left: 0; padding: 24px 16px; }
+            .ticket-info { grid-template-columns: 1fr 1fr; }
+            .add-row { grid-template-columns: 1fr 80px auto; }
+        }
+    </style>
+</head>
+<body>
+<aside class="sidebar">
+    <div class="sidebar-logo"><span>REST<b>AU</b>RANTS</span></div>
+    <a class="nav-item" href="{% url 'menu_admin' %}"><span class="nav-icon">⊞</span>Dashboard</a>
+    <a class="nav-item" href="/alimentos-bebidas/"><span class="nav-icon">🍽️</span>Alimentos / Bebidas</a>
+    <a class="nav-item active" href="{% url 'lista_tickets' %}"><span class="nav-icon">🪑</span>Tickets</a>
+    <a class="nav-item" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
+    <a class="nav-item" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
+    <div class="sidebar-bottom">
+        <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
+    </div>
+</aside>
+
+<main>
+    <div class="topbar">
+        <div>
+            <h1>Modificar Ticket <span style="color:var(--accent);font-family:'DM Mono',monospace;">#{{ ticket.id_ticket }}</span></h1>
+        </div>
+        <a href="{% url 'lista_tickets' %}">&larr; Volver a tickets</a>
+    </div>
+
+    <!-- Info del ticket -->
+    <div class="card">
+        <div class="card-title">Información del ticket</div>
+        <div class="ticket-info">
+            <div class="info-item">
+                <div class="info-label">Cliente</div>
+                <div class="info-value">
+                    {% if ticket.nombre_usuario %}
+                        {{ ticket.nombre_usuario.nombre }} {{ ticket.nombre_usuario.apellido_paterno }}
+                    {% else %}Sin cliente{% endif %}
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Fecha</div>
+                <div class="info-value mono">{{ ticket.fecha|date:"d/m/Y H:i" }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Código</div>
+                <div class="info-value mono">
+                    {% if ticket.codigounico %}TK-{{ ticket.codigounico }}{% else %}Sin código{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Productos actuales -->
+    <div class="card">
+        <div class="card-title">Productos actuales</div>
+        {% if productos_actuales %}
+        <table class="productos-table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cant.</th>
+                    <th>P.Unit</th>
+                    <th>Importe</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in productos_actuales %}
+                <tr>
+                    <td>{{ p.nombre }}</td>
+                    <td>{{ p.cantidad }}</td>
+                    <td class="mono">${{ p.precio_unitario }}</td>
+                    <td class="mono">${{ p.importe }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="total-row">
+            <span>Total actual</span>
+            <span>${{ ticket.precio_final }}</span>
+        </div>
+        {% if ticket.id_promocion %}
+        <div class="promo-note">✓ Promoción aplicada: {{ ticket.id_promocion.nombre }} (-{{ ticket.id_promocion.porcentaje_a_reducir }}%)</div>
+        {% endif %}
+        {% else %}
+        <p style="color:var(--text-muted);font-size:13px;">Sin productos registrados.</p>
+        {% endif %}
+    </div>
+
+    <!-- Agregar productos -->
+    <form method="POST" action="{% url 'modificar_ticket' ticket.id_ticket %}">
+        {% csrf_token %}
+        <div class="card">
+            <div class="card-title">Agregar productos</div>
+            <div id="filas-container">
+                <div class="add-row">
+                    <select name="producto_id[]" class="field-input">
+                        <option value="">— Selecciona un producto —</option>
+                        {% for alimento in alimentos %}
+                            <option value="{{ alimento.id_alimentosbebidas }}">{{ alimento.nombre }} — ${{ alimento.costo }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="number" name="cantidad[]" class="field-input" value="1" min="1" max="99">
+                    <button type="button" class="btn-remove" onclick="eliminarFila(this)">✕</button>
+                </div>
+            </div>
+            <button type="button" class="btn-add-row" onclick="agregarFila()" style="margin-top:6px;">+</button>
+            <p style="font-size:11px;color:var(--text-muted);margin-top:12px;">
+                Al guardar se recalculará el total y se reevaluará si aplica alguna promoción.
+            </p>
+        </div>
+
+        <div class="form-actions">
+            <a href="{% url 'lista_tickets' %}" class="btn-secondary">Cancelar</a>
+            <button type="submit" class="btn-primary">Guardar cambios</button>
+        </div>
+    </form>
+</main>
+
+<script>
+    const alimentosData = [
+        {% for alimento in alimentos %}
+        { id: "{{ alimento.id_alimentosbebidas }}", nombre: "{{ alimento.nombre|escapejs }}", costo: "{{ alimento.costo }}" },
+        {% endfor %}
+    ];
+
+    function buildSelect(selectedId) {
+        let html = '<option value="">— Selecciona un producto —</option>';
+        alimentosData.forEach(a => {
+            const sel = a.id === selectedId ? 'selected' : '';
+            html += `<option value="${a.id}" ${sel}>${a.nombre} — $${a.costo}</option>`;
+        });
+        return html;
+    }
+
+    function agregarFila() {
+        const container = document.getElementById('filas-container');
+        const div = document.createElement('div');
+        div.className = 'add-row';
+        div.innerHTML = `
+            <select name="producto_id[]" class="field-input">${buildSelect('')}</select>
+            <input type="number" name="cantidad[]" class="field-input" value="1" min="1" max="99">
+            <button type="button" class="btn-remove" onclick="eliminarFila(this)">✕</button>
+        `;
+        container.appendChild(div);
+    }
+
+    function eliminarFila(btn) {
+        const filas = document.querySelectorAll('#filas-container .add-row');
+        if (filas.length > 1) {
+            btn.closest('.add-row').remove();
+        }
+    }
+</script>
+</body>
+</html>

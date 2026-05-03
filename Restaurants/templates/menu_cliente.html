@@ -8,11 +8,15 @@
     <style>
         :root {
             --bg: #0f0f1a;
-            --panel: rgba(255,255,255,0.06);
-            --border: rgba(255,255,255,0.10);
+            --panel: rgba(255,255,255,0.055);
+            --border: rgba(255,255,255,0.09);
             --accent: #c9a84c;
+            --accent-dim: rgba(201,168,76,0.12);
             --text: #f1f1f6;
             --muted: #9696b0;
+            --success: #4cc970;
+            --success-dim: rgba(76,201,112,0.11);
+            --danger: #f07a7a;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -20,34 +24,129 @@
             font-family: "DM Sans", sans-serif;
             color: var(--text);
             background:
-                radial-gradient(circle at top right, rgba(201,168,76,0.14), transparent 25%),
-                radial-gradient(circle at bottom left, rgba(51,102,153,0.14), transparent 25%),
-                linear-gradient(135deg, #0a0a16, #121225 40%, #112033);
+                radial-gradient(ellipse at 80% 0%,   rgba(201,168,76,0.13), transparent 30%),
+                radial-gradient(ellipse at 5%  90%, rgba(51,90,160,0.16),  transparent 30%),
+                linear-gradient(135deg, #0a0a16, #121225 45%, #0d1c2e);
         }
-        header, main { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+
+        /* ── Layout ── */
+        .wrap { width: min(1160px, calc(100% - 32px)); margin: 0 auto; }
+
+        /* ── Header ── */
         header {
-            padding: 28px 0;
+            padding: 28px 0 22px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 16px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 32px;
+            animation: fadeDown 0.6s ease both;
         }
-        .brand { letter-spacing: 0.18em; text-transform: uppercase; font-size: 14px; color: var(--accent); }
-        .top-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-        .link-btn {
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .brand { font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent); font-family: "DM Mono", monospace; margin-bottom: 6px; }
+        .greeting { font-size: 22px; font-weight: 600; }
+        .greeting span { color: var(--accent); }
+        .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .hbtn {
             text-decoration: none;
-            color: var(--text);
+            color: var(--muted);
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 10px 14px;
-            font-size: 14px;
+            padding: 9px 14px;
+            font-size: 13px;
+            transition: all 0.15s;
+            white-space: nowrap;
         }
-        .hero { padding: 12px 0 28px; }
-        .hero h1 { font-size: clamp(30px, 5vw, 48px); margin-bottom: 10px; }
-        .hero p { color: var(--muted); max-width: 640px; line-height: 1.7; }
-        .stats, .content { display: grid; gap: 16px; }
-        .stats { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 24px; }
-        .content { grid-template-columns: 1.1fr 0.9fr; padding-bottom: 40px; }
+        .hbtn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+        .hbtn.accent { background: var(--accent-dim); border-color: rgba(201,168,76,0.35); color: var(--accent); }
+        .hbtn.accent:hover { background: rgba(201,168,76,0.2); }
+
+        /* ── Animations ── */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(18px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .anim { opacity: 0; animation: fadeInUp 0.5s ease forwards; }
+        .d1 { animation-delay: 0.1s; } .d2 { animation-delay: 0.18s; }
+        .d3 { animation-delay: 0.26s; } .d4 { animation-delay: 0.34s; }
+        .d5 { animation-delay: 0.42s; } .d6 { animation-delay: 0.50s; }
+
+        /* ── Date filter bar ── */
+        .filter-bar {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
+            backdrop-filter: blur(12px);
+        }
+        .filter-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); white-space: nowrap; }
+        .filter-date {
+            padding: 8px 13px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font: 13px "DM Sans", sans-serif;
+        }
+        .filter-date:focus { outline: none; border-color: rgba(201,168,76,0.5); }
+        .filter-btn {
+            padding: 8px 16px;
+            background: var(--accent);
+            border: none;
+            border-radius: 8px;
+            color: #12121d;
+            font: 600 13px "DM Sans", sans-serif;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+        .filter-btn:hover { opacity: 0.88; }
+        .filter-clear {
+            padding: 8px 14px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--muted);
+            font: 13px "DM Sans", sans-serif;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        .filter-clear:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+        .filter-active-tag {
+            font: 500 11px "DM Mono", monospace;
+            color: var(--accent);
+            background: var(--accent-dim);
+            border: 1px solid rgba(201,168,76,0.3);
+            border-radius: 999px;
+            padding: 3px 10px;
+        }
+
+        /* ── Stats grid ── */
+        .stats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; margin-bottom: 28px; }
+        .stat-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 22px;
+            backdrop-filter: blur(12px);
+            transition: border-color 0.2s, transform 0.2s;
+        }
+        .stat-card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-2px); }
+        .stat-label { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+        .stat-value { font: 600 30px "DM Mono", monospace; }
+        .stat-sub { color: var(--muted); margin-top: 8px; font-size: 12px; }
+
+        /* ── Content grid ── */
+        .content { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 18px; padding-bottom: 48px; }
         .card {
             background: var(--panel);
             border: 1px solid var(--border);
@@ -55,105 +154,174 @@
             padding: 22px;
             backdrop-filter: blur(12px);
         }
-        .label { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
-        .value { font: 600 28px "DM Mono", monospace; }
-        .sub { color: var(--muted); margin-top: 6px; font-size: 13px; }
-        .section-title { font-size: 18px; margin-bottom: 14px; }
-        .menu-grid { display: grid; gap: 12px; }
-        .menu-item, .ticket-item {
+        .card-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+
+        /* ── Menu list ── */
+        .menu-grid { display: grid; gap: 10px; max-height: 480px; overflow-y: auto; padding-right: 4px; }
+        .menu-grid::-webkit-scrollbar { width: 4px; }
+        .menu-grid::-webkit-scrollbar-track { background: transparent; }
+        .menu-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+        .menu-item {
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            background: rgba(255,255,255,0.03);
+            border-radius: 11px;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            transition: border-color 0.15s;
         }
-        .menu-item-top, .ticket-top { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
-        .price { color: var(--accent); font: 500 15px "DM Mono", monospace; }
-        .desc, .meta { color: var(--muted); font-size: 13px; line-height: 1.6; margin-top: 8px; }
-        .empty { color: var(--muted); font-size: 14px; }
-        @media (max-width: 860px) {
-            .stats, .content { grid-template-columns: 1fr; }
-            header { flex-direction: column; align-items: flex-start; }
+        .menu-item:hover { border-color: rgba(201,168,76,0.25); }
+        .menu-name { font-size: 14px; font-weight: 500; margin-bottom: 3px; }
+        .menu-desc { color: var(--muted); font-size: 12px; line-height: 1.5; }
+        .menu-price { font: 500 14px "DM Mono", monospace; color: var(--accent); white-space: nowrap; }
+
+        /* ── Tickets list ── */
+        .ticket-item {
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.02);
+            margin-bottom: 10px;
+            transition: border-color 0.15s;
+        }
+        .ticket-item:last-child { margin-bottom: 0; }
+        .ticket-item:hover { border-color: rgba(201,168,76,0.2); }
+        .ticket-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 6px; }
+        .ticket-id { font-size: 13px; font-weight: 600; }
+        .ticket-price { font: 600 15px "DM Mono", monospace; color: var(--accent); }
+        .ticket-date { color: var(--muted); font-size: 12px; margin-bottom: 6px; }
+        .ticket-products { color: var(--muted); font-size: 12px; line-height: 1.5; }
+        .ticket-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 9px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-canjeado { background: var(--success-dim); color: var(--success); border: 1px solid rgba(76,201,112,0.25); }
+        .badge-pendiente { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(201,168,76,0.3); }
+        .badge-expirado { background: rgba(240,122,122,0.1); color: var(--danger); border: 1px solid rgba(240,122,122,0.25); }
+
+        .empty { color: var(--muted); font-size: 13px; text-align: center; padding: 24px 0; }
+
+        @media (max-width: 900px) {
+            .stats   { grid-template-columns: 1fr 1fr; }
+            .content { grid-template-columns: 1fr; }
+            header   { flex-direction: column; align-items: flex-start; }
+        }
+        @media (max-width: 560px) {
+            .stats { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+<div class="wrap">
     <header>
         <div>
             <div class="brand">Restaurants</div>
-            <h2>{{ cliente.nombre }} {{ cliente.apellido_paterno }}</h2>
+            <div class="greeting">Hola, <span>{{ cliente.nombre }} {{ cliente.apellido_paterno }}</span></div>
         </div>
-        <div class="top-actions">
-            <a class="link-btn" href="{% url 'historial' %}">Ver historial completo</a>
-            <a class="link-btn" href="{% url 'logout' %}">Cerrar sesion</a>
+        <div class="header-actions">
+            <a class="hbtn accent" href="{% url 'canjear_ticket' %}">🎫 Canjear ticket</a>
+            <a class="hbtn" href="{% url 'historial' %}">Historial completo</a>
+            <a class="hbtn" href="{% url 'logout' %}">Cerrar sesion</a>
         </div>
     </header>
 
-    <main>
-        <section class="hero">
-            <h1>Tu menu y tus consumos, en una sola vista.</h1>
-            <p>Explora el catalogo disponible y revisa tus ultimos tickets sin salir de tu panel de cliente.</p>
-        </section>
+    <!-- Date filter -->
+    <form class="filter-bar anim d1" method="get">
+        <span class="filter-label">Filtrar por fecha</span>
+        <input class="filter-date" type="date" name="fecha" value="{{ fecha_str }}"
+               max="{% now 'Y-m-d' %}">
+        <button class="filter-btn" type="submit">Aplicar</button>
+        {% if fecha_str %}
+            <a class="filter-clear" href="{% url 'menu_cliente' %}">Limpiar</a>
+            <span class="filter-active-tag">📅 {{ fecha_str }}</span>
+        {% endif %}
+    </form>
 
-        <section class="stats">
-            <article class="card">
-                <div class="label">Visitas registradas</div>
-                <div class="value">{{ total_visitas }}</div>
-                <div class="sub">Tickets asociados a tu cuenta</div>
-            </article>
-            <article class="card">
-                <div class="label">Total consumido</div>
-                <div class="value">${{ total_gastado }}</div>
-                <div class="sub">Monto historico acumulado</div>
-            </article>
-            <article class="card">
-                <div class="label">Productos probados</div>
-                <div class="value">{{ productos_distintos }}</div>
-                <div class="sub">Platillos o bebidas distintas</div>
-            </article>
-        </section>
+    <!-- Stats -->
+    <div class="stats">
+        <article class="stat-card anim d2">
+            <div class="stat-label">Visitas registradas</div>
+            <div class="stat-value">{{ total_visitas }}</div>
+            <div class="stat-sub">{% if fecha_str %}En esa fecha{% else %}Total historico{% endif %}</div>
+        </article>
+        <article class="stat-card anim d3">
+            <div class="stat-label">Total consumido</div>
+            <div class="stat-value">${{ total_gastado }}</div>
+            <div class="stat-sub">{% if fecha_str %}Gasto de ese dia{% else %}Monto acumulado{% endif %}</div>
+        </article>
+        <article class="stat-card anim d4">
+            <div class="stat-label">Productos probados</div>
+            <div class="stat-value">{{ productos_distintos }}</div>
+            <div class="stat-sub">{% if fecha_str %}Distintos ese dia{% else %}Distintos en total{% endif %}</div>
+        </article>
+    </div>
 
-        <section class="content">
-            <article class="card">
-                <h3 class="section-title">Menu disponible</h3>
-                <div class="menu-grid">
-                    {% for alimento in alimentos %}
-                        <div class="menu-item">
-                            <div class="menu-item-top">
-                                <strong>{{ alimento.nombre }}</strong>
-                                <span class="price">${{ alimento.costo }}</span>
-                            </div>
-                            <p class="desc">{{ alimento.descripcion }}</p>
+    <!-- Content -->
+    <div class="content">
+        <article class="card anim d5">
+            <h3 class="card-title">Menu disponible</h3>
+            <div class="menu-grid">
+                {% for alimento in alimentos %}
+                    <div class="menu-item">
+                        <div>
+                            <div class="menu-name">{{ alimento.nombre }}</div>
+                            <div class="menu-desc">{{ alimento.descripcion }}</div>
                         </div>
-                    {% empty %}
-                        <p class="empty">No hay productos disponibles por ahora.</p>
-                    {% endfor %}
-                </div>
-            </article>
+                        <div class="menu-price">${{ alimento.costo }}</div>
+                    </div>
+                {% empty %}
+                    <p class="empty">No hay productos disponibles por ahora.</p>
+                {% endfor %}
+            </div>
+        </article>
 
-            <article class="card">
-                <h3 class="section-title">Ultimos tickets</h3>
-                <div class="menu-grid">
-                    {% for ticket in tickets_recientes %}
-                        <div class="ticket-item">
-                            <div class="ticket-top">
-                                <strong>Ticket #{{ ticket.id_ticket }}</strong>
-                                <span class="price">${{ ticket.precio_final }}</span>
-                            </div>
-                            <p class="meta">{{ ticket.fecha|date:"d/m/Y H:i" }}</p>
-                            <p class="desc">
-                                {% for detalle in ticket.detalleticket_set.all %}
-                                    {% if detalle.id_productopedido and detalle.id_productopedido.id_alimentosbebidas %}
-                                        {{ detalle.id_productopedido.id_alimentosbebidas.nombre }}{% if not forloop.last %}, {% endif %}
-                                    {% endif %}
-                                {% endfor %}
-                            </p>
-                        </div>
-                    {% empty %}
-                        <p class="empty">Aun no tienes tickets registrados.</p>
-                    {% endfor %}
+        <article class="card anim d6">
+            <h3 class="card-title">Ultimos 5 tickets</h3>
+            {% for ticket in tickets_recientes %}
+                {% with estado=ticket.canjeado %}
+                <div class="ticket-item">
+                    <div class="ticket-top">
+                        <span class="ticket-id">Ticket #{{ ticket.id_ticket }}</span>
+                        <span class="ticket-price">${{ ticket.precio_final }}</span>
+                    </div>
+                    <div class="ticket-date">{{ ticket.fecha|date:"d/m/Y H:i" }}</div>
+                    <div class="ticket-products">
+                        {% for detalle in ticket.detalleticket_set.all %}
+                            {% if detalle.id_productopedido and detalle.id_productopedido.id_alimentosbebidas %}
+                                {{ detalle.id_productopedido.id_alimentosbebidas.nombre }}{% if not forloop.last %}, {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div style="margin-top: 8px;">
+                        {% if ticket.canjeado == 1 %}
+                            <span class="ticket-badge badge-canjeado">Canjeado</span>
+                        {% elif ticket.canjeado == -1 %}
+                            <span class="ticket-badge badge-expirado">Cancelado</span>
+                        {% else %}
+                            <span class="ticket-badge badge-pendiente">Pendiente</span>
+                        {% endif %}
+                        {% if ticket.id_promocion %}
+                            <span class="ticket-badge badge-canjeado" style="margin-left: 6px;">🎁 {{ ticket.id_promocion.nombre }}</span>
+                        {% endif %}
+                    </div>
                 </div>
-            </article>
-        </section>
-    </main>
+                {% endwith %}
+            {% empty %}
+                <p class="empty">Aun no tienes tickets registrados.</p>
+            {% endfor %}
+            {% if tickets_recientes %}
+                <div style="text-align:center; margin-top: 14px;">
+                    <a href="{% url 'historial' %}" style="color: var(--accent); font-size: 13px; text-decoration: none;">Ver historial completo →</a>
+                </div>
+            {% endif %}
+        </article>
+    </div>
+</div>
 </body>
 </html>

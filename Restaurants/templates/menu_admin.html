@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel administrador | Restaurants</title>
+    <title>Dashboard | Restaurants</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
             --bg: #0f0f1a;
@@ -16,43 +17,70 @@
             --text-primary: #eeeef5;
             --text-secondary: #8888aa;
             --text-muted: #55556a;
+            --success: #4cc970;
             --danger: #e05c5c;
             --danger-dim: rgba(224,92,92,0.1);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--text-primary); display: flex; min-height: 100vh; }
+
+        /* ── Sidebar ── */
         .sidebar { width: 220px; background: var(--sidebar-bg); padding: 28px 0; position: fixed; inset: 0 auto 0 0; border-right: 1px solid var(--card-border); display: flex; flex-direction: column; }
         .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid var(--card-border); margin-bottom: 20px; }
         .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
         .sidebar-logo b { color: var(--accent); }
         .sidebar-label { padding: 0 24px; margin-bottom: 8px; color: var(--text-muted); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; color: var(--text-secondary); text-decoration: none; border-left: 3px solid transparent; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; color: var(--text-secondary); text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
         .nav-item.active, .nav-item:hover { color: var(--accent); background: var(--accent-dim); border-left-color: var(--accent); }
         .nav-icon { width: 20px; text-align: center; }
         .sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--card-border); }
-        .btn-logout { display: block; text-decoration: none; color: var(--text-secondary); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 14px; text-align: center; }
+        .btn-logout { display: block; text-decoration: none; color: var(--text-secondary); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 14px; text-align: center; transition: all 0.15s; }
         .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
+
+        /* ── Main ── */
         .main { margin-left: 220px; flex: 1; padding: 36px 40px; }
-        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; gap: 16px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; gap: 16px; }
         .topbar h2 { font-size: 26px; }
         .topbar p { color: var(--text-secondary); margin-top: 4px; }
         .badge { background: var(--accent-dim); border: 1px solid rgba(201,168,76,0.35); color: var(--accent); border-radius: 999px; padding: 6px 14px; font: 500 12px "DM Mono", monospace; }
-        .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-bottom: 28px; }
-        .stat-card, .action-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; }
-        .stat-card { padding: 20px; }
+
+        /* ── Animations ── */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .anim { opacity: 0; animation: fadeInUp 0.5s ease forwards; }
+        .d1 { animation-delay: 0.05s; } .d2 { animation-delay: 0.1s; }
+        .d3 { animation-delay: 0.15s; } .d4 { animation-delay: 0.2s; }
+        .d5 { animation-delay: 0.25s; } .d6 { animation-delay: 0.3s; }
+        .d7 { animation-delay: 0.35s; } .d8 { animation-delay: 0.4s; }
+
+        /* ── Stat cards ── */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; transition: border-color 0.2s, transform 0.2s; }
+        .stat-card:hover { border-color: rgba(201,168,76,0.35); transform: translateY(-2px); }
         .stat-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
         .stat-value { font: 600 28px "DM Mono", monospace; }
         .stat-sub { margin-top: 6px; color: var(--text-secondary); font-size: 12px; }
+
+        /* ── Charts row ── */
+        .charts-row { display: grid; grid-template-columns: 1fr 280px; gap: 16px; margin-bottom: 24px; }
+        .chart-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; }
+        .chart-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+        .chart-empty { color: var(--text-muted); font-size: 12px; text-align: center; padding: 40px 0; }
+        .donut-wrap { display: flex; flex-direction: column; align-items: center; }
+
+        /* ── Quick actions ── */
         .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 14px; }
-        .actions-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-        .action-card { padding: 22px; text-decoration: none; color: inherit; display: flex; gap: 14px; align-items: flex-start; }
-        .action-card:hover { border-color: var(--accent); background: rgba(201,168,76,0.04); }
-        .action-icon { width: 42px; height: 42px; border-radius: 10px; background: var(--accent-dim); display: grid; place-items: center; font-size: 20px; }
+        .actions-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; }
+        .action-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 22px; text-decoration: none; color: inherit; display: flex; gap: 14px; align-items: flex-start; transition: all 0.2s; }
+        .action-card:hover { border-color: var(--accent); background: rgba(201,168,76,0.04); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.2); }
+        .action-icon { width: 42px; height: 42px; border-radius: 10px; background: var(--accent-dim); display: grid; place-items: center; font-size: 20px; flex-shrink: 0; }
         .action-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
         .action-desc { color: var(--text-secondary); font-size: 13px; line-height: 1.5; }
-        @media (max-width: 960px) {
-            .stats-grid, .actions-grid { grid-template-columns: 1fr 1fr; }
-        }
+
+        @media (max-width: 1100px) { .charts-row { grid-template-columns: 1fr; } }
+        @media (max-width: 960px) { .stats-grid, .actions-grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 720px) {
             .sidebar { position: static; width: 100%; min-height: auto; }
             body { display: block; }
@@ -63,82 +91,183 @@
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="sidebar-logo"><span>REST<b>AU</b>RANTS</span></div>
-        <p class="sidebar-label">Panel</p>
-        <a class="nav-item active" href="{% url 'menu_admin' %}"><span class="nav-icon">⊞</span>Dashboard</a>
-        <a class="nav-item" href="/alimentos-bebidas/"><span class="nav-icon">🍽️</span>Alimentos / Bebidas</a>
-        <a class="nav-item" href="{% url 'atender_mesa' %}"><span class="nav-icon">🪑</span>Atender mesa</a>
-        <a class="nav-item" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
-        <a class="nav-item" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
-        <div class="sidebar-bottom">
-            <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
-        </div>
-    </aside>
+<aside class="sidebar">
+    <div class="sidebar-logo"><span>REST<b>AU</b>RANTS</span></div>
+    <p class="sidebar-label">Panel</p>
+    <a class="nav-item active" href="{% url 'menu_admin' %}"><span class="nav-icon">⊞</span>Dashboard</a>
+    <a class="nav-item" href="/alimentos-bebidas/"><span class="nav-icon">🍽️</span>Alimentos / Bebidas</a>
+    <a class="nav-item" href="{% url 'atender_mesa' %}"><span class="nav-icon">🪑</span>Atender mesa</a>
+    <a class="nav-item" href="{% url 'lista_tickets' %}"><span class="nav-icon">🎫</span>Tickets</a>
+    <a class="nav-item" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
+    <a class="nav-item" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
+    <div class="sidebar-bottom">
+        <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
+    </div>
+</aside>
 
-    <main class="main">
-        <div class="topbar">
-            <div>
-                <h2>Dashboard</h2>
-                <p>Resumen operativo del dia.</p>
+<main class="main">
+    <div class="topbar anim d1">
+        <div>
+            <h2>Dashboard</h2>
+            <p>Resumen operativo del dia.</p>
+        </div>
+        <div class="badge">Administrador</div>
+    </div>
+
+    <!-- Stats -->
+    <section class="stats-grid">
+        <article class="stat-card anim d2">
+            <div class="stat-label">Ventas hoy</div>
+            <div class="stat-value" data-count="{{ ventas_hoy }}" data-prefix="$">${{ ventas_hoy }}</div>
+            <div class="stat-sub">Ingresos acumulados del dia</div>
+        </article>
+        <article class="stat-card anim d3">
+            <div class="stat-label">Tickets hoy</div>
+            <div class="stat-value" data-count="{{ tickets_hoy }}">{{ tickets_hoy }}</div>
+            <div class="stat-sub">Pedidos registrados hoy</div>
+        </article>
+        <article class="stat-card anim d4">
+            <div class="stat-label">Clientes hoy</div>
+            <div class="stat-value" data-count="{{ clientes_hoy }}">{{ clientes_hoy }}</div>
+            <div class="stat-sub">Clientes distintos atendidos</div>
+        </article>
+        <article class="stat-card anim d5">
+            <div class="stat-label">Promociones activas</div>
+            <div class="stat-value" data-count="{{ promociones_activas }}">{{ promociones_activas }}</div>
+            <div class="stat-sub">Descuentos configurados</div>
+        </article>
+    </section>
+
+    <!-- Charts -->
+    <div class="charts-row">
+        <div class="chart-card anim d6">
+            <div class="chart-title">Ventas — últimos 7 días</div>
+            <canvas id="barChart" height="110"></canvas>
+        </div>
+        <div class="chart-card anim d7">
+            <div class="chart-title">Tickets de hoy</div>
+            <div class="donut-wrap">
+                <canvas id="donutChart" width="180" height="160"></canvas>
             </div>
-            <div class="badge">Administrador</div>
         </div>
+    </div>
 
-        <section class="stats-grid">
-            <article class="stat-card">
-                <div class="stat-label">Ventas hoy</div>
-                <div class="stat-value">${{ ventas_hoy }}</div>
-                <div class="stat-sub">Ingresos acumulados del dia</div>
-            </article>
-            <article class="stat-card">
-                <div class="stat-label">Tickets hoy</div>
-                <div class="stat-value">{{ tickets_hoy }}</div>
-                <div class="stat-sub">Pedidos registrados hoy</div>
-            </article>
-            <article class="stat-card">
-                <div class="stat-label">Clientes hoy</div>
-                <div class="stat-value">{{ clientes_hoy }}</div>
-                <div class="stat-sub">Clientes distintos atendidos</div>
-            </article>
-            <article class="stat-card">
-                <div class="stat-label">Promociones activas</div>
-                <div class="stat-value">{{ promociones_activas }}</div>
-                <div class="stat-sub">Promociones configuradas en el sistema</div>
-            </article>
-        </section>
+    <!-- Quick access -->
+    <p class="section-title anim d8">Accesos rapidos</p>
+    <section class="actions-grid">
+        <a class="action-card anim d8" href="/alimentos-bebidas/">
+            <div class="action-icon">🍽️</div>
+            <div><div class="action-title">Catalogo</div><div class="action-desc">Alta, edicion y baja de alimentos y bebidas.</div></div>
+        </a>
+        <a class="action-card anim d8" href="{% url 'atender_mesa' %}">
+            <div class="action-icon">🪑</div>
+            <div><div class="action-title">Atender mesa</div><div class="action-desc">Crear tickets con productos y promociones automaticas.</div></div>
+        </a>
+        <a class="action-card anim d8" href="{% url 'promociones' %}">
+            <div class="action-icon">🎁</div>
+            <div><div class="action-title">Promociones</div><div class="action-desc">Gestionar descuentos y restricciones.</div></div>
+        </a>
+        <a class="action-card anim d8" href="{% url 'metricas' %}">
+            <div class="action-icon">📊</div>
+            <div><div class="action-title">Metricas</div><div class="action-desc">Consultar ventas, tickets y producto mas vendido.</div></div>
+        </a>
+    </section>
+</main>
 
-        <p class="section-title">Accesos rapidos</p>
-        <section class="actions-grid">
-            <a class="action-card" href="/alimentos-bebidas/">
-                <div class="action-icon">1</div>
-                <div>
-                    <div class="action-title">Catalogo</div>
-                    <div class="action-desc">Alta, edicion y baja de alimentos y bebidas.</div>
-                </div>
-            </a>
-            <a class="action-card" href="{% url 'atender_mesa' %}">
-                <div class="action-icon">2</div>
-                <div>
-                    <div class="action-title">Atender mesa</div>
-                    <div class="action-desc">Crear tickets con multiples productos y promociones automaticas.</div>
-                </div>
-            </a>
-            <a class="action-card" href="{% url 'promociones' %}">
-                <div class="action-icon">3</div>
-                <div>
-                    <div class="action-title">Promociones</div>
-                    <div class="action-desc">Gestionar descuentos y restricciones desde la base de datos.</div>
-                </div>
-            </a>
-            <a class="action-card" href="{% url 'metricas' %}">
-                <div class="action-icon">4</div>
-                <div>
-                    <div class="action-title">Metricas</div>
-                    <div class="action-desc">Consultar ventas, tickets, clientes y producto mas vendido.</div>
-                </div>
-            </a>
-        </section>
-    </main>
+<script>
+    // Counter animation
+    document.querySelectorAll('[data-count]').forEach(el => {
+        const target = parseFloat(el.dataset.count) || 0;
+        const prefix = el.dataset.prefix || '';
+        if (target === 0) return;
+        let start = null;
+        const duration = 900;
+        const step = ts => {
+            if (!start) start = ts;
+            const p = Math.min((ts - start) / duration, 1);
+            const eased = 1 - Math.pow(1 - p, 3);
+            const val = eased * target;
+            el.textContent = prefix + (Number.isInteger(target) ? Math.round(val) : val.toFixed(2));
+            if (p < 1) requestAnimationFrame(step);
+            else el.textContent = prefix + (Number.isInteger(target) ? target : target.toFixed(2));
+        };
+        requestAnimationFrame(step);
+    });
+
+    // Bar chart
+    const barData = {{ chart_bar|safe }};
+    new Chart(document.getElementById('barChart'), {
+        type: 'bar',
+        data: {
+            labels: barData.labels,
+            datasets: [{
+                label: 'Ventas ($)',
+                data: barData.data,
+                backgroundColor: 'rgba(201,168,76,0.25)',
+                borderColor: '#c9a84c',
+                borderWidth: 2,
+                borderRadius: 6,
+                borderSkipped: false,
+                hoverBackgroundColor: 'rgba(201,168,76,0.45)',
+            }]
+        },
+        options: {
+            responsive: true,
+            animation: { duration: 900, easing: 'easeOutQuart' },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: { label: ctx => ` $${ctx.parsed.y.toFixed(2)}` }
+                }
+            },
+            scales: {
+                x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8888aa', font: { size: 11 } } },
+                y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8888aa', font: { size: 11 }, callback: v => '$' + v } }
+            }
+        }
+    });
+
+    // Donut chart
+    const donutData = {{ chart_donut|safe }};
+    const totalHoy = donutData.data.reduce((a,b) => a+b, 0);
+    new Chart(document.getElementById('donutChart'), {
+        type: 'doughnut',
+        data: {
+            labels: donutData.labels,
+            datasets: [{
+                data: donutData.data,
+                backgroundColor: donutData.colors,
+                borderColor: '#1e1e32',
+                borderWidth: 3,
+                hoverOffset: 6,
+            }]
+        },
+        options: {
+            responsive: false,
+            cutout: '65%',
+            animation: { animateRotate: true, duration: 900 },
+            plugins: {
+                legend: { position: 'bottom', labels: { color: '#8888aa', font: { size: 11, family: 'DM Sans' }, padding: 12, boxWidth: 10, boxHeight: 10 } },
+                tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}` } }
+            }
+        },
+        plugins: [{
+            id: 'center',
+            afterDraw(chart) {
+                const { ctx, chartArea: { width, height, left, top } } = chart;
+                ctx.save();
+                ctx.font = 'bold 22px DM Mono, monospace';
+                ctx.fillStyle = '#eeeef5';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(totalHoy, left + width/2, top + height/2 - 8);
+                ctx.font = '11px DM Sans, sans-serif';
+                ctx.fillStyle = '#55556a';
+                ctx.fillText('tickets', left + width/2, top + height/2 + 12);
+                ctx.restore();
+            }
+        }]
+    });
+</script>
 </body>
 </html>
