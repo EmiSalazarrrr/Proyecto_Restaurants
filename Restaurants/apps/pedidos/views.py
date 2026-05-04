@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from decimal import Decimal, ROUND_HALF_UP
 
 from django.contrib import messages
-from django.db.models import Sum
+from django.db.models import Count, Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.timezone import localdate
@@ -25,7 +25,7 @@ def _generar_codigo_unico():
             return codigo
 
 
-def _promocion_aplicable(cliente, total_productos):
+def _promociones_elegibles(cliente, total_productos):
     promociones = Promocion.objects.filter(activo=True).select_related("id_restriccion")
     compras_previas = Ticket.objects.filter(nombre_usuario=cliente).count()
     elegibles = []
@@ -43,10 +43,38 @@ def _promocion_aplicable(cliente, total_productos):
         if cumple:
             elegibles.append(promocion)
 
+    return elegibles
+
+
+def _promocion_recomendada(cliente, total_productos):
+    elegibles = _promociones_elegibles(cliente, total_productos)
     if not elegibles:
         return None
-
     return max(elegibles, key=lambda promo: promo.porcentaje_a_reducir or 0)
+
+
+def _get_promocion_seleccionada(promocion_id):
+    if not promocion_id:
+        return None
+    try:
+        return Promocion.objects.get(pk=promocion_id, activo=True)
+    except (Promocion.DoesNotExist, ValueError, TypeError):
+        return None
+
+
+def _promociones_json(promociones):
+    data = []
+    for promocion in promociones:
+        restriccion = promocion.id_restriccion
+        nombre_restriccion = (getattr(restriccion, "nombre", "") or "").lower()
+        data.append({
+            "id": promocion.id_promocion,
+            "nombre": promocion.nombre,
+            "porcentaje": float(promocion.porcentaje_a_reducir or 0),
+            "minimo": int(getattr(restriccion, "consumo_minimo_para_aplicar", 0) or 0),
+            "frecuente": "frecuente" in nombre_restriccion,
+        })
+    return json.dumps(data)
 
 
 def _get_estado(ticket, today):
@@ -63,7 +91,18 @@ def atender_mesa(request):
     clientes = Cliente.objects.filter(
         id_tipo_de_usuario__tipo_de_usuario__iexact="Cliente"
     ).order_by("nombre")
-    return render(request, "atender_mesa.html", {"alimentos": alimentos, "clientes": clientes})
+    promociones = Promocion.objects.filter(activo=True).select_related("id_restriccion").order_by("nombre")
+    compras_clientes = {
+        row["nombre_usuario"]: row["total"]
+        for row in Ticket.objects.values("nombre_usuario").annotate(total=Count("id_ticket"))
+    }
+    return render(request, "atender_mesa.html", {
+        "alimentos": alimentos,
+        "clientes": clientes,
+        "promociones": promociones,
+        "promociones_json": _promociones_json(promociones),
+        "compras_clientes_json": json.dumps(compras_clientes),
+    })
 
 
 @login_required(role="admin")
@@ -72,6 +111,7 @@ def guardar_ticket(request):
         return redirect("atender_mesa")
 
     nombre_usuario = request.POST.get("cliente")
+    promocion_id = request.POST.get("promocion_id")
     productos_ids = request.POST.getlist("producto_id[]")
     cantidades = request.POST.getlist("cantidad[]")
 
@@ -103,14 +143,14 @@ def guardar_ticket(request):
         messages.error(request, "No se pudo construir el ticket con los datos enviados.")
         return redirect("atender_mesa")
 
-    promocion = _promocion_aplicable(cliente, total_productos)
+    promocion = _get_promocion_seleccionada(promocion_id)
     ticket = Ticket.objects.create(
         precio_final=Decimal("0.00"),
         fecha=timezone.now(),
         canjeado=0,
         id_promocion=promocion,
         nombre_usuario=cliente,
-        codigounico=_generar_codigo_unico() if promocion else None,
+        codigounico=_generar_codigo_unico(),
     )
 
     for alimento, cantidad in lineas:
@@ -122,9 +162,9 @@ def guardar_ticket(request):
     ticket.save(update_fields=["precio_final"])
 
     if promocion:
-        messages.success(request, f"Ticket #{ticket.id_ticket} guardado con la promocion {promocion.nombre}.")
+        messages.success(request, f"Ticket #{ticket.id_ticket} guardado con codigo TK-{ticket.codigounico} y promocion {promocion.nombre}.")
     else:
-        messages.success(request, f"Ticket #{ticket.id_ticket} guardado exitosamente.")
+        messages.success(request, f"Ticket #{ticket.id_ticket} guardado con codigo TK-{ticket.codigounico}.")
     return redirect("lista_tickets")
 
 
@@ -220,6 +260,7 @@ def modificar_ticket(request, id_ticket):
     if request.method == "POST":
         productos_ids = request.POST.getlist("producto_id[]")
         cantidades = request.POST.getlist("cantidad[]")
+        promocion_id = request.POST.get("promocion_id")
 
         for producto_id, cantidad in zip(productos_ids, cantidades):
             if not producto_id:
@@ -233,13 +274,9 @@ def modificar_ticket(request, id_ticket):
                 pp = Productopedido.objects.create(id_alimentosbebidas=alimento)
                 Detalleticket.objects.create(id_ticket=ticket, id_productopedido=pp)
 
-        total_productos = ticket.detalleticket_set.count()
-        nueva_promocion = _promocion_aplicable(ticket.nombre_usuario, total_productos)
-        ticket.id_promocion = nueva_promocion
-        if nueva_promocion and not ticket.codigounico:
+        ticket.id_promocion = _get_promocion_seleccionada(promocion_id)
+        if not ticket.codigounico:
             ticket.codigounico = _generar_codigo_unico()
-        elif not nueva_promocion:
-            ticket.codigounico = None
         # Clear stale prefetch cache so calcular_total reads the newly added detalletickets from DB
         if hasattr(ticket, '_prefetched_objects_cache'):
             ticket._prefetched_objects_cache = {}
@@ -263,10 +300,14 @@ def modificar_ticket(request, id_ticket):
         agrupados[key]["importe"] += alimento.costo
 
     alimentos = Alimentosbebidas.objects.filter(activo=True).order_by("nombre")
+    promociones = Promocion.objects.filter(activo=True).select_related("id_restriccion").order_by("nombre")
+    recomendada = _promocion_recomendada(ticket.nombre_usuario, ticket.detalleticket_set.count())
     return render(request, "modificar_ticket.html", {
         "ticket": ticket,
         "productos_actuales": list(agrupados.values()),
         "alimentos": alimentos,
+        "promociones": promociones,
+        "promocion_recomendada": recomendada,
     })
 
 
@@ -318,8 +359,14 @@ def canjear_ticket(request):
             messages.error(request, "Este ticket ha expirado y ya no puede canjearse.")
             return render(request, "agregar_ticket.html")
 
+        cliente_actual = request.current_cliente
+        if ticket.nombre_usuario and ticket.nombre_usuario != cliente_actual:
+            messages.error(request, "Este codigo pertenece a otro cliente.")
+            return render(request, "agregar_ticket.html")
+
         ticket.canjeado = 1
-        ticket.save(update_fields=["canjeado"])
+        ticket.nombre_usuario = cliente_actual
+        ticket.save(update_fields=["canjeado", "nombre_usuario"])
         return redirect("confirmacion_canje", id_ticket=ticket.id_ticket)
 
     return render(request, "agregar_ticket.html")

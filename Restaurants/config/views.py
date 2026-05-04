@@ -131,6 +131,16 @@ def metricas_view(request):
         labels_chart, data_chart = _build_daily_series(desde, hasta, tickets)
         chart_label = "Ventas por día"
 
+    max_chart = max(data_chart) if data_chart else 0
+    chart_points = [
+        {
+            "label": label,
+            "value": value,
+            "percent": round((value / max_chart) * 100, 1) if max_chart else 0,
+        }
+        for label, value in zip(labels_chart, data_chart)
+    ]
+
     top_productos = list(
         Alimentosbebidas.objects
         .filter(
@@ -166,7 +176,8 @@ def metricas_view(request):
         "total_tickets": total_tickets,
         "clientes_unicos": clientes_unicos,
         "promedio_ticket": round(promedio, 2),
-        "chart_data": json.dumps({"labels": labels_chart, "data": data_chart, "label": chart_label}),
+        "chart_label": chart_label,
+        "chart_points": chart_points,
         "top_productos": top_productos,
         "max_top": max_top,
         "top_clientes": top_clientes,

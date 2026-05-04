@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metricas | Restaurants</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
     <style>
         :root {
             --bg: #0f0f1a;
@@ -85,6 +87,12 @@
         /* ── Chart card ── */
         .chart-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; margin-bottom: 22px; }
         .chart-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+        .sales-chart { display: grid; grid-template-columns: repeat(auto-fit, minmax(44px, 1fr)); gap: 10px; min-height: 180px; align-items: end; }
+        .sales-bar { min-width: 0; display: grid; grid-template-rows: 1fr auto auto; gap: 7px; height: 180px; }
+        .sales-bar-track { display: flex; align-items: end; min-height: 112px; background: rgba(255,255,255,0.035); border: 1px solid rgba(255,255,255,0.05); border-radius: 9px; overflow: hidden; }
+        .sales-bar-fill { width: 100%; min-height: 3px; background: linear-gradient(180deg, rgba(201,168,76,0.85), rgba(201,168,76,0.28)); border-top: 2px solid var(--accent); border-radius: 8px 8px 0 0; }
+        .sales-value { font: 500 11px "DM Mono", monospace; color: var(--accent); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .sales-label { color: var(--text-muted); font-size: 11px; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
         /* ── Bottom grid ── */
         .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -129,6 +137,7 @@
             .topbar { flex-direction: column; align-items: flex-start; }
         }
     </style>
+    <link rel="stylesheet" href="/static/css/performance.css">
 </head>
 <body>
 <aside class="sidebar">
@@ -235,8 +244,20 @@
 
     <!-- Chart -->
     <div class="chart-card anim d7">
-        <div class="chart-title" id="chart-title">Ventas</div>
-        <canvas id="barChart" height="110"></canvas>
+        <div class="chart-title">{{ chart_label }}</div>
+        <div class="sales-chart" role="img" aria-label="{{ chart_label }}">
+            {% for point in chart_points %}
+                <div class="sales-bar">
+                    <div class="sales-bar-track">
+                        <div class="sales-bar-fill" style="height: {{ point.percent }}%;"></div>
+                    </div>
+                    <div class="sales-value">${{ point.value|floatformat:0 }}</div>
+                    <div class="sales-label">{{ point.label }}</div>
+                </div>
+            {% empty %}
+                <p class="no-data">Sin ventas en el periodo seleccionado.</p>
+            {% endfor %}
+        </div>
     </div>
 
     <!-- Bottom -->
@@ -252,7 +273,7 @@
                                 <span class="top-count">{{ prod.total }}x</span>
                             </div>
                             <div class="bar-track">
-                                <div class="bar-fill" data-width="{{ prod.total }}" data-max="{{ max_top }}"></div>
+                                <div class="bar-fill" style="width: {% widthratio prod.total max_top 100 %}%;"></div>
                             </div>
                         </div>
                     {% endfor %}
@@ -292,66 +313,6 @@
 </main>
 
 <script>
-    // Counter animation
-    document.querySelectorAll('[data-count]').forEach(el => {
-        const target = parseFloat(el.dataset.count) || 0;
-        const prefix = el.dataset.prefix || '';
-        const decimals = parseInt(el.dataset.decimals || '0');
-        if (!target) return;
-        let start = null;
-        const step = ts => {
-            if (!start) start = ts;
-            const p = Math.min((ts - start) / 900, 1);
-            const eased = 1 - Math.pow(1 - p, 3);
-            const val = eased * target;
-            el.textContent = prefix + (decimals ? val.toFixed(decimals) : Math.round(val));
-            if (p < 1) requestAnimationFrame(step);
-            else el.textContent = prefix + (decimals ? target.toFixed(decimals) : target);
-        };
-        requestAnimationFrame(step);
-    });
-
-    // Bar chart
-    const chartData = {{ chart_data|safe }};
-    document.getElementById('chart-title').textContent = chartData.label;
-    new Chart(document.getElementById('barChart'), {
-        type: 'bar',
-        data: {
-            labels: chartData.labels,
-            datasets: [{
-                label: 'Ventas ($)',
-                data: chartData.data,
-                backgroundColor: 'rgba(201,168,76,0.25)',
-                borderColor: '#c9a84c',
-                borderWidth: 2,
-                borderRadius: 6,
-                borderSkipped: false,
-                hoverBackgroundColor: 'rgba(201,168,76,0.45)',
-            }]
-        },
-        options: {
-            responsive: true,
-            animation: { duration: 900, easing: 'easeOutQuart' },
-            plugins: {
-                legend: { display: false },
-                tooltip: { callbacks: { label: ctx => ` $${ctx.parsed.y.toFixed(2)}` } }
-            },
-            scales: {
-                x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8888aa', font: { size: 11 } } },
-                y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#8888aa', font: { size: 11 }, callback: v => '$' + v } }
-            }
-        }
-    });
-
-    // Progress bars
-    setTimeout(() => {
-        document.querySelectorAll('.bar-fill').forEach(bar => {
-            const w = parseFloat(bar.dataset.width);
-            const m = parseFloat(bar.dataset.max) || 1;
-            bar.style.width = (w / m * 100).toFixed(1) + '%';
-        });
-    }, 400);
-
     // Date picker toggles
     function toggleDatePicker(type) {
         const single = document.getElementById('picker-single');

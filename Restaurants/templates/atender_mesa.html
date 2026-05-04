@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Atender Mesa | Restaurants</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
     <style>
         :root {
             --bg: #0f0f1a;
@@ -207,6 +210,12 @@
             transition: opacity 0.3s, transform 0.3s;
         }
         .promo-badge.visible { opacity: 1; transform: translateY(0); }
+        .promo-panel { margin-top: 18px; padding: 14px; border: 1px solid rgba(201,168,76,0.22); border-radius: 10px; background: rgba(201,168,76,0.055); }
+        .promo-panel label { margin-bottom: 10px; }
+        .recommendation { margin-top: 10px; color: var(--text-secondary); font-size: 12px; line-height: 1.5; }
+        .recommendation strong { color: var(--accent); }
+        .use-recommended { margin-top: 10px; border: 1px solid rgba(201,168,76,0.35); background: transparent; color: var(--accent); border-radius: 8px; padding: 8px 11px; font: 500 12px "DM Sans", sans-serif; cursor: pointer; }
+        .use-recommended:hover { background: var(--accent-dim); }
 
         /* Empty state */
         .empty-state {
@@ -232,6 +241,7 @@
             .remove-btn { width: 100%; }
         }
     </style>
+    <link rel="stylesheet" href="/static/css/performance.css">
 </head>
 <body>
 <aside class="sidebar">
@@ -252,7 +262,7 @@
     <div class="topbar anim d1">
         <div>
             <h2>Atender mesa</h2>
-            <p>Selecciona cliente y productos — la mejor promocion se aplica automaticamente.</p>
+            <p>Selecciona cliente, productos y la promocion que deseas aplicar.</p>
         </div>
         <div class="badge">Nuevo ticket</div>
     </div>
@@ -302,6 +312,24 @@
                 <button class="ghost-btn" type="button" onclick="agregarFila()">
                     <span>＋</span> Agregar platillo
                 </button>
+
+                <div class="promo-panel">
+                    <label for="promocion_id">Promocion aplicada</label>
+                    <select id="promocion_id" name="promocion_id" onchange="updatePromoSummary()">
+                        <option value="">Sin promocion</option>
+                        {% for promocion in promociones %}
+                            <option value="{{ promocion.id_promocion }}">
+                                {{ promocion.nombre }} - {{ promocion.porcentaje_a_reducir }}%
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <div class="recommendation" id="promo-recommendation">
+                        Agrega productos para calcular una recomendacion.
+                    </div>
+                    <button class="use-recommended" id="use-recommended" type="button" onclick="usarRecomendada()" hidden>
+                        Usar recomendada
+                    </button>
+                </div>
                 <button class="primary-btn" type="submit">Guardar ticket</button>
             </section>
 
@@ -320,7 +348,7 @@
                     </div>
                     <div class="summary-item">
                         <span class="summary-label">Promocion</span>
-                        <span class="summary-value" style="font-size: 12px; color: var(--text-muted);">Automatica al guardar</span>
+                        <span class="summary-value" id="promo-summary" style="font-size: 12px; color: var(--text-muted);">Sin promocion</span>
                     </div>
                     <div class="summary-item">
                         <span class="summary-label">Cliente</span>
@@ -329,7 +357,7 @@
                 </div>
 
                 <div class="promo-badge" id="promo-hint">
-                    🎁 Se verificara elegibilidad al guardar
+                    🎁 El sistema recomienda, el administrador decide
                 </div>
 
                 <a class="quick-link" href="{% url 'lista_tickets' %}">Ver todos los tickets →</a>
@@ -341,10 +369,15 @@
 <script id="catalogo-data" type="application/json">
 [{% for a in alimentos %}{"id": {{ a.id_alimentosbebidas }}, "nombre": "{{ a.nombre|escapejs }}", "precio": {{ a.costo|default:"0" }}}{% if not forloop.last %},{% endif %}{% endfor %}]
 </script>
+<script id="promociones-data" type="application/json">{{ promociones_json|safe }}</script>
+<script id="compras-clientes-data" type="application/json">{{ compras_clientes_json|safe }}</script>
 
 <script>
     const catalogo = JSON.parse(document.getElementById("catalogo-data").textContent);
+    const promociones = JSON.parse(document.getElementById("promociones-data").textContent);
+    const comprasClientes = JSON.parse(document.getElementById("compras-clientes-data").textContent);
     let filaId = 0;
+    let promocionRecomendadaId = "";
 
     function opcionesHtml() {
         return catalogo.map(item =>
@@ -423,6 +456,9 @@
         } else {
             badge.classList.remove('visible');
         }
+
+        updateRecommendation(totalPiezas);
+        updatePromoSummary();
     }
 
     function updateClienteBadge(select) {
@@ -436,6 +472,50 @@
             badge.textContent = '—';
             badge.style.color = 'var(--text-muted)';
         }
+        updateRecommendation(Number(document.getElementById("total-productos").textContent || 0));
+    }
+
+    function recomendarPromo(totalPiezas) {
+        const cliente = document.getElementById('cliente').value;
+        const compras = Number(comprasClientes[cliente] || 0);
+        const elegibles = promociones.filter(p => p.frecuente ? compras >= p.minimo : totalPiezas >= p.minimo);
+        if (!elegibles.length) return null;
+        return elegibles.sort((a, b) => b.porcentaje - a.porcentaje)[0];
+    }
+
+    function updateRecommendation(totalPiezas) {
+        const box = document.getElementById('promo-recommendation');
+        const btn = document.getElementById('use-recommended');
+        const promo = recomendarPromo(totalPiezas);
+        if (!promo) {
+            promocionRecomendadaId = "";
+            box.textContent = totalPiezas > 0
+                ? "No hay una promocion recomendada para este cliente y consumo."
+                : "Agrega productos para calcular una recomendacion.";
+            btn.hidden = true;
+            return;
+        }
+        promocionRecomendadaId = String(promo.id);
+        box.textContent = `Recomendacion: ${promo.nombre} (${promo.porcentaje}% de descuento).`;
+        btn.hidden = false;
+    }
+
+    function usarRecomendada() {
+        if (!promocionRecomendadaId) return;
+        document.getElementById('promocion_id').value = promocionRecomendadaId;
+        updatePromoSummary();
+    }
+
+    function updatePromoSummary() {
+        const select = document.getElementById('promocion_id');
+        const label = document.getElementById('promo-summary');
+        if (!select.value) {
+            label.textContent = 'Sin promocion';
+            label.style.color = 'var(--text-muted)';
+            return;
+        }
+        label.textContent = select.options[select.selectedIndex].text.trim();
+        label.style.color = 'var(--accent)';
     }
 
     // Start with one empty row

@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Restaurants</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
     <style>
         :root {
             --bg: #0f0f1a;
@@ -89,6 +91,7 @@
             .topbar { flex-direction: column; align-items: flex-start; }
         }
     </style>
+    <link rel="stylesheet" href="/static/css/performance.css">
 </head>
 <body>
 <aside class="sidebar">
@@ -161,7 +164,7 @@
         </a>
         <a class="action-card anim d8" href="{% url 'atender_mesa' %}">
             <div class="action-icon">🪑</div>
-            <div><div class="action-title">Atender mesa</div><div class="action-desc">Crear tickets con productos y promociones automaticas.</div></div>
+            <div><div class="action-title">Atender mesa</div><div class="action-desc">Crear tickets con productos y promociones recomendadas.</div></div>
         </a>
         <a class="action-card anim d8" href="{% url 'promociones' %}">
             <div class="action-icon">🎁</div>
@@ -174,6 +177,7 @@
     </section>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
     // Counter animation
     document.querySelectorAll('[data-count]').forEach(el => {
