@@ -224,7 +224,7 @@
         <span class="card-icon">🎫</span>
         <h2 class="card-title">Ingresa tu codigo</h2>
         <div class="card-divider"></div>
-        <p class="card-sub">Escribe el numero de 6 digitos que aparece en tu ticket para aplicar tu promocion.</p>
+        <p class="card-sub">Escribe el numero de 6 digitos que aparece en tu ticket para registrarlo en tu cuenta.</p>
 
         {% if messages %}
             {% for message in messages %}
@@ -250,7 +250,7 @@
                     inputmode="numeric"
                 />
             </div>
-            <button class="btn-primary" type="submit">Canjear ahora</button>
+            <button class="btn-primary" type="submit">Registrar ticket</button>
         </form>
 
         <a class="btn-ghost" href="{% url 'menu_cliente' %}">← Volver a mi cuenta</a>

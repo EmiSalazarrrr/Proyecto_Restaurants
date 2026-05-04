@@ -76,6 +76,12 @@
         .btn-add-row:hover { border-color: var(--accent); color: var(--accent); }
         .btn-remove { padding: 8px 12px; border-radius: 8px; border: 1px solid rgba(240,122,122,0.2); background: transparent; color: var(--danger); cursor: pointer; font-size: 14px; line-height: 1; transition: all 0.15s; }
         .btn-remove:hover { background: rgba(240,122,122,0.08); }
+        .promo-panel { background: rgba(201,168,76,0.055); border: 1px solid rgba(201,168,76,0.22); border-radius: 12px; padding: 18px; margin-top: 18px; }
+        .promo-panel label { display: block; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 8px; }
+        .recommendation { margin-top: 10px; color: var(--text-secondary); font-size: 12px; line-height: 1.5; }
+        .recommendation strong { color: var(--accent); }
+        .use-recommended { margin-top: 10px; border: 1px solid rgba(201,168,76,0.35); background: transparent; color: var(--accent); border-radius: 8px; padding: 8px 11px; font: 500 12px "DM Sans", sans-serif; cursor: pointer; }
+        .use-recommended:hover { background: rgba(201,168,76,0.12); }
 
         /* Footer actions */
         .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px; }
@@ -195,8 +201,31 @@
             </div>
             <button type="button" class="btn-add-row" onclick="agregarFila()" style="margin-top:6px;">+</button>
             <p style="font-size:11px;color:var(--text-muted);margin-top:12px;">
-                Al guardar se recalculará el total y se reevaluará si aplica alguna promoción.
+                Al guardar se recalculara el total con la promocion seleccionada.
             </p>
+            <div class="promo-panel">
+                <label for="promocion_id">Promocion aplicada</label>
+                <select id="promocion_id" name="promocion_id" class="field-input">
+                    <option value="">Sin promocion</option>
+                    {% for promocion in promociones %}
+                        <option value="{{ promocion.id_promocion }}" {% if ticket.id_promocion_id == promocion.id_promocion %}selected{% endif %}>
+                            {{ promocion.nombre }} - {{ promocion.porcentaje_a_reducir }}%
+                        </option>
+                    {% endfor %}
+                </select>
+                <div class="recommendation">
+                    {% if promocion_recomendada %}
+                        Recomendacion: <strong>{{ promocion_recomendada.nombre }}</strong> ({{ promocion_recomendada.porcentaje_a_reducir }}% de descuento).
+                    {% else %}
+                        No hay una promocion recomendada para el consumo actual de este ticket.
+                    {% endif %}
+                </div>
+                {% if promocion_recomendada %}
+                    <button class="use-recommended" type="button" onclick="usarRecomendada('{{ promocion_recomendada.id_promocion }}')">
+                        Usar recomendada
+                    </button>
+                {% endif %}
+            </div>
         </div>
 
         <div class="form-actions">
@@ -239,6 +268,10 @@
         if (filas.length > 1) {
             btn.closest('.add-row').remove();
         }
+    }
+
+    function usarRecomendada(id) {
+        document.getElementById('promocion_id').value = id;
     }
 </script>
 </body>
