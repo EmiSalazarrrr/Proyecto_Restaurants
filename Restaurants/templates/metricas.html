@@ -158,7 +158,7 @@
     <div class="topbar anim d1">
         <div>
             <h2>Metricas</h2>
-            <p>Ventas, tickets y productos — por periodo.</p>
+            <p>Ventas cobradas, tickets y productos por periodo.</p>
         </div>
         <span class="badge range-label">
             {% if periodo == "hoy" %}Hoy
@@ -221,14 +221,14 @@
     <!-- Stats -->
     <div class="stats-grid">
         <article class="stat-card anim d3">
-            <div class="stat-label">Ventas totales</div>
+            <div class="stat-label">Ventas cobradas</div>
             <div class="stat-value" data-count="{{ total_ventas }}" data-prefix="$">${{ total_ventas }}</div>
-            <div class="stat-sub">Ingresos del periodo</div>
+            <div class="stat-sub">Ingresos cobrados del periodo</div>
         </article>
         <article class="stat-card anim d4">
-            <div class="stat-label">Tickets</div>
+            <div class="stat-label">Tickets cobrados</div>
             <div class="stat-value" data-count="{{ total_tickets }}">{{ total_tickets }}</div>
-            <div class="stat-sub">Pedidos registrados</div>
+            <div class="stat-sub">Pedidos ya pagados</div>
         </article>
         <article class="stat-card anim d5">
             <div class="stat-label">Clientes unicos</div>
