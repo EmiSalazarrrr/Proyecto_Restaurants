@@ -2,7 +2,7 @@ import json
 import random
 from collections import defaultdict
 from datetime import date, timedelta
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
 from django.contrib import messages
 from django.db.models import Count, Sum
@@ -78,11 +78,66 @@ def _promociones_json(promociones):
 
 
 def _get_estado(ticket, today):
-    if ticket.canjeado == 1:
-        return "canjeado"
-    if ticket.fecha and localdate(ticket.fecha) < today:
-        return "expirado"
-    return "pendiente"
+    if ticket.canjeado == -1:
+        return "cancelado"
+    if ticket.pagado:
+        return "pagado"
+    return "abierto"
+
+
+def _parse_money(value):
+    if value in (None, ""):
+        return Decimal("0.00")
+    try:
+        amount = Decimal(str(value)).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+    except (InvalidOperation, ValueError):
+        return None
+    return amount if amount >= 0 else None
+
+
+def _calcular_cobro(request, total):
+    metodo = (request.POST.get("metodo_pago") or "efectivo").strip().lower()
+    efectivo_recibido = _parse_money(request.POST.get("efectivo_recibido"))
+    pago_tarjeta = _parse_money(request.POST.get("pago_tarjeta"))
+
+    if efectivo_recibido is None or pago_tarjeta is None:
+        return None, "Ingresa montos de pago validos."
+
+    if metodo == "tarjeta":
+        return {
+            "metodo_pago": "tarjeta",
+            "pago_efectivo": Decimal("0.00"),
+            "pago_tarjeta": total,
+            "efectivo_recibido": Decimal("0.00"),
+            "cambio": Decimal("0.00"),
+        }, None
+
+    if metodo == "efectivo":
+        if efectivo_recibido < total:
+            return None, "El efectivo recibido no cubre el total del ticket."
+        return {
+            "metodo_pago": "efectivo",
+            "pago_efectivo": total,
+            "pago_tarjeta": Decimal("0.00"),
+            "efectivo_recibido": efectivo_recibido,
+            "cambio": efectivo_recibido - total,
+        }, None
+
+    if metodo == "mixto":
+        if pago_tarjeta > total:
+            return None, "El monto de tarjeta no puede ser mayor al total."
+        restante_efectivo = total - pago_tarjeta
+        if efectivo_recibido < restante_efectivo:
+            return None, "El efectivo recibido no cubre el restante del pago mixto."
+        return {
+            "metodo_pago": "mixto",
+            "pago_efectivo": restante_efectivo,
+            "pago_tarjeta": pago_tarjeta,
+            "efectivo_recibido": efectivo_recibido,
+            "cambio": efectivo_recibido - restante_efectivo,
+        }, None
+
+    return None, "Selecciona un metodo de pago valido."
 
 
 @login_required(role="admin")
@@ -144,13 +199,19 @@ def guardar_ticket(request):
         return redirect("atender_mesa")
 
     promocion = _get_promocion_seleccionada(promocion_id)
+    precio_final = sum(alimento.costo * cantidad for alimento, cantidad in lineas)
+    if promocion and promocion.porcentaje_a_reducir:
+        precio_final -= precio_final * (promocion.porcentaje_a_reducir / Decimal("100"))
+    precio_final = precio_final.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
     ticket = Ticket.objects.create(
-        precio_final=Decimal("0.00"),
+        precio_final=precio_final,
         fecha=timezone.now(),
         canjeado=0,
         id_promocion=promocion,
         nombre_usuario=cliente,
         codigounico=_generar_codigo_unico(),
+        metodo_pago="pendiente",
     )
 
     for alimento, cantidad in lineas:
@@ -158,13 +219,10 @@ def guardar_ticket(request):
             pp = Productopedido.objects.create(id_alimentosbebidas=alimento)
             Detalleticket.objects.create(id_ticket=ticket, id_productopedido=pp)
 
-    ticket.precio_final = ticket.calcular_total()
-    ticket.save(update_fields=["precio_final"])
-
     if promocion:
-        messages.success(request, f"Ticket #{ticket.id_ticket} guardado con codigo TK-{ticket.codigounico} y promocion {promocion.nombre}.")
+        messages.success(request, f"Ticket #{ticket.id_ticket} abierto para cocina con codigo TK-{ticket.codigounico} y promocion {promocion.nombre}.")
     else:
-        messages.success(request, f"Ticket #{ticket.id_ticket} guardado con codigo TK-{ticket.codigounico}.")
+        messages.success(request, f"Ticket #{ticket.id_ticket} abierto para cocina con codigo TK-{ticket.codigounico}.")
     return redirect("lista_tickets")
 
 
@@ -206,7 +264,6 @@ def lista_tickets(request):
     tickets = (
         Ticket.objects
         .filter(fecha__date__gte=desde, fecha__date__lte=hasta)
-        .exclude(canjeado=-1)
         .select_related("nombre_usuario", "id_promocion")
         .prefetch_related("detalleticket_set__id_productopedido__id_alimentosbebidas")
         .order_by("-fecha")
@@ -214,14 +271,14 @@ def lista_tickets(request):
 
     tickets_con_estado = [(t, _get_estado(t, today)) for t in tickets]
 
-    count_pendiente = sum(1 for _, e in tickets_con_estado if e == "pendiente")
-    count_canjeado = sum(1 for _, e in tickets_con_estado if e == "canjeado")
-    count_expirado = sum(1 for _, e in tickets_con_estado if e == "expirado")
-    total_ingresos = sum(t.precio_final for t, _ in tickets_con_estado)
+    count_abierto = sum(1 for _, e in tickets_con_estado if e == "abierto")
+    count_pagado = sum(1 for _, e in tickets_con_estado if e == "pagado")
+    count_cancelado = sum(1 for _, e in tickets_con_estado if e == "cancelado")
+    total_ingresos = sum(t.precio_final for t, e in tickets_con_estado if e == "pagado")
 
     chart_data = json.dumps({
-        "labels": ["Canjeados", "Pendientes", "Expirados"],
-        "data": [count_canjeado, count_pendiente, count_expirado],
+        "labels": ["Pagados", "Abiertos", "Cancelados"],
+        "data": [count_pagado, count_abierto, count_cancelado],
         "colors": ["#4cc970", "#c9a84c", "#f07a7a"],
     })
 
@@ -229,8 +286,8 @@ def lista_tickets(request):
         "tickets_con_estado": tickets_con_estado,
         "total_tickets": len(tickets_con_estado),
         "total_ingresos": total_ingresos,
-        "total_canjeados": count_canjeado,
-        "total_expirados": count_expirado,
+        "total_canjeados": count_pagado,
+        "total_expirados": count_cancelado,
         "chart_data": chart_data,
         "periodo": periodo,
         "desde": desde,
@@ -253,8 +310,8 @@ def modificar_ticket(request, id_ticket):
     today = localdate()
     estado = _get_estado(ticket, today)
 
-    if estado != "pendiente":
-        messages.error(request, "Solo se pueden modificar tickets en estado Pendiente.")
+    if estado != "abierto":
+        messages.error(request, "Solo se pueden modificar tickets abiertos y sin cobrar.")
         return redirect("lista_tickets")
 
     if request.method == "POST":
@@ -319,13 +376,49 @@ def cancelar_ticket(request, id_ticket):
     ticket = get_object_or_404(Ticket, id_ticket=id_ticket)
     estado = _get_estado(ticket, localdate())
 
-    if estado != "pendiente":
-        messages.error(request, "Solo se pueden cancelar tickets en estado Pendiente.")
+    if estado != "abierto":
+        messages.error(request, "Solo se pueden cancelar tickets abiertos y sin cobrar.")
         return redirect("lista_tickets")
 
     ticket.canjeado = -1
     ticket.save(update_fields=["canjeado"])
     messages.success(request, f"Ticket #{ticket.id_ticket} cancelado.")
+    return redirect("lista_tickets")
+
+
+@login_required(role="admin")
+def cobrar_ticket(request, id_ticket):
+    if request.method != "POST":
+        return redirect("lista_tickets")
+
+    ticket = get_object_or_404(
+        Ticket.objects.prefetch_related("detalleticket_set__id_productopedido__id_alimentosbebidas"),
+        id_ticket=id_ticket,
+    )
+
+    if _get_estado(ticket, localdate()) != "abierto":
+        messages.error(request, "Solo se pueden cobrar tickets abiertos.")
+        return redirect("lista_tickets")
+
+    ticket.precio_final = ticket.calcular_total()
+    cobro, error_cobro = _calcular_cobro(request, ticket.precio_final)
+    if error_cobro:
+        messages.error(request, error_cobro)
+        return redirect("lista_tickets")
+
+    for field, value in cobro.items():
+        setattr(ticket, field, value)
+    ticket.pagado = True
+    ticket.save(update_fields=[
+        "precio_final",
+        "metodo_pago",
+        "pago_efectivo",
+        "pago_tarjeta",
+        "efectivo_recibido",
+        "cambio",
+        "pagado",
+    ])
+    messages.success(request, f"Ticket #{ticket.id_ticket} cobrado correctamente. Cambio: ${ticket.cambio}.")
     return redirect("lista_tickets")
 
 

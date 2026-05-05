@@ -260,6 +260,49 @@
 
         <hr class="divider">
 
+        <div class="totals">
+            <div class="total-row">
+                <span>Método de pago</span>
+                <span>{% if ticket.pagado %}{{ ticket.metodo_pago|default:"efectivo"|title }}{% else %}Pendiente de cobro{% endif %}</span>
+            </div>
+            {% if ticket.pagado %}
+            {% if ticket.metodo_pago == "mixto" %}
+            <div class="total-row">
+                <span>Pago con tarjeta</span>
+                <span>${{ ticket.pago_tarjeta }}</span>
+            </div>
+            <div class="total-row">
+                <span>Efectivo aplicado</span>
+                <span>${{ ticket.pago_efectivo }}</span>
+            </div>
+            <div class="total-row">
+                <span>Efectivo recibido</span>
+                <span>${{ ticket.efectivo_recibido }}</span>
+            </div>
+            <div class="total-row">
+                <span>Cambio</span>
+                <span>${{ ticket.cambio }}</span>
+            </div>
+            {% elif ticket.metodo_pago == "efectivo" %}
+            <div class="total-row">
+                <span>Efectivo recibido</span>
+                <span>${{ ticket.efectivo_recibido }}</span>
+            </div>
+            <div class="total-row">
+                <span>Cambio</span>
+                <span>${{ ticket.cambio }}</span>
+            </div>
+            {% else %}
+            <div class="total-row">
+                <span>Pago con tarjeta</span>
+                <span>${{ ticket.pago_tarjeta }}</span>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+
+        <hr class="divider">
+
         <!-- Footer -->
         <div class="footer">
             {% if ticket.id_promocion %}

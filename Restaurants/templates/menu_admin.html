@@ -122,12 +122,12 @@
         <article class="stat-card anim d2">
             <div class="stat-label">Ventas hoy</div>
             <div class="stat-value" data-count="{{ ventas_hoy }}" data-prefix="$">${{ ventas_hoy }}</div>
-            <div class="stat-sub">Ingresos acumulados del dia</div>
+            <div class="stat-sub">Ingresos cobrados del dia</div>
         </article>
         <article class="stat-card anim d3">
             <div class="stat-label">Tickets hoy</div>
             <div class="stat-value" data-count="{{ tickets_hoy }}">{{ tickets_hoy }}</div>
-            <div class="stat-sub">Pedidos registrados hoy</div>
+            <div class="stat-sub">Pedidos abiertos y cobrados</div>
         </article>
         <article class="stat-card anim d4">
             <div class="stat-label">Clientes hoy</div>
@@ -144,7 +144,7 @@
     <!-- Charts -->
     <div class="charts-row">
         <div class="chart-card anim d6">
-            <div class="chart-title">Ventas — últimos 7 días</div>
+            <div class="chart-title">Ventas cobradas - ultimos 7 dias</div>
             <canvas id="barChart" height="110"></canvas>
         </div>
         <div class="chart-card anim d7">

@@ -26,6 +26,12 @@ class Ticket(models.Model):
     id_promocion = models.ForeignKey(Promocion, models.DO_NOTHING, db_column='id_promocion', blank=True, null=True)
     nombre_usuario = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='nombre_usuario', blank=True, null=True)
     codigounico = models.IntegerField(unique=True)
+    metodo_pago = models.CharField(max_length=10, default='pendiente')
+    pago_efectivo = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    pago_tarjeta = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    efectivo_recibido = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    cambio = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    pagado = models.BooleanField(default=False)
 
     def calcular_total(self):
         total = sum(detalle.id_productopedido.id_alimentosbebidas.costo for detalle in self.detalleticket_set.all())

@@ -107,9 +107,23 @@
         .btn-imprimir:hover  { background: rgba(201,168,76,0.1); }
         .btn-modificar { color: #7eb3ff; border-color: rgba(126,179,255,0.3); }
         .btn-modificar:hover { background: rgba(126,179,255,0.08); }
+        .btn-cobrar    { color: var(--success); border-color: rgba(76,201,112,0.35); }
+        .btn-cobrar:hover { background: rgba(76,201,112,0.08); }
         .btn-cancelar  { color: var(--danger); border-color: rgba(240,122,122,0.3); }
         .btn-cancelar:hover  { background: rgba(240,122,122,0.08); }
         .btn-cancelar-form { display: contents; }
+        .cobro-expand { display: none; }
+        .cobro-expand td { border-top: none !important; background: rgba(76,201,112,0.035); padding: 16px 18px 18px 32px; }
+        .cobro-form { display: grid; gap: 12px; max-width: 760px; }
+        .cobro-methods { display: flex; flex-wrap: wrap; gap: 8px; }
+        .cobro-method { display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-secondary); font-size: 13px; cursor: pointer; }
+        .cobro-method:has(input:checked) { border-color: var(--success); color: var(--success); background: rgba(76,201,112,0.08); }
+        .cobro-fields { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: end; }
+        .cobro-field label { display: block; color: var(--text-muted); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; }
+        .cobro-field input { width: 100%; padding: 9px 11px; border: 1px solid var(--card-border); border-radius: 8px; background: #16162a; color: var(--text-primary); font: 13px "DM Mono", monospace; }
+        .cobro-field[hidden] { display: none; }
+        .cobro-summary { color: var(--text-secondary); font-size: 13px; }
+        .btn-confirmar { padding: 10px 14px; border: none; border-radius: 8px; background: var(--success); color: #08110c; font-weight: 700; cursor: pointer; }
 
         /* ── Responsive ── */
         @media (max-width: 1200px) { .dashboard-row { grid-template-columns: 1fr 1fr; } .chart-card { grid-column: span 2; } }
@@ -121,6 +135,7 @@
             .topbar { flex-direction: column; align-items: flex-start; }
             .table-wrap { overflow-x: auto; }
             .dashboard-row { grid-template-columns: 1fr 1fr; }
+            .cobro-fields { grid-template-columns: 1fr; }
         }
     </style>
     <link rel="stylesheet" href="/static/css/performance.css">
@@ -192,19 +207,19 @@
             <div class="value">{{ total_tickets }}</div>
         </article>
         <article class="card">
-            <div class="label">Ingresos acumulados</div>
+            <div class="label">Ingresos cobrados</div>
             <div class="value">${{ total_ingresos }}</div>
         </article>
         <article class="card">
-            <div class="label">Canjeados</div>
+            <div class="label">Pagados</div>
             <div class="value green">{{ total_canjeados }}</div>
         </article>
         <article class="card">
-            <div class="label">Expirados</div>
+            <div class="label">Cancelados</div>
             <div class="value red">{{ total_expirados }}</div>
         </article>
         <div class="chart-card">
-            <div class="chart-title">Distribución de canje</div>
+            <div class="chart-title">Distribucion de tickets</div>
             {% if total_tickets > 0 %}
                 <canvas id="canjeChart" width="220" height="180"></canvas>
             {% else %}
@@ -222,6 +237,7 @@
                     <th>Cliente</th>
                     <th>Productos</th>
                     <th>Promocion</th>
+                    <th>Pago</th>
                     <th>Total</th>
                     <th>Fecha</th>
                     <th>Estado</th>
@@ -267,22 +283,37 @@
                             <span class="muted">Sin promocion</span>
                         {% endif %}
                     </td>
+                    <td>
+                        {% if ticket.pagado %}
+                        <div style="font-size:13px; text-transform:capitalize;">{{ ticket.metodo_pago|default:"efectivo" }}</div>
+                        {% if ticket.metodo_pago == "mixto" %}
+                            <div class="muted">Efectivo ${{ ticket.pago_efectivo }} / Tarjeta ${{ ticket.pago_tarjeta }}</div>
+                        {% elif ticket.metodo_pago == "efectivo" %}
+                            <div class="muted">Cambio ${{ ticket.cambio }}</div>
+                        {% else %}
+                            <div class="muted">Tarjeta</div>
+                        {% endif %}
+                        {% else %}
+                            <span class="muted">Pendiente de cobro</span>
+                        {% endif %}
+                    </td>
                     <td class="mono">${{ ticket.precio_final }}</td>
                     <td class="mono" style="font-size:12px;">{{ ticket.fecha|date:"d/m/Y" }}<br><span class="muted">{{ ticket.fecha|date:"H:i" }}</span></td>
                     <td>
-                        {% if estado == "canjeado" %}
-                            <span class="badge badge-canjeado"><span class="badge-dot"></span>Canjeado</span>
-                        {% elif estado == "expirado" %}
-                            <span class="badge badge-expirado"><span class="badge-dot"></span>Expirado</span>
+                        {% if estado == "pagado" %}
+                            <span class="badge badge-canjeado"><span class="badge-dot"></span>Pagado</span>
+                        {% elif estado == "cancelado" %}
+                            <span class="badge badge-expirado"><span class="badge-dot"></span>Cancelado</span>
                         {% else %}
-                            <span class="badge badge-pendiente"><span class="badge-dot"></span>Pendiente</span>
+                            <span class="badge badge-pendiente"><span class="badge-dot"></span>Abierto</span>
                         {% endif %}
                     </td>
                     <td>
                         <div class="actions">
                             <a href="{% url 'imprimir_ticket' ticket.id_ticket %}" target="_blank" class="btn-action btn-imprimir">Imprimir</a>
-                            {% if estado == "pendiente" %}
+                            {% if estado == "abierto" %}
                                 <a href="{% url 'modificar_ticket' ticket.id_ticket %}" class="btn-action btn-modificar">Modificar</a>
+                                <button type="button" class="btn-action btn-cobrar" onclick="toggleCobro({{ ticket.id_ticket }})">Cobrar</button>
                                 <form method="POST" action="{% url 'cancelar_ticket' ticket.id_ticket %}" class="btn-cancelar-form" onsubmit="return confirm('¿Cancelar el ticket #{{ ticket.id_ticket }}? Esta acción no se puede deshacer.')">
                                     {% csrf_token %}
                                     <button type="submit" class="btn-action btn-cancelar">Cancelar</button>
@@ -292,7 +323,7 @@
                     </td>
                 </tr>
                 <tr class="productos-expand" id="expand-{{ ticket.id_ticket }}">
-                    <td colspan="8">
+                    <td colspan="9">
                         <div class="productos-list">
                             {% for detalle in ticket.detalleticket_set.all %}
                                 {% if detalle.id_productopedido and detalle.id_productopedido.id_alimentosbebidas %}
@@ -305,9 +336,44 @@
                         </div>
                     </td>
                 </tr>
+                {% if estado == "abierto" %}
+                <tr class="cobro-expand" id="cobro-{{ ticket.id_ticket }}">
+                    <td colspan="9">
+                        <form class="cobro-form" method="POST" action="{% url 'cobrar_ticket' ticket.id_ticket %}" data-total="{{ ticket.precio_final }}">
+                            {% csrf_token %}
+                            <div class="cobro-methods">
+                                <label class="cobro-method">
+                                    <input type="radio" name="metodo_pago" value="efectivo" checked onchange="updateCobro(this.form)">
+                                    Efectivo
+                                </label>
+                                <label class="cobro-method">
+                                    <input type="radio" name="metodo_pago" value="tarjeta" onchange="updateCobro(this.form)">
+                                    Tarjeta
+                                </label>
+                                <label class="cobro-method">
+                                    <input type="radio" name="metodo_pago" value="mixto" onchange="updateCobro(this.form)">
+                                    Mixto
+                                </label>
+                            </div>
+                            <div class="cobro-fields">
+                                <div class="cobro-field cash-field">
+                                    <label>Efectivo recibido</label>
+                                    <input name="efectivo_recibido" type="number" min="0" step="0.01" value="0" oninput="updateCobro(this.form)">
+                                </div>
+                                <div class="cobro-field card-field" hidden>
+                                    <label>Monto tarjeta</label>
+                                    <input name="pago_tarjeta" type="number" min="0" step="0.01" value="0" oninput="updateCobro(this.form)">
+                                </div>
+                                <button class="btn-confirmar" type="submit">Confirmar cobro</button>
+                            </div>
+                            <div class="cobro-summary">Total a cobrar: ${{ ticket.precio_final }}</div>
+                        </form>
+                    </td>
+                </tr>
+                {% endif %}
                 {% empty %}
                 <tr>
-                    <td colspan="8" class="empty">No hay tickets registrados para este periodo.</td>
+                    <td colspan="9" class="empty">No hay tickets registrados para este periodo.</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -321,6 +387,47 @@
     function toggleProductos(ticketId) {
         const row = document.getElementById('expand-' + ticketId);
         row.style.display = row.style.display === 'table-row' ? 'none' : 'table-row';
+    }
+
+    function toggleCobro(ticketId) {
+        const row = document.getElementById('cobro-' + ticketId);
+        row.style.display = row.style.display === 'table-row' ? 'none' : 'table-row';
+        const form = row.querySelector('form');
+        if (form) updateCobro(form);
+    }
+
+    function updateCobro(form) {
+        const total = Number(form.dataset.total || 0);
+        const method = form.querySelector('input[name="metodo_pago"]:checked')?.value || 'efectivo';
+        const cashField = form.querySelector('.cash-field');
+        const cardField = form.querySelector('.card-field');
+        const cashInput = form.querySelector('input[name="efectivo_recibido"]');
+        const cardInput = form.querySelector('input[name="pago_tarjeta"]');
+        const summary = form.querySelector('.cobro-summary');
+
+        cashField.hidden = method === 'tarjeta';
+        cardField.hidden = method !== 'mixto';
+
+        if (method === 'tarjeta') {
+            cashInput.value = '0';
+            cardInput.value = total.toFixed(2);
+            summary.textContent = `Tarjeta: $${total.toFixed(2)}. Cambio: $0.00`;
+            return;
+        }
+
+        if (method === 'mixto') {
+            const cardAmount = Number(cardInput.value || 0);
+            const cashNeeded = Math.max(total - cardAmount, 0);
+            const cashReceived = Number(cashInput.value || 0);
+            const change = Math.max(cashReceived - cashNeeded, 0);
+            summary.textContent = `Mixto: tarjeta $${cardAmount.toFixed(2)} + efectivo $${cashNeeded.toFixed(2)}. Cambio: $${change.toFixed(2)}`;
+            return;
+        }
+
+        cardInput.value = '0';
+        const cashReceived = Number(cashInput.value || 0);
+        const change = Math.max(cashReceived - total, 0);
+        summary.textContent = `Total a cobrar: $${total.toFixed(2)}. Cambio: $${change.toFixed(2)}`;
     }
 
     // Gráfica Chart.js

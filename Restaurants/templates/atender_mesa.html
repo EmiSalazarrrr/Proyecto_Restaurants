@@ -330,7 +330,8 @@
                         Usar recomendada
                     </button>
                 </div>
-                <button class="primary-btn" type="submit">Guardar ticket</button>
+
+                <button class="primary-btn" type="submit">Abrir comanda</button>
             </section>
 
             <!-- Resumen -->
@@ -345,6 +346,14 @@
                     <div class="summary-item">
                         <span class="summary-label">Subtotal</span>
                         <span class="summary-value highlight" id="subtotal">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Descuento</span>
+                        <span class="summary-value" id="discount-summary">$0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Total</span>
+                        <span class="summary-value big" id="total-summary">$0.00</span>
                     </div>
                     <div class="summary-item">
                         <span class="summary-label">Promocion</span>
@@ -378,6 +387,9 @@
     const comprasClientes = JSON.parse(document.getElementById("compras-clientes-data").textContent);
     let filaId = 0;
     let promocionRecomendadaId = "";
+    let currentSubtotal = 0;
+    let currentDiscount = 0;
+    let currentTotal = 0;
 
     function opcionesHtml() {
         return catalogo.map(item =>
@@ -446,6 +458,8 @@
             importe.value = `$${imp.toFixed(2)}`;
         });
 
+        currentSubtotal = subtotal;
+        updateTotals();
         document.getElementById("subtotal").textContent       = `$${subtotal.toFixed(2)}`;
         document.getElementById("total-productos").textContent = totalPiezas;
 
@@ -512,10 +526,26 @@
         if (!select.value) {
             label.textContent = 'Sin promocion';
             label.style.color = 'var(--text-muted)';
+            updateTotals();
             return;
         }
         label.textContent = select.options[select.selectedIndex].text.trim();
         label.style.color = 'var(--accent)';
+        updateTotals();
+    }
+
+    function getSelectedPromo() {
+        const selectedId = document.getElementById('promocion_id').value;
+        return promociones.find(p => String(p.id) === String(selectedId)) || null;
+    }
+
+    function updateTotals() {
+        const promo = getSelectedPromo();
+        const percent = promo ? Number(promo.porcentaje || 0) : 0;
+        currentDiscount = currentSubtotal * (percent / 100);
+        currentTotal = Math.max(currentSubtotal - currentDiscount, 0);
+        document.getElementById('discount-summary').textContent = `$${currentDiscount.toFixed(2)}`;
+        document.getElementById('total-summary').textContent = `$${currentTotal.toFixed(2)}`;
     }
 
     // Start with one empty row
