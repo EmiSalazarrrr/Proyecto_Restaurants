@@ -12,7 +12,6 @@ class Productopedido(models.Model):
         return f"{self.id_productopedido} - {self.id_alimentosbebidas.nombre}"
 
     class Meta:
-        managed = False
         db_table = 'productopedido'
         verbose_name = 'Producto Pedido'
         verbose_name_plural = 'Productos Pedidos'
@@ -26,7 +25,13 @@ class Ticket(models.Model):
     canjeado = models.IntegerField(blank=True, null=True)
     id_promocion = models.ForeignKey(Promocion, models.DO_NOTHING, db_column='id_promocion', blank=True, null=True)
     nombre_usuario = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='nombre_usuario', blank=True, null=True)
-    codigounico = models.IntegerField(unique=True, null=True, blank=True)
+    codigounico = models.IntegerField(unique=True)
+    metodo_pago = models.CharField(max_length=10, default='pendiente')
+    pago_efectivo = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    pago_tarjeta = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    efectivo_recibido = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    cambio = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    pagado = models.BooleanField(default=False)
 
     def calcular_total(self):
         total = sum(detalle.id_productopedido.id_alimentosbebidas.costo for detalle in self.detalleticket_set.all())
@@ -38,7 +43,6 @@ class Ticket(models.Model):
     def __str__(self):
         return f"Ticket {self.id_ticket} - Usuario: {self.nombre_usuario.nombre_usuario} - Precio Final: {self.precio_final}"
     class Meta:
-        managed = False
         db_table = 'ticket'
         verbose_name = 'Ticket'
         verbose_name_plural = 'Tickets'
@@ -53,7 +57,6 @@ class Detalleticket(models.Model):
         return f"Detalle Ticket - Ticket ID: {self.id_ticket.id_ticket} - Producto Pedido ID: {self.id_productopedido.id_productopedido}"
 
     class Meta:
-        managed = False
         db_table = 'detalleticket'
         verbose_name = 'Detalle Ticket'
         verbose_name_plural = 'Detalles Tickets'

@@ -19,13 +19,13 @@ class ProductopedidoAdmin(admin.ModelAdmin):
 
 @admin.register(Ticket)
 class TicketAdmin(admin.ModelAdmin):
-    list_display =('id_ticket','nombre_usuario','precio_final','fecha','canjeado','id_promocion','codigounico')
+    list_display =('id_ticket','nombre_usuario','precio_final','pagado','metodo_pago','pago_efectivo','pago_tarjeta','cambio','fecha','canjeado','id_promocion','codigounico')
     search_fields = ('codigounico','nombre_usuario__nombreusuario')
-    list_filter = ('canjeado','id_promocion','fecha',)
+    list_filter = ('pagado','canjeado','id_promocion','fecha',)
     ordering = ('-fecha',)
     list_per_page = 20
     inlines = [DetalleticketInline]
-    readonly_fields = ('precio_final',)
+    readonly_fields = ('precio_final','pago_efectivo','pago_tarjeta','efectivo_recibido','cambio')
 
     def productos_del_ticket(self, obj):
         productos = obj.detalleticket_set.all()

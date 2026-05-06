@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Cambiar Estado | Restaurants</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
     <style>
         :root { --bg: #0f0f1a; --sidebar-bg: #1a1a2e; --card-bg: #1e1e32; --card-border: #2a2a45; --accent: #c9a84c; --accent-dim: rgba(201,168,76,0.12); --text-primary: #eeeef5; --text-secondary: #8888aa; --text-muted: #7a7a9a; --danger: #e05c5c; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -39,6 +42,7 @@
         .btn-danger { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 8px; color: #11111a; font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: opacity 0.18s; }
         .btn-danger:hover { opacity: 0.85; }
     </style>
+    <link rel="stylesheet" href="/static/css/performance.css">
 </head>
 <body>
     <aside class="sidebar">

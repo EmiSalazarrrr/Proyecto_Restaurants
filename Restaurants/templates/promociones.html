@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Promociones | Restaurants</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
     <style>
         :root {
             --bg: #0f0f1a;
@@ -173,6 +175,7 @@
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
     </style>
+    <link rel="stylesheet" href="/static/css/performance.css">
 </head>
 <body>
 <aside class="sidebar">
@@ -277,7 +280,7 @@
 
         <section class="card anim d7">
             <h3 class="section-title">Nueva restriccion</h3>
-            <p class="section-sub">Las promociones se aplican automaticamente si el consumo del cliente alcanza el minimo definido aqui.</p>
+            <p class="section-sub">El sistema recomienda promociones segun estas reglas; el administrador decide cual aplicar.</p>
             <form class="styled-form" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="create_restriccion">
@@ -413,6 +416,7 @@
     </div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
     // Donut chart
     const donutData = {{ chart_donut|safe }};

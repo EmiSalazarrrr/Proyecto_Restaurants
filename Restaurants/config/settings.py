@@ -37,10 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.menu',
-    'apps.pedidos',
-    'apps.promociones',
-    'apps.usuarios',
+    'apps.menu.apps.MenuConfig',
+    'apps.pedidos.apps.PedidosConfig',
+    'apps.promociones.apps.PromocionesConfig',
+    'apps.usuarios.apps.UsuariosConfig',
 ]
 
 MIDDLEWARE = [
@@ -123,5 +123,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 

@@ -21,6 +21,7 @@ urlpatterns = [
     path('tickets/', pedidos_views.lista_tickets, name='lista_tickets'),
     path('tickets/<int:id_ticket>/imprimir/', pedidos_views.imprimir_ticket, name='imprimir_ticket'),
     path('tickets/<int:id_ticket>/modificar/', pedidos_views.modificar_ticket, name='modificar_ticket'),
+    path('tickets/<int:id_ticket>/cobrar/', pedidos_views.cobrar_ticket, name='cobrar_ticket'),
     path('tickets/<int:id_ticket>/cancelar/', pedidos_views.cancelar_ticket, name='cancelar_ticket'),
     path('canjear-ticket/', pedidos_views.canjear_ticket, name='canjear_ticket'),
     path('tickets/<int:id_ticket>/confirmacion/', pedidos_views.confirmacion_canje, name='confirmacion_canje'),

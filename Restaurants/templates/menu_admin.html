@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Restaurants</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
     <style>
         :root {
             --bg: #0f0f1a;
@@ -89,6 +91,7 @@
             .topbar { flex-direction: column; align-items: flex-start; }
         }
     </style>
+    <link rel="stylesheet" href="/static/css/performance.css">
 </head>
 <body>
 <aside class="sidebar">
@@ -119,12 +122,12 @@
         <article class="stat-card anim d2">
             <div class="stat-label">Ventas hoy</div>
             <div class="stat-value" data-count="{{ ventas_hoy }}" data-prefix="$">${{ ventas_hoy }}</div>
-            <div class="stat-sub">Ingresos acumulados del dia</div>
+            <div class="stat-sub">Ingresos cobrados del dia</div>
         </article>
         <article class="stat-card anim d3">
             <div class="stat-label">Tickets hoy</div>
             <div class="stat-value" data-count="{{ tickets_hoy }}">{{ tickets_hoy }}</div>
-            <div class="stat-sub">Pedidos registrados hoy</div>
+            <div class="stat-sub">Pedidos abiertos y cobrados</div>
         </article>
         <article class="stat-card anim d4">
             <div class="stat-label">Clientes hoy</div>
@@ -141,7 +144,7 @@
     <!-- Charts -->
     <div class="charts-row">
         <div class="chart-card anim d6">
-            <div class="chart-title">Ventas — últimos 7 días</div>
+            <div class="chart-title">Ventas cobradas - ultimos 7 dias</div>
             <canvas id="barChart" height="110"></canvas>
         </div>
         <div class="chart-card anim d7">
@@ -161,7 +164,7 @@
         </a>
         <a class="action-card anim d8" href="{% url 'atender_mesa' %}">
             <div class="action-icon">🪑</div>
-            <div><div class="action-title">Atender mesa</div><div class="action-desc">Crear tickets con productos y promociones automaticas.</div></div>
+            <div><div class="action-title">Atender mesa</div><div class="action-desc">Crear tickets con productos y promociones recomendadas.</div></div>
         </a>
         <a class="action-card anim d8" href="{% url 'promociones' %}">
             <div class="action-icon">🎁</div>
@@ -174,6 +177,7 @@
     </section>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
     // Counter animation
     document.querySelectorAll('[data-count]').forEach(el => {

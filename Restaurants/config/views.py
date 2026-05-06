@@ -48,18 +48,23 @@ def _build_monthly_series(desde, hasta, queryset):
 def menu_admin_view(request):
     today = localdate()
     tickets_hoy = Ticket.objects.filter(fecha__date=today).exclude(canjeado=-1)
-    ventas_hoy = tickets_hoy.aggregate(total=Sum("precio_final"))["total"] or 0
+    tickets_pagados_hoy = tickets_hoy.filter(pagado=True)
+    ventas_hoy = tickets_pagados_hoy.aggregate(total=Sum("precio_final"))["total"] or 0
     clientes_hoy = tickets_hoy.values("nombre_usuario").distinct().count()
     promociones_activas = Promocion.objects.filter(activo=True).count()
 
     desde_7 = today - timedelta(days=6)
     labels_7, data_7 = _build_daily_series(
         desde_7, today,
-        Ticket.objects.exclude(canjeado=-1).filter(fecha__date__gte=desde_7, fecha__date__lte=today),
+        Ticket.objects.exclude(canjeado=-1).filter(
+            fecha__date__gte=desde_7,
+            fecha__date__lte=today,
+            pagado=True,
+        ),
     )
 
-    canjeados_hoy = tickets_hoy.filter(canjeado=1).count()
-    pendientes_hoy = tickets_hoy.filter(canjeado=0).count()
+    pagados_hoy = tickets_pagados_hoy.count()
+    abiertos_hoy = tickets_hoy.filter(pagado=False).count()
 
     context = {
         "ventas_hoy": ventas_hoy,
@@ -68,8 +73,8 @@ def menu_admin_view(request):
         "promociones_activas": promociones_activas,
         "chart_bar": json.dumps({"labels": labels_7, "data": data_7}),
         "chart_donut": json.dumps({
-            "labels": ["Canjeados", "Pendientes"],
-            "data": [canjeados_hoy, pendientes_hoy],
+            "labels": ["Pagados", "Abiertos"],
+            "data": [pagados_hoy, abiertos_hoy],
             "colors": ["#4cc970", "#c9a84c"],
         }),
     }
@@ -113,7 +118,7 @@ def metricas_view(request):
 
     tickets = (
         Ticket.objects
-        .filter(fecha__date__gte=desde, fecha__date__lte=hasta)
+        .filter(fecha__date__gte=desde, fecha__date__lte=hasta, pagado=True)
         .exclude(canjeado=-1)
         .select_related("nombre_usuario", "id_promocion")
     )
@@ -131,12 +136,24 @@ def metricas_view(request):
         labels_chart, data_chart = _build_daily_series(desde, hasta, tickets)
         chart_label = "Ventas por día"
 
+    max_chart = max(data_chart) if data_chart else 0
+    chart_points = [
+        {
+            "label": label,
+            "value": value,
+            "percent": round((value / max_chart) * 100, 1) if max_chart else 0,
+        }
+        for label, value in zip(labels_chart, data_chart)
+    ]
+
     top_productos = list(
         Alimentosbebidas.objects
         .filter(
             productopedido__detalleticket__id_ticket__fecha__date__gte=desde,
             productopedido__detalleticket__id_ticket__fecha__date__lte=hasta,
+            productopedido__detalleticket__id_ticket__pagado=True,
         )
+        .exclude(productopedido__detalleticket__id_ticket__canjeado=-1)
         .values("nombre")
         .annotate(total=Count("productopedido"))
         .order_by("-total")[:5]
@@ -166,7 +183,8 @@ def metricas_view(request):
         "total_tickets": total_tickets,
         "clientes_unicos": clientes_unicos,
         "promedio_ticket": round(promedio, 2),
-        "chart_data": json.dumps({"labels": labels_chart, "data": data_chart, "label": chart_label}),
+        "chart_label": chart_label,
+        "chart_points": chart_points,
         "top_productos": top_productos,
         "max_top": max_top,
         "top_clientes": top_clientes,

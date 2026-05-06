@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metricas | Restaurants</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
     <style>
         :root {
             --bg: #0f0f1a;
@@ -129,6 +131,7 @@
             .topbar { flex-direction: column; align-items: flex-start; }
         }
     </style>
+    <link rel="stylesheet" href="/static/css/performance.css">
 </head>
 <body>
 <aside class="sidebar">
@@ -149,7 +152,7 @@
     <div class="topbar anim d1">
         <div>
             <h2>Metricas</h2>
-            <p>Ventas, tickets y productos — por periodo.</p>
+            <p>Ventas cobradas, tickets y productos por periodo.</p>
         </div>
         <span class="badge range-label">
             {% if periodo == "hoy" %}Hoy
@@ -212,14 +215,14 @@
     <!-- Stats -->
     <div class="stats-grid">
         <article class="stat-card anim d3">
-            <div class="stat-label">Ventas totales</div>
+            <div class="stat-label">Ventas cobradas</div>
             <div class="stat-value" data-count="{{ total_ventas }}" data-prefix="$">${{ total_ventas }}</div>
-            <div class="stat-sub">Ingresos del periodo</div>
+            <div class="stat-sub">Ingresos cobrados del periodo</div>
         </article>
         <article class="stat-card anim d4">
-            <div class="stat-label">Tickets</div>
+            <div class="stat-label">Tickets cobrados</div>
             <div class="stat-value" data-count="{{ total_tickets }}">{{ total_tickets }}</div>
-            <div class="stat-sub">Pedidos registrados</div>
+            <div class="stat-sub">Pedidos ya pagados</div>
         </article>
         <article class="stat-card anim d5">
             <div class="stat-label">Clientes unicos</div>
@@ -235,8 +238,20 @@
 
     <!-- Chart -->
     <div class="chart-card anim d7">
-        <div class="chart-title" id="chart-title">Ventas</div>
-        <canvas id="barChart" height="110"></canvas>
+        <div class="chart-title">{{ chart_label }}</div>
+        <div class="sales-chart" role="img" aria-label="{{ chart_label }}">
+            {% for point in chart_points %}
+                <div class="sales-bar">
+                    <div class="sales-bar-track">
+                        <div class="sales-bar-fill" style="height: {{ point.percent }}%;"></div>
+                    </div>
+                    <div class="sales-value">${{ point.value|floatformat:0 }}</div>
+                    <div class="sales-label">{{ point.label }}</div>
+                </div>
+            {% empty %}
+                <p class="no-data">Sin ventas en el periodo seleccionado.</p>
+            {% endfor %}
+        </div>
     </div>
 
     <!-- Bottom -->
@@ -252,7 +267,7 @@
                                 <span class="top-count">{{ prod.total }}x</span>
                             </div>
                             <div class="bar-track">
-                                <div class="bar-fill" data-width="{{ prod.total }}" data-max="{{ max_top }}"></div>
+                                <div class="bar-fill" style="width: {% widthratio prod.total max_top 100 %}%;"></div>
                             </div>
                         </div>
                     {% endfor %}
@@ -363,6 +378,7 @@
             bar.style.width = (w / m * 100).toFixed(1) + '%';
         });
     }, 400);
+
 
     // Date picker toggles
     function toggleDatePicker(type) {
