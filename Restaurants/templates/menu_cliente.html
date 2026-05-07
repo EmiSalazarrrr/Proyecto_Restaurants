@@ -10,40 +10,38 @@
     <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
     <style>
         :root {
-            --bg: #0f0f1a;
-            --panel: rgba(255,255,255,0.055);
-            --border: rgba(255,255,255,0.09);
-            --accent: #c9a84c;
-            --accent-dim: rgba(201,168,76,0.12);
-            --text: #f1f1f6;
-            --muted: #9696b0;
-            --success: #4cc970;
-            --success-dim: rgba(76,201,112,0.11);
-            --danger: #f07a7a;
+            --bg: #F8F3F0;
+            --card: #FFFFFF;
+            --border: rgba(0,32,91,0.10);
+            --blue: #014BAA;
+            --blue-light: #307FE2;
+            --amber: #F2A900;
+            --dark: #00205B;
+            --muted: rgba(0,32,91,0.50);
+            --success: #1E8A4C;
+            --success-dim: rgba(30,138,76,0.10);
+            --danger: #C0392B;
+            --danger-dim: rgba(192,57,43,0.10);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             min-height: 100vh;
             font-family: "DM Sans", sans-serif;
-            color: var(--text);
-            background:
-                radial-gradient(ellipse at 80% 0%,   rgba(201,168,76,0.13), transparent 30%),
-                radial-gradient(ellipse at 5%  90%, rgba(51,90,160,0.16),  transparent 30%),
-                linear-gradient(135deg, #0a0a16, #121225 45%, #0d1c2e);
+            color: var(--dark);
+            background: var(--bg);
             padding-bottom: 40px;
         }
-
         .wrap { width: min(1160px, 100%); margin: 0 auto; padding: 0 16px; }
 
         /* ── Header ── */
         header {
-            padding: 24px 0 18px;
+            background: linear-gradient(135deg, #014BAA 0%, #307FE2 100%);
+            margin: 0 -16px 22px;
+            padding: 22px 16px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 12px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 22px;
             animation: fadeDown 0.6s ease both;
             flex-wrap: wrap;
         }
@@ -51,14 +49,14 @@
             from { opacity: 0; transform: translateY(-12px); }
             to   { opacity: 1; transform: translateY(0); }
         }
-        .brand { font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent); font-family: "DM Mono", monospace; margin-bottom: 5px; }
-        .greeting { font-size: 20px; font-weight: 600; line-height: 1.2; }
-        .greeting span { color: var(--accent); }
+        .brand { font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255,255,255,0.65); font-family: "DM Mono", monospace; margin-bottom: 5px; }
+        .greeting { font-size: 20px; font-weight: 600; line-height: 1.2; color: #FFFFFF; }
+        .greeting span { color: #F2A900; }
         .header-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
         .hbtn {
             text-decoration: none;
-            color: var(--muted);
-            border: 1px solid var(--border);
+            color: rgba(255,255,255,0.80);
+            border: 1px solid rgba(255,255,255,0.25);
             border-radius: 10px;
             padding: 9px 14px;
             font-size: 13px;
@@ -66,10 +64,11 @@
             white-space: nowrap;
             text-align: center;
             display: inline-block;
+            background: rgba(255,255,255,0.08);
         }
-        .hbtn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
-        .hbtn.accent { background: var(--accent-dim); border-color: rgba(201,168,76,0.35); color: var(--accent); }
-        .hbtn.accent:hover { background: rgba(201,168,76,0.2); }
+        .hbtn:hover { color: #FFFFFF; border-color: rgba(255,255,255,0.50); background: rgba(255,255,255,0.16); }
+        .hbtn.accent { background: #F2A900; border-color: #F2A900; color: #00205B; font-weight: 600; }
+        .hbtn.accent:hover { background: #E09B00; border-color: #E09B00; }
 
         /* ── Animations ── */
         @keyframes fadeInUp {
@@ -83,7 +82,7 @@
 
         /* ── Filter bar ── */
         .filter-bar {
-            background: var(--panel);
+            background: var(--card);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 12px 16px;
@@ -92,87 +91,88 @@
             gap: 10px;
             flex-wrap: wrap;
             margin-bottom: 20px;
-            backdrop-filter: blur(12px);
+            box-shadow: 0 1px 4px rgba(0,32,91,0.06);
         }
         .filter-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); white-space: nowrap; }
         .filter-date {
             flex: 1; min-width: 130px;
             padding: 8px 12px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid var(--border);
+            background: #F8F3F0;
+            border: 1px solid rgba(0,32,91,0.15);
             border-radius: 8px;
-            color: var(--text);
+            color: var(--dark);
             font: 13px "DM Sans", sans-serif;
         }
-        .filter-date:focus { outline: none; border-color: rgba(201,168,76,0.5); }
+        .filter-date:focus { outline: none; border-color: var(--blue-light); box-shadow: 0 0 0 3px rgba(48,127,226,0.12); }
         .filter-btn {
             padding: 8px 16px;
-            background: var(--accent);
+            background: var(--blue);
             border: none; border-radius: 8px;
-            color: #12121d; font: 600 13px "DM Sans", sans-serif;
+            color: #FFFFFF; font: 600 13px "DM Sans", sans-serif;
             cursor: pointer; transition: opacity 0.15s; white-space: nowrap;
         }
         .filter-btn:hover { opacity: 0.88; }
         .filter-clear {
             padding: 8px 12px;
-            background: transparent; border: 1px solid var(--border); border-radius: 8px;
+            background: transparent; border: 1px solid rgba(0,32,91,0.15); border-radius: 8px;
             color: var(--muted); font: 13px "DM Sans", sans-serif;
             cursor: pointer; text-decoration: none; transition: all 0.15s; white-space: nowrap;
         }
-        .filter-clear:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+        .filter-clear:hover { border-color: var(--blue); color: var(--blue); }
         .filter-active-tag {
-            font: 500 11px "DM Mono", monospace; color: var(--accent);
-            background: var(--accent-dim); border: 1px solid rgba(201,168,76,0.3);
+            font: 500 11px "DM Mono", monospace; color: #8B6200;
+            background: rgba(242,169,0,0.14); border: 1px solid rgba(242,169,0,0.30);
             border-radius: 999px; padding: 3px 10px;
         }
 
         /* ── Stats grid ── */
         .stats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-bottom: 20px; }
         .stat-card {
-            background: var(--panel); border: 1px solid var(--border);
+            background: var(--card); border: 1px solid var(--border);
             border-radius: 14px; padding: 18px 16px;
-            backdrop-filter: blur(12px); transition: border-color 0.2s, transform 0.2s;
+            box-shadow: 0 1px 4px rgba(0,32,91,0.06); transition: border-color 0.2s, transform 0.2s;
         }
-        .stat-card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-2px); }
-        .stat-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
-        .stat-value { font: 600 26px "DM Mono", monospace; }
+        .stat-card:hover { border-color: rgba(1,75,170,0.30); transform: translateY(-2px); }
+        .stat-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; font-weight: 500; }
+        .stat-value { font: 600 26px "DM Mono", monospace; color: var(--blue); }
         .stat-sub { color: var(--muted); margin-top: 6px; font-size: 11px; }
 
         /* ── Content grid ── */
         .content { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 16px; }
         .card {
-            background: var(--panel); border: 1px solid var(--border);
-            border-radius: 14px; padding: 20px; backdrop-filter: blur(12px);
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 20px;
+            box-shadow: 0 1px 4px rgba(0,32,91,0.06);
         }
-        .card-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; }
+        .card-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; color: var(--dark); }
 
         /* ── Menu list ── */
         .menu-grid { display: grid; gap: 9px; max-height: 460px; overflow-y: auto; padding-right: 4px; }
         .menu-grid::-webkit-scrollbar { width: 4px; }
         .menu-grid::-webkit-scrollbar-track { background: transparent; }
-        .menu-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+        .menu-grid::-webkit-scrollbar-thumb { background: rgba(0,32,91,0.15); border-radius: 2px; }
         .menu-item {
             border: 1px solid var(--border); border-radius: 11px;
-            padding: 12px 14px; background: rgba(255,255,255,0.02);
+            padding: 12px 14px; background: #F8F3F0;
             display: flex; justify-content: space-between; align-items: center;
             gap: 12px; transition: border-color 0.15s;
         }
-        .menu-item:hover { border-color: rgba(201,168,76,0.25); }
-        .menu-name { font-size: 13.5px; font-weight: 500; margin-bottom: 3px; }
+        .menu-item:hover { border-color: rgba(1,75,170,0.28); }
+        .menu-name { font-size: 13.5px; font-weight: 500; margin-bottom: 3px; color: var(--dark); }
         .menu-desc { color: var(--muted); font-size: 11.5px; line-height: 1.45; }
-        .menu-price { font: 500 14px "DM Mono", monospace; color: var(--accent); white-space: nowrap; flex-shrink: 0; }
+        .menu-price { font: 700 14px "DM Mono", monospace; color: var(--amber); white-space: nowrap; flex-shrink: 0; }
 
         /* ── Ticket items ── */
         .ticket-item {
             border: 1px solid var(--border); border-radius: 11px;
-            padding: 13px 14px; background: rgba(255,255,255,0.02);
+            padding: 13px 14px; background: #F8F3F0;
             margin-bottom: 9px; transition: border-color 0.15s;
         }
         .ticket-item:last-child { margin-bottom: 0; }
-        .ticket-item:hover { border-color: rgba(201,168,76,0.2); }
+        .ticket-item:hover { border-color: rgba(1,75,170,0.28); }
         .ticket-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 4px; }
-        .ticket-id   { font-size: 13px; font-weight: 600; }
-        .ticket-price { font: 600 14px "DM Mono", monospace; color: var(--accent); }
+        .ticket-id   { font-size: 13px; font-weight: 600; color: var(--dark); }
+        .ticket-price { font: 700 14px "DM Mono", monospace; color: var(--amber); }
         .ticket-date { color: var(--muted); font-size: 11.5px; margin-bottom: 5px; }
         .ticket-products { color: var(--muted); font-size: 12px; line-height: 1.5; }
         .badges { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
@@ -181,13 +181,13 @@
             padding: 3px 9px; border-radius: 999px;
             font-size: 11px; font-weight: 600;
         }
-        .badge-canjeado  { background: var(--success-dim); color: var(--success); border: 1px solid rgba(76,201,112,0.25); }
-        .badge-pendiente { background: var(--accent-dim);  color: var(--accent);  border: 1px solid rgba(201,168,76,0.3); }
-        .badge-expirado  { background: rgba(240,122,122,0.1); color: var(--danger); border: 1px solid rgba(240,122,122,0.25); }
+        .badge-canjeado  { background: var(--success-dim); color: var(--success); border: 1px solid rgba(30,138,76,0.25); }
+        .badge-pendiente { background: rgba(242,169,0,0.12); color: #8B6200; border: 1px solid rgba(242,169,0,0.30); }
+        .badge-expirado  { background: var(--danger-dim); color: var(--danger); border: 1px solid rgba(192,57,43,0.25); }
 
         .empty { color: var(--muted); font-size: 13px; text-align: center; padding: 24px 0; }
-        .ver-mas { display: block; text-align: center; margin-top: 14px; color: var(--accent); font-size: 13px; text-decoration: none; }
-        .ver-mas:hover { text-decoration: underline; }
+        .ver-mas { display: block; text-align: center; margin-top: 14px; color: var(--blue-light); font-size: 13px; text-decoration: none; font-weight: 500; }
+        .ver-mas:hover { text-decoration: underline; color: var(--blue); }
 
         /* ════════════════════════════════
            TABLET (≤ 900px)
@@ -206,7 +206,6 @@
             .stat-value { font-size: 20px; }
             .stat-label { font-size: 9px; }
             .stat-sub { font-size: 10px; }
-
             .header-actions {
                 width: 100%;
                 display: grid;
@@ -220,9 +219,7 @@
         ════════════════════════════════ */
         @media (max-width: 430px) {
             .wrap { padding: 0 12px; }
-
-            /* Header */
-            header { padding: 16px 0 14px; margin-bottom: 16px; gap: 10px; }
+            header { margin: 0 -12px 16px; padding: 16px 12px 14px; gap: 10px; }
             .brand { font-size: 9px; margin-bottom: 3px; }
             .greeting { font-size: 16px; }
             .header-actions {
@@ -232,36 +229,23 @@
                 gap: 6px;
             }
             .hbtn { font-size: 11px; padding: 8px 6px; border-radius: 9px; }
-
-            /* Filter */
             .filter-bar { padding: 10px 12px; gap: 8px; margin-bottom: 14px; }
             .filter-label { width: 100%; margin-bottom: 0; }
             .filter-date { width: 100%; min-width: 0; }
             .filter-btn, .filter-clear { flex: 1; text-align: center; font-size: 12px; }
-
-            /* Stats — horizontal cards */
             .stats { grid-template-columns: 1fr; gap: 8px; margin-bottom: 14px; }
-            .stat-card {
-                display: flex; align-items: center; gap: 14px;
-                padding: 12px 14px;
-            }
+            .stat-card { display: flex; align-items: center; gap: 14px; padding: 12px 14px; }
             .stat-label { margin-bottom: 0; min-width: 100px; font-size: 9.5px; }
             .stat-value { font-size: 21px; }
             .stat-sub { display: none; }
-
-            /* Content */
             .content { gap: 12px; }
             .card { padding: 14px 12px; border-radius: 12px; }
             .card-title { font-size: 13px; margin-bottom: 12px; }
-
-            /* Menu */
             .menu-grid { gap: 7px; max-height: 240px; }
             .menu-item { padding: 10px 11px; border-radius: 10px; }
             .menu-name { font-size: 13px; }
             .menu-desc { font-size: 11px; }
             .menu-price { font-size: 13px; }
-
-            /* Tickets */
             .ticket-item { padding: 11px 11px; border-radius: 10px; margin-bottom: 8px; }
             .ticket-id { font-size: 12.5px; }
             .ticket-price { font-size: 13px; }

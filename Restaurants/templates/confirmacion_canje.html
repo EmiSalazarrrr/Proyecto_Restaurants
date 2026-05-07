@@ -10,26 +10,24 @@
     <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
     <style>
         :root {
-            --bg: #0f0f1a;
-            --panel: rgba(255,255,255,0.055);
-            --border: rgba(255,255,255,0.09);
-            --accent: #c9a84c;
-            --accent-dim: rgba(201,168,76,0.12);
-            --text: #f1f1f6;
-            --muted: #9696b0;
-            --success: #4cc970;
-            --success-dim: rgba(76,201,112,0.11);
-            --danger: #f07a7a;
+            --bg: #F8F3F0;
+            --card: #FFFFFF;
+            --border: rgba(0,32,91,0.10);
+            --blue: #014BAA;
+            --blue-light: #307FE2;
+            --amber: #F2A900;
+            --dark: #00205B;
+            --muted: rgba(0,32,91,0.50);
+            --success: #1E8A4C;
+            --success-dim: rgba(30,138,76,0.10);
+            --danger: #C0392B;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             min-height: 100vh;
             font-family: "DM Sans", sans-serif;
-            color: var(--text);
-            background:
-                radial-gradient(ellipse at 80% 5%,  rgba(76,201,112,0.10), transparent 30%),
-                radial-gradient(ellipse at 5%  90%, rgba(51,90,160,0.16),  transparent 30%),
-                linear-gradient(135deg, #09091a, #111224 45%, #0d1c2e);
+            color: var(--dark);
+            background: var(--bg);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -53,8 +51,8 @@
             100% { transform: scale(1) rotate(0); opacity: 1; }
         }
         @keyframes glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(76,201,112,0.2); }
-            50%       { box-shadow: 0 0 40px rgba(76,201,112,0.4); }
+            0%, 100% { box-shadow: 0 0 20px rgba(30,138,76,0.15); }
+            50%       { box-shadow: 0 0 36px rgba(30,138,76,0.35); }
         }
 
         /* ── Success header ── */
@@ -64,44 +62,39 @@
             animation: fadeInUp 0.6s ease 0.1s both;
         }
         .check-circle {
-            width: 72px;
-            height: 72px;
+            width: 72px; height: 72px;
             border-radius: 50%;
             background: var(--success-dim);
-            border: 2px solid rgba(76,201,112,0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: 2px solid rgba(30,138,76,0.35);
+            display: flex; align-items: center; justify-content: center;
             font-size: 32px;
             margin: 0 auto 16px;
             animation: checkPop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both, glow 3s ease-in-out 1s infinite;
         }
-        .success-title { font-size: 24px; font-weight: 600; margin-bottom: 6px; }
+        .success-title { font-size: 24px; font-weight: 600; margin-bottom: 6px; color: var(--dark); }
         .success-sub { color: var(--muted); font-size: 14px; }
 
         /* ── Receipt card ── */
         .receipt {
             width: min(500px, 100%);
-            background: rgba(14,14,26,0.95);
+            background: var(--card);
             border: 1px solid var(--border);
             border-radius: 18px;
             overflow: hidden;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 32px 80px rgba(0,0,0,0.45);
+            box-shadow: 0 8px 40px rgba(0,32,91,0.12);
             animation: popIn 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) 0.1s both;
         }
 
-        /* Receipt top strip */
+        /* Receipt top strip — blue gradient */
         .receipt-top {
-            background: linear-gradient(135deg, rgba(76,201,112,0.15), rgba(76,201,112,0.06));
-            border-bottom: 1px solid rgba(76,201,112,0.2);
+            background: linear-gradient(135deg, #014BAA 0%, #307FE2 100%);
             padding: 20px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        .receipt-brand { font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--success); font-family: "DM Mono", monospace; }
-        .receipt-id { font: 500 12px "DM Mono", monospace; color: var(--muted); }
+        .receipt-brand { font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255,255,255,0.80); font-family: "DM Mono", monospace; }
+        .receipt-id { font: 500 12px "DM Mono", monospace; color: rgba(255,255,255,0.65); }
 
         /* Receipt body */
         .receipt-body { padding: 24px; }
@@ -112,12 +105,13 @@
             letter-spacing: 1.4px;
             color: var(--muted);
             margin-bottom: 12px;
+            font-weight: 500;
         }
 
         /* Client info */
         .client-info {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid var(--border);
+            background: rgba(1,75,170,0.04);
+            border: 1px solid rgba(1,75,170,0.10);
             border-radius: 10px;
             padding: 12px 16px;
             margin-bottom: 20px;
@@ -126,7 +120,7 @@
             align-items: center;
             gap: 12px;
         }
-        .client-name { font-size: 14px; font-weight: 600; }
+        .client-name { font-size: 14px; font-weight: 600; color: var(--dark); }
         .client-user { font: 12px "DM Mono", monospace; color: var(--muted); margin-top: 2px; }
         .ticket-date { font: 12px "DM Mono", monospace; color: var(--muted); text-align: right; white-space: nowrap; }
 
@@ -137,35 +131,35 @@
             grid-template-columns: 1fr auto auto;
             gap: 10px 14px;
             padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(0,32,91,0.08);
             align-items: center;
             font-size: 13.5px;
         }
         .product-row:last-child { border-bottom: none; }
         .product-qty { color: var(--muted); font: 12px "DM Mono", monospace; }
-        .product-price { font: 500 13px "DM Mono", monospace; color: var(--text); white-space: nowrap; }
-        .product-name { font-weight: 500; }
+        .product-price { font: 500 13px "DM Mono", monospace; color: var(--dark); white-space: nowrap; }
+        .product-name { font-weight: 500; color: var(--dark); }
 
         /* Totals */
         .totals { border-top: 1px solid var(--border); padding-top: 16px; display: grid; gap: 10px; margin-bottom: 20px; }
         .total-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-size: 13px; }
         .total-label { color: var(--muted); }
-        .total-value { font: 500 14px "DM Mono", monospace; }
+        .total-value { font: 500 14px "DM Mono", monospace; color: var(--dark); }
         .total-row.discount .total-value { color: var(--success); }
         .total-row.promo-name { font-size: 12px; }
         .total-row.promo-name .total-value {
-            background: var(--accent-dim);
-            border: 1px solid rgba(201,168,76,0.3);
+            background: rgba(242,169,0,0.12);
+            border: 1px solid rgba(242,169,0,0.28);
             border-radius: 6px;
             padding: 2px 8px;
-            color: var(--accent);
+            color: #8B6200;
             font-size: 11px;
         }
 
         /* Final total */
         .final-total {
-            background: linear-gradient(135deg, rgba(76,201,112,0.12), rgba(76,201,112,0.05));
-            border: 1px solid rgba(76,201,112,0.25);
+            background: linear-gradient(135deg, rgba(1,75,170,0.07), rgba(48,127,226,0.04));
+            border: 1px solid rgba(1,75,170,0.15);
             border-radius: 12px;
             padding: 18px 20px;
             display: flex;
@@ -174,14 +168,14 @@
             gap: 12px;
             margin-bottom: 20px;
         }
-        .final-label { font-size: 13px; font-weight: 600; color: var(--success); }
+        .final-label { font-size: 13px; font-weight: 600; color: var(--blue); }
         .final-label small { display: block; font-size: 11px; font-weight: 400; color: var(--muted); margin-top: 2px; }
-        .final-amount { font: 700 32px "DM Mono", monospace; color: var(--success); }
+        .final-amount { font: 700 32px "DM Mono", monospace; color: var(--amber); }
 
         /* Cashier note */
         .cashier-note {
-            background: rgba(201,168,76,0.07);
-            border: 1px solid rgba(201,168,76,0.2);
+            background: rgba(242,169,0,0.07);
+            border: 1px solid rgba(242,169,0,0.20);
             border-radius: 10px;
             padding: 14px 16px;
             display: flex;
@@ -191,30 +185,30 @@
         }
         .note-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
         .note-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
-        .note-text strong { color: var(--accent); }
+        .note-text strong { color: #8B6200; }
 
         /* Code display */
         .code-display {
             text-align: center;
             margin-bottom: 20px;
             padding-bottom: 20px;
-            border-bottom: 1px dashed rgba(255,255,255,0.08);
+            border-bottom: 1px dashed rgba(0,32,91,0.12);
         }
         .code-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px; color: var(--muted); margin-bottom: 8px; }
         .code-value {
             font: 700 30px "DM Mono", monospace;
-            color: var(--text);
+            color: var(--dark);
             letter-spacing: 8px;
-            opacity: 0.5;
+            opacity: 0.30;
         }
         .code-tag {
             display: inline-block;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(30,138,76,0.08);
+            border: 1px solid rgba(30,138,76,0.20);
             border-radius: 6px;
             padding: 2px 10px;
             font: 11px "DM Mono", monospace;
-            color: var(--muted);
+            color: var(--success);
             margin-top: 6px;
         }
 
@@ -231,10 +225,10 @@
             cursor: pointer;
             border: none;
         }
-        .btn-primary { background: var(--accent); color: #12121d; }
+        .btn-primary { background: var(--blue); color: #FFFFFF; }
         .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-        .btn-ghost { border: 1px solid var(--border); color: var(--muted); background: transparent; }
-        .btn-ghost:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+        .btn-ghost { border: 1px solid rgba(0,32,91,0.15); color: var(--muted); background: transparent; }
+        .btn-ghost:hover { border-color: var(--blue); color: var(--blue); background: rgba(1,75,170,0.04); }
 
         @media (max-width: 540px) {
             .receipt-body { padding: 18px 16px; }

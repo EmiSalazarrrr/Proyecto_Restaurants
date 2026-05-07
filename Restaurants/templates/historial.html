@@ -10,27 +10,25 @@
     <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
     <style>
         :root {
-            --bg: #0f0f1a;
-            --panel: rgba(255,255,255,0.055);
-            --border: rgba(255,255,255,0.09);
-            --accent: #c9a84c;
-            --accent-dim: rgba(201,168,76,0.12);
-            --text: #f1f1f6;
-            --muted: #9696b0;
-            --success: #4cc970;
-            --success-dim: rgba(76,201,112,0.11);
-            --danger: #f07a7a;
-            --danger-dim: rgba(240,122,122,0.10);
+            --bg: #F8F3F0;
+            --card: #FFFFFF;
+            --border: rgba(0,32,91,0.10);
+            --blue: #014BAA;
+            --blue-light: #307FE2;
+            --amber: #F2A900;
+            --dark: #00205B;
+            --muted: rgba(0,32,91,0.50);
+            --success: #1E8A4C;
+            --success-dim: rgba(30,138,76,0.10);
+            --danger: #C0392B;
+            --danger-dim: rgba(192,57,43,0.10);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             min-height: 100vh;
             font-family: "DM Sans", sans-serif;
-            color: var(--text);
-            background:
-                radial-gradient(ellipse at 80% 0%,  rgba(201,168,76,0.12), transparent 30%),
-                radial-gradient(ellipse at 5%  90%, rgba(51,90,160,0.16),  transparent 30%),
-                linear-gradient(135deg, #0a0a16, #121225 45%, #0d1c2e);
+            color: var(--dark);
+            background: var(--bg);
             padding-bottom: 40px;
         }
         .wrap { width: min(1120px, 100%); margin: 0 auto; padding: 0 16px; }
@@ -47,94 +45,97 @@
 
         /* ── Header ── */
         .topbar {
+            background: linear-gradient(135deg, #014BAA 0%, #307FE2 100%);
+            margin: 0 -16px 20px;
+            padding: 22px 16px 20px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             gap: 14px;
-            padding: 24px 0 18px;
-            margin-bottom: 20px;
             animation: fadeInUp 0.5s ease 0.02s both;
             flex-wrap: wrap;
         }
-        .brand-tag { font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent); font-family: "DM Mono", monospace; margin-bottom: 5px; }
-        .topbar h1 { font-size: 22px; font-weight: 600; margin-bottom: 3px; }
-        .topbar p  { color: var(--muted); font-size: 13px; }
+        .brand-tag { font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: rgba(255,255,255,0.65); font-family: "DM Mono", monospace; margin-bottom: 5px; }
+        .topbar h1 { font-size: 22px; font-weight: 600; margin-bottom: 3px; color: #FFFFFF; }
+        .topbar p  { color: rgba(255,255,255,0.70); font-size: 13px; }
         .hbtn {
-            text-decoration: none; color: var(--muted);
-            border: 1px solid var(--border); border-radius: 10px;
+            text-decoration: none; color: rgba(255,255,255,0.80);
+            border: 1px solid rgba(255,255,255,0.25); border-radius: 10px;
             padding: 9px 16px; font-size: 13px;
             transition: all 0.15s; white-space: nowrap;
-            display: inline-block;
+            display: inline-block; background: rgba(255,255,255,0.10);
+            align-self: flex-start;
         }
-        .hbtn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+        .hbtn:hover { color: #FFFFFF; border-color: rgba(255,255,255,0.50); background: rgba(255,255,255,0.18); }
 
         /* ── Filter bar ── */
         .filter-bar {
-            background: var(--panel); border: 1px solid var(--border);
+            background: var(--card); border: 1px solid var(--border);
             border-radius: 12px; padding: 12px 16px;
             display: flex; align-items: center;
             gap: 10px; flex-wrap: wrap;
-            margin-bottom: 20px; backdrop-filter: blur(12px);
+            margin-bottom: 20px;
+            box-shadow: 0 1px 4px rgba(0,32,91,0.06);
         }
         .filter-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); white-space: nowrap; }
         .filter-date {
             flex: 1; min-width: 130px;
             padding: 8px 12px;
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 8px;
-            color: var(--text); font: 13px "DM Sans", sans-serif;
+            background: #F8F3F0; border: 1px solid rgba(0,32,91,0.15); border-radius: 8px;
+            color: var(--dark); font: 13px "DM Sans", sans-serif;
         }
-        .filter-date:focus { outline: none; border-color: rgba(201,168,76,0.5); }
+        .filter-date:focus { outline: none; border-color: var(--blue-light); box-shadow: 0 0 0 3px rgba(48,127,226,0.12); }
         .filter-btn {
-            padding: 8px 16px; background: var(--accent); border: none; border-radius: 8px;
-            color: #12121d; font: 600 13px "DM Sans", sans-serif;
+            padding: 8px 16px; background: var(--blue); border: none; border-radius: 8px;
+            color: #FFFFFF; font: 600 13px "DM Sans", sans-serif;
             cursor: pointer; transition: opacity 0.15s; white-space: nowrap;
         }
         .filter-btn:hover { opacity: 0.88; }
         .filter-clear {
             padding: 8px 12px; background: transparent;
-            border: 1px solid var(--border); border-radius: 8px;
+            border: 1px solid rgba(0,32,91,0.15); border-radius: 8px;
             color: var(--muted); font: 13px "DM Sans", sans-serif;
             cursor: pointer; text-decoration: none; transition: all 0.15s; white-space: nowrap;
         }
-        .filter-clear:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+        .filter-clear:hover { border-color: var(--blue); color: var(--blue); }
         .filter-active-tag {
-            font: 500 11px "DM Mono", monospace; color: var(--accent);
-            background: var(--accent-dim); border: 1px solid rgba(201,168,76,0.3);
+            font: 500 11px "DM Mono", monospace; color: #8B6200;
+            background: rgba(242,169,0,0.14); border: 1px solid rgba(242,169,0,0.30);
             border-radius: 999px; padding: 3px 10px;
         }
 
         /* ── Stats ── */
         .stats { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-bottom: 22px; }
         .stat-card {
-            background: var(--panel); border: 1px solid var(--border);
+            background: var(--card); border: 1px solid var(--border);
             border-radius: 13px; padding: 18px 20px;
-            backdrop-filter: blur(12px); transition: border-color 0.2s, transform 0.2s;
+            box-shadow: 0 1px 4px rgba(0,32,91,0.06); transition: border-color 0.2s, transform 0.2s;
         }
-        .stat-card:hover { border-color: rgba(201,168,76,0.3); transform: translateY(-2px); }
-        .stat-label { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
-        .stat-value { font: 600 24px "DM Mono", monospace; }
+        .stat-card:hover { border-color: rgba(1,75,170,0.30); transform: translateY(-2px); }
+        .stat-label { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; font-weight: 500; }
+        .stat-value { font: 600 24px "DM Mono", monospace; color: var(--blue); }
         .stat-sub { color: var(--muted); margin-top: 6px; font-size: 11px; }
 
         /* ── Shared badge/tag styles ── */
         .status-badge { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-        .badge-canjeado  { background: var(--success-dim); color: var(--success); border: 1px solid rgba(76,201,112,0.25); }
-        .badge-pendiente { background: var(--accent-dim);  color: var(--accent);  border: 1px solid rgba(201,168,76,0.3); }
-        .badge-expirado  { background: var(--danger-dim);  color: var(--danger);  border: 1px solid rgba(240,122,122,0.25); }
-        .badge-cancelado { background: rgba(100,100,120,0.15); color: var(--muted); border: 1px solid rgba(150,150,176,0.2); }
+        .badge-canjeado  { background: var(--success-dim); color: var(--success); border: 1px solid rgba(30,138,76,0.25); }
+        .badge-pendiente { background: rgba(242,169,0,0.12); color: #8B6200; border: 1px solid rgba(242,169,0,0.30); }
+        .badge-expirado  { background: var(--danger-dim); color: var(--danger); border: 1px solid rgba(192,57,43,0.25); }
+        .badge-cancelado { background: rgba(0,32,91,0.06); color: var(--muted); border: 1px solid rgba(0,32,91,0.12); }
 
         .product-tag {
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            background: rgba(0,32,91,0.06); border: 1px solid rgba(0,32,91,0.10);
             border-radius: 6px; padding: 3px 8px;
             font-size: 11px; color: var(--muted); white-space: nowrap;
         }
         .promo-tag {
             display: inline-flex; align-items: center; gap: 4px;
-            background: var(--accent-dim); border: 1px solid rgba(201,168,76,0.25);
+            background: rgba(242,169,0,0.12); border: 1px solid rgba(242,169,0,0.25);
             border-radius: 6px; padding: 3px 8px;
-            font-size: 11px; color: var(--accent); margin-top: 5px;
+            font-size: 11px; color: #8B6200; margin-top: 5px;
         }
         .mono { font-family: "DM Mono", monospace; }
-        .price-col    { font: 500 14px "DM Mono", monospace; color: var(--accent); }
+        .price-col    { font: 500 14px "DM Mono", monospace; color: var(--amber); }
         .discount-col { font: 500 13px "DM Mono", monospace; color: var(--success); }
         .muted-text   { color: var(--muted); font-size: 12.5px; }
 
@@ -142,25 +143,28 @@
            DESKTOP TABLE VIEW
         ══════════════════════════════════════ */
         .table-card {
-            background: var(--panel); border: 1px solid var(--border);
-            border-radius: 14px; overflow: hidden; backdrop-filter: blur(12px);
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 14px; overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0,32,91,0.06);
         }
         .table-header {
             padding: 16px 20px; border-bottom: 1px solid var(--border);
             display: flex; justify-content: space-between; align-items: center; gap: 12px;
+            background: rgba(1,75,170,0.04);
         }
-        .table-header h2 { font-size: 14px; font-weight: 600; }
+        .table-header h2 { font-size: 14px; font-weight: 600; color: var(--dark); }
         .table-count { font: 500 12px "DM Mono", monospace; color: var(--muted); }
 
         table { width: 100%; border-collapse: collapse; }
         th {
-            padding: 10px 16px; font-size: 10px; color: var(--muted);
+            padding: 10px 16px; font-size: 10px; color: var(--dark);
             text-transform: uppercase; letter-spacing: 1.2px; text-align: left;
-            background: rgba(255,255,255,0.025); border-bottom: 1px solid var(--border);
+            background: rgba(1,75,170,0.05); border-bottom: 1px solid var(--border);
+            font-weight: 600;
         }
-        td { padding: 14px 16px; font-size: 13px; border-top: 1px solid rgba(255,255,255,0.05); vertical-align: top; }
+        td { padding: 14px 16px; font-size: 13px; border-top: 1px solid rgba(0,32,91,0.07); vertical-align: top; color: var(--dark); }
         tbody tr.data-row { transition: background 0.12s; }
-        tbody tr.data-row:hover { background: rgba(255,255,255,0.025); }
+        tbody tr.data-row:hover { background: rgba(1,75,170,0.03); }
         .products-list { display: flex; flex-wrap: wrap; gap: 5px; }
         .empty-row td { text-align: center; padding: 48px 16px; color: var(--muted); font-size: 13px; }
         .empty-icon { font-size: 28px; display: block; margin-bottom: 10px; }
@@ -171,21 +175,22 @@
         .mobile-list { display: none; }
 
         .m-card {
-            background: rgba(14,14,26,0.9); border: 1px solid var(--border);
+            background: var(--card); border: 1px solid var(--border);
             border-radius: 14px; padding: 16px;
+            box-shadow: 0 1px 4px rgba(0,32,91,0.06);
             transition: border-color 0.15s;
         }
-        .m-card:hover { border-color: rgba(201,168,76,0.2); }
+        .m-card:hover { border-color: rgba(1,75,170,0.28); }
         .m-card-top {
             display: flex; justify-content: space-between; align-items: center;
             gap: 10px; margin-bottom: 10px;
         }
-        .m-id { font: 600 13px "DM Sans", sans-serif; }
+        .m-id { font: 600 13px "DM Sans", sans-serif; color: var(--dark); }
         .m-date { font: 11px "DM Mono", monospace; color: var(--muted); text-align: right; }
         .m-products {
             display: flex; flex-wrap: wrap; gap: 5px;
             margin-bottom: 12px; padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            border-bottom: 1px solid rgba(0,32,91,0.08);
         }
         .m-amounts { display: grid; gap: 7px; margin-bottom: 12px; }
         .m-row {
@@ -193,12 +198,12 @@
             font-size: 12.5px;
         }
         .m-row-label { color: var(--muted); }
-        .m-row-val { font: 500 13px "DM Mono", monospace; }
+        .m-row-val { font: 500 13px "DM Mono", monospace; color: var(--dark); }
         .m-row.m-total {
-            padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.07);
+            padding-top: 8px; border-top: 1px solid rgba(0,32,91,0.10);
         }
-        .m-row.m-total .m-row-label { font-weight: 600; color: var(--text); }
-        .m-row.m-total .m-row-val { color: var(--accent); font-size: 15px; font-weight: 700; }
+        .m-row.m-total .m-row-label { font-weight: 600; color: var(--dark); }
+        .m-row.m-total .m-row-val { color: var(--amber); font-size: 15px; font-weight: 700; }
         .m-row.m-discount .m-row-val { color: var(--success); }
         .m-footer { display: flex; flex-wrap: wrap; gap: 6px; }
 
@@ -212,14 +217,14 @@
         }
         .pag-btn {
             padding: 8px 18px; background: transparent;
-            border: 1px solid var(--border); border-radius: 8px;
-            color: var(--muted); font: 13px "DM Sans", sans-serif;
+            border: 1px solid rgba(1,75,170,0.25); border-radius: 8px;
+            color: var(--blue); font: 13px "DM Sans", sans-serif;
             cursor: pointer; transition: all 0.15s;
         }
-        .pag-btn:hover:not(:disabled) { border-color: rgba(255,255,255,0.2); color: var(--text); }
+        .pag-btn:hover:not(:disabled) { background: var(--blue); color: #FFFFFF; border-color: var(--blue); }
         .pag-btn:disabled { opacity: 0.35; cursor: default; }
         .pag-info { font: 500 12px "DM Mono", monospace; color: var(--muted); }
-        .pag-total { font-size: 11px; color: rgba(150,150,176,0.6); }
+        .pag-total { font-size: 11px; color: var(--muted); opacity: 0.6; }
 
         /* ══════════════════════════════════════
            RESPONSIVE — TABLET (≤ 820px)
@@ -230,12 +235,10 @@
 
         /* ══════════════════════════════════════
            RESPONSIVE — MÓVIL (≤ 767px)
-           → Ocultar tabla, mostrar cards
         ══════════════════════════════════════ */
         @media (max-width: 767px) {
             .desktop-table { display: none; }
             .mobile-list { display: grid; gap: 10px; }
-
             .stats { grid-template-columns: 1fr 1fr; gap: 9px; }
             .stat-card { padding: 13px 12px; }
             .stat-value { font-size: 20px; }
@@ -247,30 +250,22 @@
         ══════════════════════════════════════ */
         @media (max-width: 430px) {
             .wrap { padding: 0 12px; }
-
-            .topbar { padding: 16px 0 14px; margin-bottom: 14px; }
+            .topbar { margin: 0 -12px 14px; padding: 16px 12px 14px; }
             .topbar h1 { font-size: 19px; }
             .topbar p  { font-size: 12px; }
             .hbtn { font-size: 12px; padding: 8px 13px; }
-
             .filter-bar { padding: 10px 12px; gap: 8px; margin-bottom: 14px; }
             .filter-label { width: 100%; }
             .filter-date { width: 100%; min-width: 0; }
             .filter-btn, .filter-clear { flex: 1; text-align: center; font-size: 12px; }
-
             .stats { grid-template-columns: 1fr; gap: 7px; margin-bottom: 14px; }
-            .stat-card {
-                display: flex; align-items: center; gap: 14px;
-                padding: 11px 13px;
-            }
+            .stat-card { display: flex; align-items: center; gap: 14px; padding: 11px 13px; }
             .stat-label { margin-bottom: 0; min-width: 90px; }
             .stat-value { font-size: 20px; }
             .stat-sub { display: none; }
-
             .m-card { padding: 14px 13px; }
             .m-id { font-size: 12.5px; }
             .m-date { font-size: 10.5px; }
-
             .pagination { padding: 14px 0 2px; gap: 8px; }
             .pag-btn { padding: 8px 14px; font-size: 12px; }
             .pag-info { font-size: 11px; }
