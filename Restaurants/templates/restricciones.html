@@ -7,15 +7,15 @@
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f0f1a;
-            --sidebar-bg: #1a1a2e;
-            --card-bg: #1e1e32;
-            --card-border: #2a2a45;
-            --accent: #c9a84c;
-            --accent-dim: rgba(201,168,76,0.12);
-            --text-primary: #eeeef5;
-            --text-secondary: #8888aa;
-            --text-muted: #7a7a9a;
+            --bg: #F4F0E8;
+            --sidebar-bg: #0D1E3B;
+            --card-bg: #FDFAF7;
+            --card-border: rgba(33,40,66,0.18);
+            --accent: #D8AE48;
+            --accent-dim: rgba(216,174,72,0.12);
+            --text-primary: #0D1E3B;
+            --text-secondary: #5C4A3A;
+            --text-muted: #9B8B7A;
             --success: #4cc970;
             --success-dim: rgba(76,201,112,0.12);
             --danger: #f07a7a;
@@ -27,13 +27,14 @@
         /* ── Sidebar ── */
         .sidebar { width: 220px; background: var(--sidebar-bg); padding: 28px 0; position: fixed; inset: 0 auto 0 0; border-right: 1px solid var(--card-border); display: flex; flex-direction: column; }
         .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid var(--card-border); margin-bottom: 20px; }
-        .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+        .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #F4F0E8; }
         .sidebar-logo b { color: var(--accent); }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; color: var(--text-secondary); text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
-        .nav-item.active, .nav-item:hover { color: var(--accent); background: var(--accent-dim); border-left-color: var(--accent); }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; color: #F4F0E8; text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
+        .nav-item.active { color: #0D1E3B; background: #D8AE48; border-left-color: #D8AE48; }
+        .nav-item:hover { color: #F4F0E8; background: #1A2F50; border-left-color: transparent; }
         .nav-icon { width: 20px; text-align: center; }
         .sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--card-border); }
-        .btn-logout { display: block; text-decoration: none; color: var(--text-secondary); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 14px; text-align: center; transition: all 0.15s; }
+        .btn-logout { display: block; text-decoration: none; color: rgba(244,240,232,0.75); border: 1px solid rgba(244,240,232,0.15); border-radius: 8px; padding: 10px 14px; text-align: center; transition: all 0.15s; }
         .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
 
         /* ── Main ── */
@@ -51,14 +52,14 @@
         /* ── Topbar ── */
         .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; gap: 16px; flex-wrap: wrap; }
         .topbar h2 { font-size: 26px; }
-        .topbar p { color: var(--text-secondary); margin-top: 4px; }
+        .topbar p { color: #5C4A3A; margin-top: 4px; }
         .btn-back { text-decoration: none; color: var(--text-secondary); border: 1px solid var(--card-border); border-radius: 8px; padding: 9px 16px; font-size: 13px; transition: all 0.15s; }
-        .btn-back:hover { color: var(--accent); border-color: rgba(201,168,76,0.4); }
+        .btn-back:hover { color: var(--accent); border-color: rgba(216,174,72,0.4); }
 
         /* ── Alerts ── */
         .alert { margin-bottom: 16px; padding: 12px 14px; border-radius: 10px; font-size: 13px; }
-        .alert-success { background: var(--success-dim); border: 1px solid rgba(76,201,112,0.24); color: #caf7d5; }
-        .alert-error   { background: var(--danger-dim);  border: 1px solid rgba(240,122,122,0.24); color: #ffd5d5; }
+        .alert-success { background: var(--success-dim); border: 1px solid rgba(76,201,112,0.24); color: #1a6030; }
+        .alert-error   { background: var(--danger-dim);  border: 1px solid rgba(240,122,122,0.24); color: #8b2020; }
 
         /* ── Layout ── */
         .layout { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
@@ -70,10 +71,10 @@
         .card-count { font: 500 12px "DM Mono", monospace; color: var(--text-secondary); }
 
         table { width: 100%; border-collapse: collapse; }
-        th { padding: 10px 16px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px; text-align: left; background: rgba(255,255,255,0.025); border-bottom: 1px solid var(--card-border); }
-        td { padding: 14px 16px; font-size: 13.5px; border-top: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
+        th { padding: 10px 16px; font-size: 10px; color: #0D1E3B; text-transform: uppercase; letter-spacing: 1.2px; text-align: left; background: rgba(13,30,59,0.05); border-bottom: 1px solid var(--card-border); }
+        td { padding: 14px 16px; font-size: 13.5px; border-top: 1px solid rgba(13,30,59,0.08); vertical-align: middle; }
         tbody tr { transition: background 0.12s; }
-        tbody tr:hover { background: rgba(255,255,255,0.02); }
+        tbody tr:hover { background: rgba(13,30,59,0.03); }
         .mono { font-family: "DM Mono", monospace; }
 
         .usage-badge {
@@ -81,8 +82,8 @@
             padding: 3px 10px; border-radius: 999px;
             font-size: 11px; font-weight: 600;
         }
-        .badge-in-use { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(201,168,76,0.3); }
-        .badge-free   { background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid var(--card-border); }
+        .badge-in-use { background: var(--accent-dim); color: var(--accent); border: 1px solid rgba(216,174,72,0.3); }
+        .badge-free   { background: rgba(13,30,59,0.04); color: var(--text-muted); border: 1px solid var(--card-border); }
 
         .btn-del {
             padding: 5px 11px; border-radius: 6px;
@@ -98,7 +99,7 @@
         .empty-td { text-align: center; padding: 40px 16px; color: var(--text-secondary); font-size: 13px; }
 
         /* Pagination */
-        .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-top: 1px solid rgba(255,255,255,0.06); }
+        .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-top: 1px solid rgba(13,30,59,0.08); }
         .pag-info { font: 500 12px "DM Mono", monospace; color: var(--text-secondary); }
         .pag-btns { display: flex; gap: 6px; }
         .pag-btn { padding: 6px 14px; border-radius: 7px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-secondary); font: 13px "DM Sans", sans-serif; cursor: pointer; transition: all 0.15s; }
@@ -111,23 +112,23 @@
         .field { margin-bottom: 16px; }
         .field label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 8px; }
         .field input {
-            width: 100%; background: #16162a;
+            width: 100%; background: #FAFAF8;
             border: 1px solid var(--card-border); border-radius: 10px;
             padding: 11px 14px; color: var(--text-primary);
             font: 14px "DM Sans", sans-serif; transition: border-color 0.15s;
         }
-        .field input:focus { outline: none; border-color: rgba(201,168,76,0.55); }
+        .field input:focus { outline: none; border-color: rgba(216,174,72,0.55); }
         .field-hint { margin-top: 5px; font-size: 11px; color: var(--text-muted); }
         .btn-submit {
             width: 100%; padding: 12px; border: none; border-radius: 10px;
-            background: var(--accent); color: #12121d;
+            background: var(--accent); color: #0D1E3B;
             font: 600 14px "DM Sans", sans-serif;
             cursor: pointer; transition: opacity 0.15s, transform 0.15s;
         }
         .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
 
         /* ── Info card ── */
-        .info-card { background: rgba(201,168,76,0.05); border: 1px solid rgba(201,168,76,0.18); border-radius: 12px; padding: 16px 18px; margin-top: 14px; font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
+        .info-card { background: rgba(216,174,72,0.07); border: 1px solid rgba(216,174,72,0.18); border-radius: 12px; padding: 16px 18px; margin-top: 14px; font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
         .info-card strong { color: var(--accent); }
 
         @media (max-width: 960px)  { .layout { grid-template-columns: 1fr; } }
