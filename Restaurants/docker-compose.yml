@@ -8,6 +8,7 @@ services:
     - "8000:8000"
     environment:
     - DEBUG=1
+    - TZ=America/Mexico_City
     depends_on:
     - db
   db:
