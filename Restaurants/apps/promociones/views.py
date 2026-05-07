@@ -2,6 +2,7 @@ import json
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
+from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.usuarios.views import login_required
@@ -116,3 +117,48 @@ def promociones_view(request):
         }),
     }
     return render(request, "promociones.html", context)
+
+
+@login_required(role="admin")
+def restricciones_view(request):
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "create_restriccion":
+            nombre = (request.POST.get("restriccion_nombre") or "").strip()
+            minimo = request.POST.get("consumo_minimo") or "0"
+            try:
+                minimo_int = max(int(minimo), 0)
+            except (TypeError, ValueError):
+                minimo_int = None
+
+            if not nombre:
+                messages.error(request, "El nombre de la restriccion es obligatorio.")
+            elif minimo_int is None:
+                messages.error(request, "El consumo minimo debe ser un numero entero.")
+            elif Restricciones.objects.filter(nombre__iexact=nombre).exists():
+                messages.error(request, "Ya existe una restriccion con ese nombre.")
+            else:
+                Restricciones.objects.create(
+                    nombre=nombre,
+                    consumo_minimo_para_aplicar=minimo_int,
+                )
+                messages.success(request, "Restriccion creada correctamente.")
+            return redirect("restricciones")
+
+        if action == "delete_restriccion":
+            restriccion = get_object_or_404(Restricciones, pk=request.POST.get("restriccion_id"))
+            en_uso = Promocion.objects.filter(id_restriccion=restriccion).count()
+            if en_uso:
+                messages.error(request, f"No se puede eliminar: esta en uso por {en_uso} promocion(es).")
+            else:
+                restriccion.delete()
+                messages.success(request, "Restriccion eliminada correctamente.")
+            return redirect("restricciones")
+
+    restricciones = (
+        Restricciones.objects
+        .annotate(total_promociones=Count("promocion"))
+        .order_by("consumo_minimo_para_aplicar", "nombre")
+    )
+    return render(request, "restricciones.html", {"restricciones": restricciones})

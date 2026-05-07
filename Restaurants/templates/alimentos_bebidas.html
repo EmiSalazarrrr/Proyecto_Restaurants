@@ -10,15 +10,15 @@
     <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
     <style>
         :root {
-            --bg: #0f0f1a;
-            --sidebar-bg: #1a1a2e;
-            --card-bg: #1e1e32;
-            --card-border: #2a2a45;
-            --accent: #c9a84c;
-            --accent-dim: rgba(201,168,76,0.12);
-            --text-primary: #eeeef5;
-            --text-secondary: #8888aa;
-            --text-muted: #55556a;
+            --bg: #F4F0E8;
+            --sidebar-bg: #0D1E3B;
+            --card-bg: #FDFAF7;
+            --card-border: rgba(33,40,66,0.18);
+            --accent: #D8AE48;
+            --accent-dim: rgba(216,174,72,0.12);
+            --text-primary: #0D1E3B;
+            --text-secondary: #5C4A3A;
+            --text-muted: #9B8B7A;
             --success: #4cc970;
             --success-dim: rgba(76,201,112,0.12);
             --danger: #e05c5c;
@@ -30,14 +30,15 @@
         /* ── Sidebar ── */
         .sidebar { width: 220px; background: var(--sidebar-bg); padding: 28px 0; position: fixed; inset: 0 auto 0 0; border-right: 1px solid var(--card-border); display: flex; flex-direction: column; }
         .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid var(--card-border); margin-bottom: 20px; }
-        .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; }
+        .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #F4F0E8; }
         .sidebar-logo b { color: var(--accent); }
-        .sidebar-label { padding: 0 24px; margin-bottom: 8px; color: var(--text-muted); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; color: var(--text-secondary); text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
-        .nav-item.active, .nav-item:hover { color: var(--accent); background: var(--accent-dim); border-left-color: var(--accent); }
+        .sidebar-label { padding: 0 24px; margin-bottom: 8px; color: rgba(244,240,232,0.50); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; color: #F4F0E8; text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
+        .nav-item.active { color: #0D1E3B; background: #D8AE48; border-left-color: #D8AE48; }
+        .nav-item:hover { color: #F4F0E8; background: #1A2F50; border-left-color: transparent; }
         .nav-icon { width: 20px; text-align: center; }
         .sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--card-border); }
-        .btn-logout { display: block; text-decoration: none; color: var(--text-secondary); border: 1px solid var(--card-border); border-radius: 8px; padding: 10px 14px; text-align: center; transition: all 0.15s; }
+        .btn-logout { display: block; text-decoration: none; color: rgba(244,240,232,0.75); border: 1px solid rgba(244,240,232,0.15); border-radius: 8px; padding: 10px 14px; text-align: center; transition: all 0.15s; }
         .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
 
         /* ── Main ── */
@@ -57,27 +58,27 @@
         /* ── Topbar ── */
         .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; gap: 16px; }
         .topbar h2 { font-size: 26px; }
-        .topbar p { color: var(--text-secondary); margin-top: 4px; }
-        .badge { background: var(--accent-dim); border: 1px solid rgba(201,168,76,0.35); color: var(--accent); border-radius: 999px; padding: 6px 14px; font: 500 12px "DM Mono", monospace; }
+        .topbar p { color: #5C4A3A; margin-top: 4px; }
+        .badge { background: var(--accent-dim); border: 1px solid rgba(216,174,72,0.35); color: var(--accent); border-radius: 999px; padding: 6px 14px; font: 500 12px "DM Mono", monospace; }
 
         /* ── Alerts ── */
         .alerts { margin-bottom: 18px; display: grid; gap: 10px; }
         .alert { padding: 12px 16px; border-radius: 10px; font-size: 13px; }
-        .alert.success, .alert.alert-success { background: var(--success-dim); border: 1px solid rgba(76,201,112,0.28); color: #baf3c7; }
-        .alert.error { background: var(--danger-dim); border: 1px solid rgba(224,92,92,0.28); color: #ffd0d0; }
+        .alert.success, .alert.alert-success { background: var(--success-dim); border: 1px solid rgba(76,201,112,0.28); color: #1a6030; }
+        .alert.error { background: var(--danger-dim); border: 1px solid rgba(224,92,92,0.28); color: #8b2020; }
 
         /* ── Stats row ── */
         .stats-row { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 16px; margin-bottom: 22px; }
         .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; transition: border-color 0.2s, transform 0.2s; }
-        .stat-card:hover { border-color: rgba(201,168,76,0.35); transform: translateY(-2px); }
-        .stat-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 10px; }
-        .stat-value { font: 600 28px "DM Mono", monospace; }
-        .stat-sub { margin-top: 6px; color: var(--text-secondary); font-size: 12px; }
+        .stat-card:hover { border-color: rgba(216,174,72,0.35); transform: translateY(-2px); }
+        .stat-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: #0D1E3B; margin-bottom: 10px; }
+        .stat-value { font: 600 28px "DM Mono", monospace; color: #212842; }
+        .stat-sub { margin-top: 6px; color: #5C4A3A; font-size: 12px; }
 
         /* ── Insight + Actions row ── */
         .mid-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
         .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; }
-        .card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 18px; }
+        .card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #0D1E3B; margin-bottom: 18px; }
 
         /* Top products bars */
         .top-list { display: grid; gap: 14px; }
@@ -85,7 +86,7 @@
         .top-item-header { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
         .top-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 75%; }
         .top-count { font: 500 12px "DM Mono", monospace; color: var(--accent); white-space: nowrap; }
-        .bar-track { height: 5px; background: rgba(255,255,255,0.07); border-radius: 999px; overflow: hidden; }
+        .bar-track { height: 5px; background: rgba(13,30,59,0.07); border-radius: 999px; overflow: hidden; }
         .bar-fill { height: 100%; background: var(--accent); border-radius: 999px; width: 0; transition: width 1s cubic-bezier(.17,.67,.35,1); }
         .no-data { color: var(--text-muted); font-size: 13px; padding: 12px 0; }
         .sin-mov { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; }
@@ -94,11 +95,11 @@
 
         /* Quick action cards */
         .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .action-card { background: rgba(255,255,255,0.025); border: 1px solid var(--card-border); border-radius: 10px; padding: 18px; display: flex; align-items: center; gap: 14px; text-decoration: none; color: inherit; transition: all 0.2s; }
-        .action-card:hover { border-color: var(--accent); background: rgba(201,168,76,0.04); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
+        .action-card { background: rgba(13,30,59,0.03); border: 1px solid var(--card-border); border-radius: 10px; padding: 18px; display: flex; align-items: center; gap: 14px; text-decoration: none; color: inherit; transition: all 0.2s; }
+        .action-card:hover { border-color: var(--accent); background: rgba(216,174,72,0.04); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
         .action-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--accent-dim); display: grid; place-items: center; font-size: 18px; flex-shrink: 0; }
         .action-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
-        .action-desc { color: var(--text-secondary); font-size: 11px; }
+        .action-desc { color: #5C4A3A; font-size: 11px; }
 
         /* ── Catalog table ── */
         .table-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden; }
@@ -107,14 +108,22 @@
         .table-count { font: 500 12px "DM Mono", monospace; color: var(--text-muted); }
 
         /* Search bar inside table header */
-        .table-search { padding: 9px 14px; background: #16162a; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); font: 13px "DM Sans", sans-serif; width: 220px; }
+        .table-search { padding: 9px 14px; background: #FAFAF8; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); font: 13px "DM Sans", sans-serif; width: 220px; }
         .table-search:focus { outline: none; border-color: var(--accent); }
 
+        /* Pagination */
+        .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-top: 1px solid var(--card-border); }
+        .pag-info { font: 500 12px "DM Mono", monospace; color: var(--text-secondary); }
+        .pag-btns { display: flex; gap: 6px; }
+        .pag-btn { padding: 6px 14px; border-radius: 7px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-secondary); font: 13px "DM Sans", sans-serif; cursor: pointer; transition: all 0.15s; }
+        .pag-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+        .pag-btn:disabled { opacity: 0.3; cursor: default; }
+
         table { width: 100%; border-collapse: collapse; }
-        th { padding: 11px 18px; font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.2px; text-align: left; background: rgba(42,42,69,0.4); }
-        td { padding: 13px 18px; font-size: 13.5px; border-top: 1px solid rgba(255,255,255,0.05); }
+        th { padding: 11px 18px; font-size: 10px; color: #0D1E3B; text-transform: uppercase; letter-spacing: 1.2px; text-align: left; background: rgba(33,40,66,0.10); }
+        td { padding: 13px 18px; font-size: 13.5px; border-top: 1px solid rgba(13,30,59,0.08); }
         tbody tr { transition: background 0.12s; }
-        tbody tr:hover { background: rgba(255,255,255,0.02); }
+        tbody tr:hover { background: rgba(13,30,59,0.03); }
 
         .price-tag { font-family: "DM Mono", monospace; color: var(--accent); font-size: 13px; }
         .desc-text { color: var(--text-secondary); font-size: 12.5px; }
@@ -303,6 +312,13 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <div class="pagination" id="cat-pagination" style="display:none;">
+                <span class="pag-info" id="pag-info-cat"></span>
+                <div class="pag-btns">
+                    <button class="pag-btn" id="pag-prev-cat">← Anterior</button>
+                    <button class="pag-btn" id="pag-next-cat">Siguiente →</button>
+                </div>
+            </div>
         </div>
     </div>
 </main>
@@ -334,18 +350,47 @@
         });
     }, 400);
 
-    // Table search
+    // Table search + pagination
     const catalogRows = Array.from(document.querySelectorAll('#catalog-tbody tr[data-name]'));
+    const CAT_PER_PAGE = 10;
+    let catPage = 1;
+    let catFiltered = [];
+    const catPag     = document.getElementById('cat-pagination');
+    const catInfo    = document.getElementById('pag-info-cat');
+    const catPrev    = document.getElementById('pag-prev-cat');
+    const catNext    = document.getElementById('pag-next-cat');
+
+    function renderCatPage() {
+        const start = (catPage - 1) * CAT_PER_PAGE;
+        const end   = start + CAT_PER_PAGE;
+        const pages = Math.ceil(catFiltered.length / CAT_PER_PAGE);
+        catalogRows.forEach(r => r.style.display = 'none');
+        catFiltered.forEach(function(r, i) { r.style.display = (i >= start && i < end) ? '' : 'none'; });
+        catInfo.textContent = catFiltered.length
+            ? 'Página ' + catPage + ' de ' + pages
+            : 'Sin resultados';
+        catPrev.disabled = catPage <= 1;
+        catNext.disabled = catPage >= pages;
+        catPag.style.display = catFiltered.length > CAT_PER_PAGE ? 'flex' : 'none';
+        document.getElementById('table-count').textContent = catFiltered.length + ' producto' + (catFiltered.length !== 1 ? 's' : '');
+    }
+
+    catPrev.addEventListener('click', function() { if (catPage > 1) { catPage--; renderCatPage(); } });
+    catNext.addEventListener('click', function() {
+        const pages = Math.ceil(catFiltered.length / CAT_PER_PAGE);
+        if (catPage < pages) { catPage++; renderCatPage(); }
+    });
+
     function filterTable() {
         const q = document.getElementById('search-input').value.toLowerCase();
-        let visible = 0;
-        catalogRows.forEach(row => {
-            const show = !q || row.dataset.name.includes(q) || row.dataset.desc.includes(q);
-            row.style.display = show ? '' : 'none';
-            if (show) visible++;
-        });
-        document.getElementById('table-count').textContent = visible + ' producto' + (visible !== 1 ? 's' : '');
+        catFiltered = catalogRows.filter(row =>
+            !q || row.dataset.name.includes(q) || row.dataset.desc.includes(q)
+        );
+        catPage = 1;
+        renderCatPage();
     }
+
+    filterTable(); // render inicial
 </script>
 </body>
 </html>

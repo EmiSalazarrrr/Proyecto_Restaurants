@@ -84,6 +84,11 @@ DATABASES = {
         'PASSWORD': '',
         'HOST': 'db',
         'PORT': '3306',
+        'OPTIONS': {
+            # Forzar sesión UTC en MariaDB para que Django (USE_TZ=True)
+            # maneje correctamente la conversión UTC ↔ America/Mexico_City.
+            'init_command': "SET time_zone='+00:00'",
+        },
     }
 }
 
@@ -110,9 +115,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-mx'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Mexico_City'
 
 USE_I18N = True
 

@@ -252,11 +252,15 @@ def historial_view(request):
         })
 
     resumen = tickets.aggregate(total=Sum("precio_final"))
+    monto_total = resumen["total"] or 0
+    total_consumos = len(historial)
+    promedio = round(monto_total / total_consumos, 2) if total_consumos else 0
     context = {
         "cliente": cliente,
         "historial": historial,
-        "total_consumos": len(historial),
-        "monto_total": resumen["total"] or 0,
+        "total_consumos": total_consumos,
+        "monto_total": monto_total,
+        "promedio": promedio,
         "fecha_str": fecha_str,
     }
     return render(request, "historial.html", context)

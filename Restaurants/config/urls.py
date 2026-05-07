@@ -26,6 +26,7 @@ urlpatterns = [
     path('canjear-ticket/', pedidos_views.canjear_ticket, name='canjear_ticket'),
     path('tickets/<int:id_ticket>/confirmacion/', pedidos_views.confirmacion_canje, name='confirmacion_canje'),
     path('promociones/', promociones_views.promociones_view, name='promociones'),
+    path('restricciones/', promociones_views.restricciones_view, name='restricciones'),
     path('metricas/', views.metricas_view, name='metricas'),
 ]
 
