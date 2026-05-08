@@ -225,6 +225,15 @@
         .pag-btn:disabled { opacity: 0.35; cursor: default; }
         .pag-info { font: 500 12px "DM Mono", monospace; color: var(--muted); }
         .pag-total { font-size: 11px; color: var(--muted); opacity: 0.6; }
+        .pag-jump { display: flex; align-items: center; gap: 4px; }
+        .pag-jump-input { width: 44px; padding: 5px 6px; border: 1px solid rgba(1,75,170,0.25); border-radius: 8px; background: transparent; color: var(--dark); font: 13px "DM Mono", monospace; text-align: center; -moz-appearance: textfield; }
+        .pag-jump-input::-webkit-inner-spin-button,
+        .pag-jump-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .pag-jump-input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 2px rgba(1,75,170,0.10); }
+        .pag-jump-of { font: 500 12px "DM Mono", monospace; color: var(--muted); white-space: nowrap; }
+        .pag-jump-btn { width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(1,75,170,0.25); background: transparent; color: var(--blue); font: 600 15px "DM Sans", sans-serif; cursor: pointer; transition: all 0.12s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1; }
+        .pag-jump-btn:hover:not(:disabled) { background: var(--blue); color: #FFFFFF; border-color: var(--blue); }
+        .pag-jump-btn:disabled { opacity: 0.28; cursor: default; }
 
         /* ══════════════════════════════════════
            RESPONSIVE — TABLET (≤ 820px)
@@ -390,6 +399,10 @@
         <div class="pagination" id="pag-desktop">
             <button class="pag-btn" id="prev-d">← Anterior</button>
             <span class="pag-info" id="info-d"></span>
+            <div class="pag-jump">
+                <input type="number" class="pag-jump-input" id="jump-d" min="1" title="Ir a página">
+                <span class="pag-jump-of" id="of-d"></span>
+            </div>
             <button class="pag-btn" id="next-d">Siguiente →</button>
         </div>
         {% endif %}
@@ -449,6 +462,10 @@
         <div class="pagination" id="pag-mobile">
             <button class="pag-btn" id="prev-m">← Anterior</button>
             <span class="pag-info" id="info-m"></span>
+            <div class="pag-jump">
+                <input type="number" class="pag-jump-input" id="jump-m" min="1" title="Ir a página">
+                <span class="pag-jump-of" id="of-m"></span>
+            </div>
             <button class="pag-btn" id="next-m">Siguiente →</button>
         </div>
     </div>
@@ -470,7 +487,7 @@
 (function () {
     const PER_PAGE = 5;
 
-    function paginate(items, prevBtn, nextBtn, infoEl) {
+    function paginate(items, prevBtn, nextBtn, infoEl, jumpInput, ofEl) {
         if (!items.length) {
             if (prevBtn) prevBtn.closest('.pagination').style.display = 'none';
             return;
@@ -485,15 +502,26 @@
             items.forEach(function (el, i) {
                 el.style.display = (i >= start && i < end) ? '' : 'none';
             });
-            infoEl.textContent = 'Página ' + page + ' de ' + pages;
-            prevBtn.disabled = page <= 1;
-            nextBtn.disabled = page >= pages;
+            infoEl.textContent   = 'Página ' + page + ' de ' + pages;
+            jumpInput.value      = page;
+            jumpInput.max        = pages;
+            ofEl.textContent     = 'de ' + pages;
+            prevBtn.disabled     = page <= 1;
+            nextBtn.disabled     = page >= pages;
             // Ocultar paginación si todo cabe en una página
             prevBtn.closest('.pagination').style.display = pages > 1 ? 'flex' : 'none';
         }
 
+        function goTo(val) {
+            page = Math.min(Math.max(parseInt(val, 10) || 1, 1), pages);
+            render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         prevBtn.addEventListener('click', function () { if (page > 1)     { page--; render(); window.scrollTo({top: 0, behavior: 'smooth'}); } });
         nextBtn.addEventListener('click', function () { if (page < pages) { page++; render(); window.scrollTo({top: 0, behavior: 'smooth'}); } });
+        jumpInput.addEventListener('change', function () { goTo(this.value); });
+        jumpInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') { goTo(this.value); this.blur(); } });
 
         render();
     }
@@ -505,7 +533,9 @@
             desktopRows,
             document.getElementById('prev-d'),
             document.getElementById('next-d'),
-            document.getElementById('info-d')
+            document.getElementById('info-d'),
+            document.getElementById('jump-d'),
+            document.getElementById('of-d')
         );
     }
 
@@ -516,7 +546,9 @@
             mobileCards,
             document.getElementById('prev-m'),
             document.getElementById('next-m'),
-            document.getElementById('info-m')
+            document.getElementById('info-m'),
+            document.getElementById('jump-m'),
+            document.getElementById('of-m')
         );
     }
 

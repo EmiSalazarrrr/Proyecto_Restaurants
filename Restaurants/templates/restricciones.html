@@ -101,10 +101,19 @@
         /* Pagination */
         .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-top: 1px solid rgba(13,30,59,0.08); }
         .pag-info { font: 500 12px "DM Mono", monospace; color: var(--text-secondary); }
-        .pag-btns { display: flex; gap: 6px; }
+        .pag-btns { display: flex; align-items: center; gap: 6px; }
         .pag-btn { padding: 6px 14px; border-radius: 7px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-secondary); font: 13px "DM Sans", sans-serif; cursor: pointer; transition: all 0.15s; }
         .pag-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
         .pag-btn:disabled { opacity: 0.3; cursor: default; }
+        .pag-jump { display: flex; align-items: center; gap: 4px; }
+        .pag-jump-input { width: 44px; padding: 5px 6px; border: 1px solid var(--card-border); border-radius: 7px; background: var(--bg); color: var(--text-primary); font: 13px "DM Mono", monospace; text-align: center; -moz-appearance: textfield; }
+        .pag-jump-input::-webkit-inner-spin-button,
+        .pag-jump-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .pag-jump-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(216,174,72,0.15); }
+        .pag-jump-of { font: 500 12px "DM Mono", monospace; color: var(--text-muted); white-space: nowrap; }
+        .pag-jump-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-secondary); font: 600 15px "DM Sans", sans-serif; cursor: pointer; transition: all 0.12s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1; }
+        .pag-jump-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: rgba(216,174,72,0.08); }
+        .pag-jump-btn:disabled { opacity: 0.28; cursor: default; }
 
         /* ── Form card ── */
         .form-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 24px; }
@@ -227,6 +236,10 @@
                 <span class="pag-info" id="pag-info-rest"></span>
                 <div class="pag-btns">
                     <button class="pag-btn" id="pag-prev-rest">← Anterior</button>
+                    <div class="pag-jump">
+                        <input type="number" class="pag-jump-input" id="pag-jump-rest" min="1" title="Ir a página">
+                        <span class="pag-jump-of" id="pag-of-rest"></span>
+                    </div>
                     <button class="pag-btn" id="pag-next-rest">Siguiente →</button>
                 </div>
             </div>
@@ -274,21 +287,32 @@
     if (!rows.length) return;
     const pages = Math.ceil(rows.length / PER_PAGE);
     const pagination = document.getElementById('rest-pagination');
-    const infoEl = document.getElementById('pag-info-rest');
+    const infoEl  = document.getElementById('pag-info-rest');
     const prevBtn = document.getElementById('pag-prev-rest');
     const nextBtn = document.getElementById('pag-next-rest');
+    const jumpInput = document.getElementById('pag-jump-rest');
+    const ofEl    = document.getElementById('pag-of-rest');
 
     function render() {
         const start = (page - 1) * PER_PAGE;
         const end   = start + PER_PAGE;
         rows.forEach(function(tr, i) { tr.style.display = (i >= start && i < end) ? '' : 'none'; });
         infoEl.textContent = 'Página ' + page + ' de ' + pages;
+        jumpInput.value = page;
+        jumpInput.max   = pages;
+        ofEl.textContent = 'de ' + pages;
         prevBtn.disabled = page <= 1;
         nextBtn.disabled = page >= pages;
         pagination.style.display = pages > 1 ? 'flex' : 'none';
     }
+    function goToPage(val) {
+        page = Math.min(Math.max(parseInt(val, 10) || 1, 1), pages);
+        render();
+    }
     prevBtn.addEventListener('click', function() { if (page > 1)     { page--; render(); } });
     nextBtn.addEventListener('click', function() { if (page < pages) { page++; render(); } });
+    jumpInput.addEventListener('change', function() { goToPage(this.value); });
+    jumpInput.addEventListener('keydown', function(e) { if (e.key === 'Enter') { goToPage(this.value); this.blur(); } });
     render();
 })();
 </script>

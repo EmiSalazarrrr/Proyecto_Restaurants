@@ -162,6 +162,8 @@ def metricas_view(request):
         .order_by("-total")[:5]
     )
     max_top = top_productos[0]["total"] if top_productos else 1
+    for prod in top_productos:
+        prod["bar_pct"] = round((prod["total"] / max_top) * 100, 1) if max_top else 0
 
     top_clientes = list(
         tickets
