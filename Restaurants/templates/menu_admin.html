@@ -135,10 +135,10 @@
             <div class="stat-value" data-count="{{ clientes_hoy }}">{{ clientes_hoy }}</div>
             <div class="stat-sub">Clientes distintos atendidos</div>
         </article>
-        <article class="stat-card anim d5">
-            <div class="stat-label">Promociones activas</div>
-            <div class="stat-value" data-count="{{ promociones_activas }}">{{ promociones_activas }}</div>
-            <div class="stat-sub">Descuentos configurados</div>
+        <article class="stat-card anim d5" {% if canjeados_pendientes %}style="border-color:rgba(99,143,255,0.40);"{% endif %}>
+            <div class="stat-label" {% if canjeados_pendientes %}style="color:#1a3acc;"{% endif %}>Por cobrar</div>
+            <div class="stat-value" data-count="{{ canjeados_pendientes }}" {% if canjeados_pendientes %}style="color:#1a3acc;"{% endif %}>{{ canjeados_pendientes }}</div>
+            <div class="stat-sub">Tickets canjeados sin cobrar</div>
         </article>
     </section>
 

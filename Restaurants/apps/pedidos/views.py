@@ -5,7 +5,7 @@ from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
 from django.contrib import messages
-from django.db.models import Count, Sum
+from django.db.models import Case, Count, IntegerField, Sum, Value, When
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.timezone import localdate
@@ -77,11 +77,24 @@ def _promociones_json(promociones):
     return json.dumps(data)
 
 
-def _get_estado(ticket, today):
+def _get_estado(ticket, now):
+    """
+    Devuelve el estado calculado del ticket:
+      'pagado'   — ya cobrado por el admin
+      'canjeado' — cliente canjeó (canjeado=1), pendiente de cobro
+      'expirado' — nunca canjeado y pasaron más de 24 h desde su creación
+      'cancelado'— cancelado manualmente (canjeado=-1)
+      'abierto'  — activo, dentro de las 24 h, esperando que el cliente canjee
+    """
     if ticket.canjeado == -1:
         return "cancelado"
     if ticket.pagado:
         return "pagado"
+    if ticket.canjeado == 1:
+        return "canjeado"
+    # canjeado == 0: ticket abierto — verificar caducidad de 24 h
+    if (now - ticket.fecha).total_seconds() > 86400:
+        return "expirado"
     return "abierto"
 
 
@@ -229,6 +242,7 @@ def guardar_ticket(request):
 @login_required(role="admin")
 def lista_tickets(request):
     today = localdate()
+    now = timezone.now()
     periodo = request.GET.get("periodo", "hoy")
     fecha_str = request.GET.get("fecha", "")
     desde_str = request.GET.get("desde", "")
@@ -261,33 +275,48 @@ def lista_tickets(request):
         desde = hasta = today
         periodo = "hoy"
 
+    # Los tickets canjeados por el cliente (canjeado=1, no pagados) suben al tope
+    # para que el admin los vea de inmediato y pueda cobrarlos.
     tickets = (
         Ticket.objects
         .filter(fecha__date__gte=desde, fecha__date__lte=hasta)
         .select_related("nombre_usuario", "id_promocion")
         .prefetch_related("detalleticket_set__id_productopedido__id_alimentosbebidas")
-        .order_by("-fecha")
+        .annotate(
+            _sort_priority=Case(
+                When(canjeado=1, pagado=False, then=Value(0)),  # canjeado arriba
+                When(canjeado=0, pagado=False, then=Value(1)),  # abiertos/expirados
+                default=Value(2),                               # pagados/cancelados
+                output_field=IntegerField(),
+            )
+        )
+        .order_by('_sort_priority', '-fecha')
     )
 
-    tickets_con_estado = [(t, _get_estado(t, today)) for t in tickets]
+    tickets_con_estado = [(t, _get_estado(t, now)) for t in tickets]
 
-    count_abierto = sum(1 for _, e in tickets_con_estado if e == "abierto")
-    count_pagado = sum(1 for _, e in tickets_con_estado if e == "pagado")
+    count_abierto   = sum(1 for _, e in tickets_con_estado if e == "abierto")
+    count_canjeado  = sum(1 for _, e in tickets_con_estado if e == "canjeado")
+    count_pagado    = sum(1 for _, e in tickets_con_estado if e == "pagado")
+    count_expirado  = sum(1 for _, e in tickets_con_estado if e == "expirado")
     count_cancelado = sum(1 for _, e in tickets_con_estado if e == "cancelado")
-    total_ingresos = sum(t.precio_final for t, e in tickets_con_estado if e == "pagado")
+    total_ingresos  = sum(t.precio_final for t, e in tickets_con_estado if e == "pagado")
 
     chart_data = json.dumps({
-        "labels": ["Pagados", "Abiertos", "Cancelados"],
-        "data": [count_pagado, count_abierto, count_cancelado],
-        "colors": ["#4cc970", "#c9a84c", "#f07a7a"],
+        "labels": ["Pagados", "Canjeados", "Abiertos", "Expirados", "Cancelados"],
+        "data": [count_pagado, count_canjeado, count_abierto, count_expirado, count_cancelado],
+        "colors": ["#4cc970", "#7eb3ff", "#D8AE48", "#f0a07a", "#f07a7a"],
     })
 
     return render(request, "lista_tickets.html", {
         "tickets_con_estado": tickets_con_estado,
         "total_tickets": len(tickets_con_estado),
         "total_ingresos": total_ingresos,
-        "total_canjeados": count_pagado,
-        "total_expirados": count_cancelado,
+        "count_pagado": count_pagado,
+        "count_canjeado": count_canjeado,
+        "count_abierto": count_abierto,
+        "count_expirado": count_expirado,
+        "count_cancelado": count_cancelado,
         "chart_data": chart_data,
         "periodo": periodo,
         "desde": desde,
@@ -307,11 +336,13 @@ def modificar_ticket(request, id_ticket):
         .prefetch_related("detalleticket_set__id_productopedido__id_alimentosbebidas"),
         id_ticket=id_ticket,
     )
-    today = localdate()
-    estado = _get_estado(ticket, today)
+    now = timezone.now()
+    estado = _get_estado(ticket, now)
 
+    # Solo se pueden modificar tickets abiertos (canjeado=0): si el cliente ya
+    # canjeó el ticket no se puede cambiar la orden.
     if estado != "abierto":
-        messages.error(request, "Solo se pueden modificar tickets abiertos y sin cobrar.")
+        messages.error(request, "Solo se pueden modificar tickets abiertos y sin canjear.")
         return redirect("lista_tickets")
 
     if request.method == "POST":
@@ -374,10 +405,11 @@ def cancelar_ticket(request, id_ticket):
         return redirect("lista_tickets")
 
     ticket = get_object_or_404(Ticket, id_ticket=id_ticket)
-    estado = _get_estado(ticket, localdate())
+    estado = _get_estado(ticket, timezone.now())
 
-    if estado != "abierto":
-        messages.error(request, "Solo se pueden cancelar tickets abiertos y sin cobrar.")
+    # Permitir cancelar tanto tickets abiertos como canjeados (antes de cobrar).
+    if estado not in ("abierto", "canjeado"):
+        messages.error(request, "Solo se pueden cancelar tickets activos y sin cobrar.")
         return redirect("lista_tickets")
 
     ticket.canjeado = -1
@@ -396,8 +428,9 @@ def cobrar_ticket(request, id_ticket):
         id_ticket=id_ticket,
     )
 
-    if _get_estado(ticket, localdate()) != "abierto":
-        messages.error(request, "Solo se pueden cobrar tickets abiertos.")
+    # Se puede cobrar tanto un ticket abierto como uno ya canjeado por el cliente.
+    if _get_estado(ticket, timezone.now()) not in ("abierto", "canjeado"):
+        messages.error(request, "Solo se pueden cobrar tickets activos.")
         return redirect("lista_tickets")
 
     ticket.precio_final = ticket.calcular_total()
@@ -433,7 +466,6 @@ def canjear_ticket(request):
             messages.error(request, "Código inválido. Ingresa solo el número que aparece en tu ticket.")
             return render(request, "agregar_ticket.html")
 
-        today = localdate()
         try:
             ticket = Ticket.objects.select_related("id_promocion").get(codigounico=codigo)
         except Ticket.DoesNotExist:
@@ -448,8 +480,9 @@ def canjear_ticket(request):
             messages.error(request, "Este ticket fue cancelado.")
             return render(request, "agregar_ticket.html")
 
-        if localdate(ticket.fecha) < today:
-            messages.error(request, "Este ticket ha expirado y ya no puede canjearse.")
+        # Caducidad: el ticket expira 24 horas después de su creación
+        if (timezone.now() - ticket.fecha).total_seconds() > 86400:
+            messages.error(request, "Este ticket ha expirado (más de 24 h desde su creación).")
             return render(request, "agregar_ticket.html")
 
         cliente_actual = request.current_cliente

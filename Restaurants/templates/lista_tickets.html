@@ -89,10 +89,19 @@
 
         /* ── Status badges ── */
         .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; white-space: nowrap; }
-        .badge-pendiente { background: rgba(216,174,72,0.12); color: #7a5c00; border: 1px solid rgba(216,174,72,0.25); }
-        .badge-canjeado  { background: rgba(76,201,112,0.12); color: #1a6030; border: 1px solid rgba(76,201,112,0.25); }
-        .badge-expirado  { background: rgba(240,122,122,0.12); color: #8b2020; border: 1px solid rgba(240,122,122,0.25); }
+        .badge-abierto   { background: rgba(216,174,72,0.12);  color: #7a5c00; border: 1px solid rgba(216,174,72,0.25); }
+        .badge-canjeado  { background: rgba(99,143,255,0.14);  color: #1a3acc; border: 1px solid rgba(99,143,255,0.30); }
+        .badge-pagado    { background: rgba(76,201,112,0.12);  color: #1a6030; border: 1px solid rgba(76,201,112,0.25); }
+        .badge-expirado  { background: rgba(240,160,122,0.13); color: #7a3a10; border: 1px solid rgba(240,160,122,0.30); }
+        .badge-cancelado { background: rgba(155,139,122,0.12); color: #5a4a3a; border: 1px solid rgba(155,139,122,0.25); }
         .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+        /* ── Row highlights ── */
+        /* Canjeado: fila azul suave + borde izquierdo para destacarla */
+        tr.row-canjeado > td { background: rgba(99,143,255,0.05) !important; }
+        tr.row-canjeado > td:first-child { border-left: 3px solid #638FFF; padding-left: 13px; }
+        /* Expirado: fila atenuada */
+        tr.row-expirado > td { opacity: 0.55; }
 
         /* ── Products badge + expandable ── */
         .productos-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px; background: rgba(13,30,59,0.05); border: 1px solid var(--card-border); font-size: 12px; color: var(--text-secondary); cursor: pointer; user-select: none; transition: all 0.15s; }
@@ -233,13 +242,13 @@
             <div class="label">Ingresos cobrados</div>
             <div class="value">${{ total_ingresos }}</div>
         </article>
-        <article class="card">
-            <div class="label">Pagados</div>
-            <div class="value green">{{ total_canjeados }}</div>
+        <article class="card" style="border-color: rgba(99,143,255,0.35);">
+            <div class="label" style="color:#1a3acc;">Por cobrar</div>
+            <div class="value" style="color:#1a3acc;">{{ count_canjeado }}</div>
         </article>
         <article class="card">
-            <div class="label">Cancelados</div>
-            <div class="value red">{{ total_expirados }}</div>
+            <div class="label">Pagados</div>
+            <div class="value green">{{ count_pagado }}</div>
         </article>
         <div class="chart-card">
             <div class="chart-title">Distribucion de tickets</div>
@@ -269,7 +278,7 @@
             </thead>
             <tbody>
                 {% for ticket, estado in tickets_con_estado %}
-                <tr class="ticket-row">
+                <tr class="ticket-row {% if estado == 'canjeado' %}row-canjeado{% elif estado == 'expirado' %}row-expirado{% endif %}">
                     <td>
                         <div class="mono" style="font-size:13px;">#{{ ticket.id_ticket }}</div>
                         {% if ticket.codigounico %}
@@ -324,20 +333,32 @@
                     <td class="mono" style="font-size:12px;">{{ ticket.fecha|date:"d/m/Y" }}<br><span class="muted">{{ ticket.fecha|date:"H:i" }}</span></td>
                     <td>
                         {% if estado == "pagado" %}
-                            <span class="badge badge-canjeado"><span class="badge-dot"></span>Pagado</span>
+                            <span class="badge badge-pagado"><span class="badge-dot"></span>Pagado</span>
+                        {% elif estado == "canjeado" %}
+                            <span class="badge badge-canjeado"><span class="badge-dot"></span>Canjeado ⬆ Cobrar</span>
+                        {% elif estado == "abierto" %}
+                            <span class="badge badge-abierto"><span class="badge-dot"></span>Abierto</span>
+                        {% elif estado == "expirado" %}
+                            <span class="badge badge-expirado"><span class="badge-dot"></span>Expirado</span>
                         {% elif estado == "cancelado" %}
-                            <span class="badge badge-expirado"><span class="badge-dot"></span>Cancelado</span>
-                        {% else %}
-                            <span class="badge badge-pendiente"><span class="badge-dot"></span>Abierto</span>
+                            <span class="badge badge-cancelado"><span class="badge-dot"></span>Cancelado</span>
                         {% endif %}
                     </td>
                     <td>
                         <div class="actions">
                             <a href="{% url 'imprimir_ticket' ticket.id_ticket %}" target="_blank" class="btn-action btn-imprimir">Imprimir</a>
                             {% if estado == "abierto" %}
+                                {# Abierto: se puede modificar, cobrar y cancelar #}
                                 <a href="{% url 'modificar_ticket' ticket.id_ticket %}" class="btn-action btn-modificar">Modificar</a>
                                 <button type="button" class="btn-action btn-cobrar" onclick="toggleCobro({{ ticket.id_ticket }})">Cobrar</button>
                                 <form method="POST" action="{% url 'cancelar_ticket' ticket.id_ticket %}" class="btn-cancelar-form" onsubmit="return confirm('¿Cancelar el ticket #{{ ticket.id_ticket }}? Esta acción no se puede deshacer.')">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn-action btn-cancelar">Cancelar</button>
+                                </form>
+                            {% elif estado == "canjeado" %}
+                                {# Canjeado: cliente ya lo registró — solo cobrar o cancelar (no modificar) #}
+                                <button type="button" class="btn-action btn-cobrar" onclick="toggleCobro({{ ticket.id_ticket }})">Cobrar</button>
+                                <form method="POST" action="{% url 'cancelar_ticket' ticket.id_ticket %}" class="btn-cancelar-form" onsubmit="return confirm('¿Cancelar el ticket #{{ ticket.id_ticket }}? El cliente ya lo canjeó.')">
                                     {% csrf_token %}
                                     <button type="submit" class="btn-action btn-cancelar">Cancelar</button>
                                 </form>
@@ -359,7 +380,7 @@
                         </div>
                     </td>
                 </tr>
-                {% if estado == "abierto" %}
+                {% if estado == "abierto" or estado == "canjeado" %}
                 <tr class="cobro-expand" id="cobro-{{ ticket.id_ticket }}">
                     <td colspan="9">
                         <form class="cobro-form" method="POST" action="{% url 'cobrar_ticket' ticket.id_ticket %}" data-total="{{ ticket.precio_final }}">
@@ -437,9 +458,13 @@
             rows.forEach(function(tr, i) {
                 const visible = i >= start && i < end;
                 tr.style.display = visible ? '' : 'none';
-                const next = tr.nextElementSibling;
-                if (next && next.classList.contains('productos-expand')) {
-                    if (!visible) next.style.display = 'none';
+                if (!visible) {
+                    // Colapsar todas las filas expandidas adyacentes (productos + cobro)
+                    let next = tr.nextElementSibling;
+                    while (next && !next.classList.contains('ticket-row')) {
+                        next.style.display = 'none';
+                        next = next.nextElementSibling;
+                    }
                 }
             });
             infoEl.textContent = 'Página ' + page + ' de ' + pages + ' (' + rows.length + ' tickets)';
