@@ -76,11 +76,29 @@
             from { opacity: 0; transform: translateY(16px); }
             to   { opacity: 1; transform: translateY(0); }
         }
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-10px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
         .anim { opacity: 0; animation: fadeInUp 0.5s ease forwards; }
-        .d1 { animation-delay: 0.05s; } .d2 { animation-delay: 0.1s; }
-        .d3 { animation-delay: 0.15s; } .d4 { animation-delay: 0.2s; }
-        .d5 { animation-delay: 0.25s; } .d6 { animation-delay: 0.3s; }
-        .d7 { animation-delay: 0.35s; } .d8 { animation-delay: 0.4s; }
+        .d1 { animation-delay: 0.05s; } .d2 { animation-delay: 0.10s; }
+        .d3 { animation-delay: 0.15s; } .d4 { animation-delay: 0.20s; }
+        .d5 { animation-delay: 0.25s; } .d6 { animation-delay: 0.30s; }
+        .d7 { animation-delay: 0.35s; } .d8 { animation-delay: 0.40s; }
+        .d9 { animation-delay: 0.45s; } .d10{ animation-delay: 0.50s; }
+        .d11{ animation-delay: 0.55s; }
+
+        /* ── Sidebar entrance ── */
+        .sidebar { animation: fadeInLeft 0.5s cubic-bezier(0.22,0.61,0.36,1) both; }
+        .sidebar-logo { animation: fadeInLeft 0.4s ease 0.10s both; opacity: 0; }
+        .sidebar > .nav-item { animation: fadeInLeft 0.35s ease both; opacity: 0; }
+        .sidebar > .nav-item:nth-child(3)  { animation-delay: 0.18s; }
+        .sidebar > .nav-item:nth-child(4)  { animation-delay: 0.23s; }
+        .sidebar > .nav-item:nth-child(5)  { animation-delay: 0.28s; }
+        .sidebar > .nav-item:nth-child(6)  { animation-delay: 0.33s; }
+        .sidebar > .nav-item:nth-child(7)  { animation-delay: 0.38s; }
+        .sidebar > .nav-item:nth-child(8)  { animation-delay: 0.43s; }
+        .sidebar-bottom { animation: fadeInLeft 0.35s ease 0.48s both; opacity: 0; }
 
         /* ── Stat cards ── */
         .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; margin-bottom: 24px; }
@@ -188,15 +206,15 @@
             <div class="action-icon">🍽️</div>
             <div><div class="action-title">Catalogo</div><div class="action-desc">Alta, edicion y baja de alimentos y bebidas.</div></div>
         </a>
-        <a class="action-card anim d8" href="{% url 'atender_mesa' %}">
+        <a class="action-card anim d9" href="{% url 'atender_mesa' %}">
             <div class="action-icon">🪑</div>
             <div><div class="action-title">Atender mesa</div><div class="action-desc">Crear tickets con productos y promociones recomendadas.</div></div>
         </a>
-        <a class="action-card anim d8" href="{% url 'promociones' %}">
+        <a class="action-card anim d10" href="{% url 'promociones' %}">
             <div class="action-icon">🎁</div>
             <div><div class="action-title">Promociones</div><div class="action-desc">Gestionar descuentos y restricciones.</div></div>
         </a>
-        <a class="action-card anim d8" href="{% url 'metricas' %}">
+        <a class="action-card anim d11" href="{% url 'metricas' %}">
             <div class="action-icon">📊</div>
             <div><div class="action-title">Metricas</div><div class="action-desc">Consultar ventas, tickets y producto mas vendido.</div></div>
         </a>
@@ -205,24 +223,27 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
-    // Counter animation
-    document.querySelectorAll('[data-count]').forEach(el => {
-        const target = parseFloat(el.dataset.count) || 0;
-        const prefix = el.dataset.prefix || '';
-        if (target === 0) return;
-        let start = null;
-        const duration = 900;
-        const step = ts => {
-            if (!start) start = ts;
-            const p = Math.min((ts - start) / duration, 1);
-            const eased = 1 - Math.pow(1 - p, 3);
-            const val = eased * target;
-            el.textContent = prefix + (Number.isInteger(target) ? Math.round(val) : val.toFixed(2));
-            if (p < 1) requestAnimationFrame(step);
-            else el.textContent = prefix + (Number.isInteger(target) ? target : target.toFixed(2));
-        };
-        requestAnimationFrame(step);
-    });
+    // Counter animation — delayed so numbers count up while cards are already visible
+    // Last stat card is d5 (0.25s delay + 0.5s animation = 0.75s total), start at 0.35s
+    setTimeout(() => {
+        document.querySelectorAll('[data-count]').forEach(el => {
+            const target = parseFloat(el.dataset.count) || 0;
+            const prefix = el.dataset.prefix || '';
+            if (target === 0) return;
+            let start = null;
+            const duration = 900;
+            const step = ts => {
+                if (!start) start = ts;
+                const p = Math.min((ts - start) / duration, 1);
+                const eased = 1 - Math.pow(1 - p, 3);
+                const val = eased * target;
+                el.textContent = prefix + (Number.isInteger(target) ? Math.round(val) : val.toFixed(2));
+                if (p < 1) requestAnimationFrame(step);
+                else el.textContent = prefix + (Number.isInteger(target) ? target : target.toFixed(2));
+            };
+            requestAnimationFrame(step);
+        });
+    }, 350);
 
     // Bar chart
     const barData = {{ chart_bar|safe }};
