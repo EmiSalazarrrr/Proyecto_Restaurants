@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <script>!function(){var t=localStorage.getItem('theme');t&&document.documentElement.setAttribute('data-theme',t)}();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restricciones | Restaurants</title>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -33,9 +34,40 @@
         .nav-item.active { color: #0D1E3B; background: #D8AE48; border-left-color: #D8AE48; }
         .nav-item:hover { color: #F4F0E8; background: #1A2F50; border-left-color: transparent; }
         .nav-icon { width: 20px; text-align: center; }
-        .sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--card-border); }
+        .sidebar-bottom { margin-top: auto; padding: 20px 24px 20px; border-top: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 10px; }
         .btn-logout { display: block; text-decoration: none; color: rgba(244,240,232,0.75); border: 1px solid rgba(244,240,232,0.15); border-radius: 8px; padding: 10px 14px; text-align: center; transition: all 0.15s; }
         .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
+        /* Botón tema — inline para evitar caché */
+        .btn-theme { display: flex; align-items: center; gap: 8px; justify-content: center; width: 100%; background: transparent; border: 1px solid rgba(244,240,232,0.12); border-radius: 8px; padding: 9px 14px; color: rgba(244,240,232,0.65); cursor: pointer; font: 500 13px "DM Sans", sans-serif; transition: all 0.15s; line-height: 1; white-space: nowrap; }
+        .btn-theme:hover { border-color: var(--accent, #D8AE48); color: var(--accent, #D8AE48); }
+        /* Modo oscuro — variables inline */
+        html[data-theme="dark"] {
+            --bg: #111827; --card-bg: #1a2035; --card-border: rgba(255,255,255,0.07);
+            --text-primary: #e2ddd5; --text-secondary: #a08870; --text-muted: #6e5e52;
+            --sidebar-bg: #090d14; --accent: #D8AE48; --accent-dim: rgba(216,174,72,0.11);
+            --success: #4cc970; --success-dim: rgba(76,201,112,0.10);
+            --danger: #f07a7a; --danger-dim: rgba(240,122,122,0.08);
+        }
+        html[data-theme="dark"] th { background: rgba(255,255,255,0.04) !important; color: var(--text-primary) !important; }
+        html[data-theme="dark"] td { border-top-color: rgba(255,255,255,0.05) !important; }
+        html[data-theme="dark"] tbody tr:hover td { background: rgba(255,255,255,0.025) !important; }
+        html[data-theme="dark"] .card, html[data-theme="dark"] .form-card { background: var(--card-bg) !important; border-color: var(--card-border) !important; }
+        html[data-theme="dark"] h1, html[data-theme="dark"] h2, html[data-theme="dark"] h3,
+        html[data-theme="dark"] .card-header h3, html[data-theme="dark"] .form-title { color: var(--text-primary) !important; }
+        html[data-theme="dark"] .topbar p, html[data-theme="dark"] .muted { color: var(--text-muted) !important; }
+        html[data-theme="dark"] .card-header { background: rgba(255,255,255,0.02) !important; border-bottom-color: var(--card-border) !important; }
+        html[data-theme="dark"] .card-count { color: var(--text-muted) !important; }
+        html[data-theme="dark"] .field input { background: #151b27 !important; border-color: rgba(255,255,255,0.10) !important; color: var(--text-primary) !important; }
+        html[data-theme="dark"] .field label { color: var(--text-muted) !important; }
+        html[data-theme="dark"] .info-card { background: rgba(216,174,72,0.07) !important; border-color: rgba(216,174,72,0.15) !important; color: var(--text-secondary) !important; }
+        html[data-theme="dark"] .badge-in-use { background: rgba(216,174,72,0.15) !important; }
+        html[data-theme="dark"] .badge-free { background: rgba(255,255,255,0.05) !important; border-color: rgba(255,255,255,0.08) !important; color: var(--text-muted) !important; }
+        html[data-theme="dark"] .btn-del { background: transparent !important; border-color: rgba(240,122,122,0.25) !important; }
+        html[data-theme="dark"] .pag-btn { background: var(--card-bg) !important; border-color: var(--card-border) !important; color: var(--text-secondary) !important; }
+        html[data-theme="dark"] .pag-jump-input { background: #111827 !important; border-color: var(--card-border) !important; color: var(--text-primary) !important; }
+        html[data-theme="dark"] .pag-info, html[data-theme="dark"] .pag-jump-of { color: var(--text-muted) !important; }
+        html[data-theme="dark"] .alert-success { background: rgba(76,201,112,0.08) !important; border-color: rgba(76,201,112,0.18) !important; }
+        html[data-theme="dark"] .alert-error   { background: rgba(240,122,122,0.08) !important; border-color: rgba(240,122,122,0.18) !important; }
 
         /* ── Main ── */
         .main { margin-left: 220px; flex: 1; padding: 36px 40px; }
@@ -162,6 +194,7 @@
     <a class="nav-item active" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
     <a class="nav-item" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
     <div class="sidebar-bottom">
+        <button class="btn-theme" id="theme-toggle" onclick="toggleTheme()">🌙 Modo oscuro</button>
         <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
     </div>
 </aside>
@@ -280,6 +313,22 @@
 </main>
 
 <script>
+    // ── Tema oscuro/claro ──────────────────────────────────────────
+    function toggleTheme() {
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var next = dark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateThemeBtn();
+    }
+    function updateThemeBtn() {
+        var btn = document.getElementById('theme-toggle');
+        if (!btn) return;
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.textContent = dark ? '☀️ Modo claro' : '🌙 Modo oscuro';
+    }
+    updateThemeBtn();
+
 (function() {
     const PER_PAGE = 10;
     let page = 1;
