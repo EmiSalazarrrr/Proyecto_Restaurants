@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <script>!function(){var t=localStorage.getItem('theme');t&&document.documentElement.setAttribute('data-theme',t)}();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi cuenta | Restaurants</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -70,6 +71,110 @@
         .hbtn:active { transform: scale(0.96) translateY(0); }
         .hbtn.accent { background: #F2A900; border-color: #F2A900; color: #00205B; font-weight: 600; }
         .hbtn.accent:hover { background: #E09B00; border-color: #E09B00; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(242,169,0,0.30); }
+        .theme-toggle-user {
+            color: rgba(255,255,255,0.80);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 10px;
+            padding: 9px 14px;
+            font: 500 13px "DM Sans", sans-serif;
+            line-height: 1;
+            cursor: pointer;
+            white-space: nowrap;
+            background: rgba(255,255,255,0.08);
+            transition: all 0.15s;
+        }
+        .theme-toggle-user:hover { color: #F2A900; border-color: rgba(242,169,0,0.55); background: rgba(242,169,0,0.10); }
+
+        /* Modo oscuro coherente con la vista de administrador */
+        html[data-theme="dark"] {
+            --bg: #111827;
+            --card: #1a2035;
+            --border: rgba(255,255,255,0.07);
+            --blue: #D8AE48;
+            --blue-light: #D8AE48;
+            --amber: #D8AE48;
+            --dark: #e2ddd5;
+            --muted: #8f8173;
+            --success: #4cc970;
+            --success-dim: rgba(76,201,112,0.10);
+            --danger: #f07a7a;
+            --danger-dim: rgba(240,122,122,0.08);
+        }
+        html[data-theme="dark"] header {
+            background: linear-gradient(135deg, #090d14 0%, #111827 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            box-shadow: 0 14px 34px rgba(0,0,0,0.28);
+        }
+        html[data-theme="dark"] .brand { color: rgba(226,221,213,0.56); }
+        html[data-theme="dark"] .greeting { color: var(--dark); }
+        html[data-theme="dark"] .greeting span { color: var(--amber); }
+        html[data-theme="dark"] .hbtn,
+        html[data-theme="dark"] .theme-toggle-user {
+            color: rgba(226,221,213,0.78);
+            border-color: rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.04);
+        }
+        html[data-theme="dark"] .hbtn:hover,
+        html[data-theme="dark"] .theme-toggle-user:hover {
+            color: var(--amber);
+            border-color: rgba(216,174,72,0.45);
+            background: rgba(216,174,72,0.08);
+        }
+        html[data-theme="dark"] .hbtn.accent {
+            background: var(--amber);
+            border-color: var(--amber);
+            color: #0D1E3B;
+        }
+        html[data-theme="dark"] .filter-bar,
+        html[data-theme="dark"] .stat-card,
+        html[data-theme="dark"] .card {
+            background: var(--card);
+            border-color: var(--border);
+            box-shadow: none;
+        }
+        html[data-theme="dark"] .menu-item,
+        html[data-theme="dark"] .ticket-item {
+            background: rgba(255,255,255,0.03);
+            border-color: rgba(255,255,255,0.06);
+        }
+        html[data-theme="dark"] .menu-item:hover,
+        html[data-theme="dark"] .ticket-item:hover,
+        html[data-theme="dark"] .stat-card:hover {
+            border-color: rgba(216,174,72,0.35);
+        }
+        html[data-theme="dark"] .filter-date {
+            background: #151b27;
+            border-color: rgba(255,255,255,0.10);
+            color: var(--dark);
+        }
+        html[data-theme="dark"] .filter-date:focus {
+            border-color: rgba(216,174,72,0.65);
+            box-shadow: 0 0 0 3px rgba(216,174,72,0.12);
+        }
+        html[data-theme="dark"] .filter-btn {
+            background: var(--amber);
+            color: #0D1E3B;
+        }
+        html[data-theme="dark"] .filter-bar .filter-btn {
+            background: var(--amber) !important;
+            color: #0D1E3B !important;
+        }
+        html[data-theme="dark"] .filter-clear {
+            border-color: rgba(255,255,255,0.10);
+            color: var(--muted);
+        }
+        html[data-theme="dark"] .filter-clear:hover,
+        html[data-theme="dark"] .ver-mas:hover {
+            color: var(--amber);
+            border-color: rgba(216,174,72,0.45);
+        }
+        html[data-theme="dark"] .filter-active-tag,
+        html[data-theme="dark"] .badge-pendiente {
+            background: rgba(216,174,72,0.14);
+            border-color: rgba(216,174,72,0.30);
+            color: var(--amber);
+        }
+        html[data-theme="dark"] .menu-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); }
 
         /* ── Animations ── */
         @keyframes fadeInUp {
@@ -231,7 +336,7 @@
             .header-actions {
                 width: 100%;
                 display: grid;
-                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-columns: repeat(4, minmax(0,1fr));
                 gap: 7px;
             }
         }
@@ -247,10 +352,10 @@
             .header-actions {
                 width: 100%;
                 display: grid;
-                grid-template-columns: 1fr 1fr 1fr;
+                grid-template-columns: repeat(2, minmax(0,1fr));
                 gap: 6px;
             }
-            .hbtn { font-size: 11px; padding: 8px 6px; border-radius: 9px; }
+            .hbtn, .theme-toggle-user { font-size: 11px; padding: 8px 6px; border-radius: 9px; }
             .filter-bar { padding: 10px 12px; gap: 8px; margin-bottom: 14px; }
             .filter-label { width: 100%; margin-bottom: 0; }
             .filter-date { width: 100%; min-width: 0; }
@@ -289,6 +394,7 @@
         <div class="header-actions">
             <a class="hbtn accent" href="{% url 'canjear_ticket' %}">🎫 Canjear</a>
             <a class="hbtn" href="{% url 'historial' %}">📋 Historial</a>
+            <button class="theme-toggle-user" id="theme-toggle" type="button" onclick="toggleTheme()">Modo oscuro</button>
             <a class="hbtn" href="{% url 'logout' %}">Salir</a>
         </div>
     </header>
@@ -404,6 +510,23 @@
             requestAnimationFrame(step);
         });
     }, 320);
+
+    function toggleTheme() {
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var next = dark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateThemeBtn();
+    }
+
+    function updateThemeBtn() {
+        var btn = document.getElementById('theme-toggle');
+        if (!btn) return;
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.textContent = dark ? 'Modo claro' : 'Modo oscuro';
+    }
+
+    updateThemeBtn();
 </script>
 </body>
 </html>
