@@ -352,3 +352,274 @@ a {
         grid-template-columns: 1fr !important;
     }
 }
+
+/* ════════════════════════════════════════════════════════════════
+   DARK MODE
+════════════════════════════════════════════════════════════════ */
+
+/* ── Botón toggle (sidebar) ── */
+.btn-theme {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+    background: transparent;
+    border: 1px solid rgba(244,240,232,0.12);
+    border-radius: 8px;
+    padding: 9px 14px;
+    color: rgba(244,240,232,0.60);
+    cursor: pointer;
+    font: 500 13px "DM Sans", sans-serif;
+    transition: all 0.15s;
+    margin-bottom: 8px;
+    line-height: 1;
+    white-space: nowrap;
+}
+.btn-theme:hover {
+    border-color: var(--accent, #D8AE48);
+    color: var(--accent, #D8AE48);
+}
+
+/* ── Variables en modo oscuro ── */
+/* html[data-theme="dark"] tiene especificidad 0-1-1 vs :root 0-1-0, siempre gana */
+html[data-theme="dark"] {
+    --bg:           #111827;
+    --card-bg:      #1a2035;
+    --card-border:  rgba(255,255,255,0.07);
+    --text-primary: #e2ddd5;
+    --text-secondary: #a08870;
+    --text-muted:   #6e5e52;
+    --sidebar-bg:   #090d14;
+    --accent:       #D8AE48;
+    --accent-dim:   rgba(216,174,72,0.11);
+    --success:      #4cc970;
+    --success-dim:  rgba(76,201,112,0.10);
+    --danger:       #f07a7a;
+    --danger-dim:   rgba(240,122,122,0.08);
+    --warning:      #D8AE48;
+}
+
+/* Transición suave al cambiar tema */
+body, .card, .stat-card, .chart-card, .table-card, .table-wrap,
+.form-card, .action-card, main, .main, .sidebar, .filter-bar, .date-row {
+    transition: background 0.22s, border-color 0.22s, color 0.22s;
+}
+
+/* ── Tabla ── */
+html[data-theme="dark"] th {
+    background: rgba(255,255,255,0.04) !important;
+    color: var(--text-primary) !important;
+}
+html[data-theme="dark"] td {
+    border-top-color: rgba(255,255,255,0.05) !important;
+    color: var(--text-primary);
+}
+html[data-theme="dark"] tbody tr:hover td,
+html[data-theme="dark"] tbody tr.data-row:hover td,
+html[data-theme="dark"] tbody tr.ticket-row:hover td {
+    background: rgba(255,255,255,0.025) !important;
+}
+
+/* ── Cards y contenedores ── */
+html[data-theme="dark"] .stat-card,
+html[data-theme="dark"] .chart-card,
+html[data-theme="dark"] .card,
+html[data-theme="dark"] .table-card,
+html[data-theme="dark"] .table-wrap,
+html[data-theme="dark"] .form-card,
+html[data-theme="dark"] .action-card {
+    background: var(--card-bg) !important;
+    border-color: var(--card-border) !important;
+}
+
+/* ── Texto y etiquetas ── */
+html[data-theme="dark"] h1, html[data-theme="dark"] h2, html[data-theme="dark"] h3,
+html[data-theme="dark"] .stat-label, html[data-theme="dark"] .label,
+html[data-theme="dark"] .card-title, html[data-theme="dark"] .chart-title,
+html[data-theme="dark"] .section-title, html[data-theme="dark"] .chart-empty,
+html[data-theme="dark"] .action-title, html[data-theme="dark"] .form-title {
+    color: var(--text-primary) !important;
+}
+html[data-theme="dark"] .stat-value,
+html[data-theme="dark"] .value { color: var(--text-primary) !important; }
+html[data-theme="dark"] .stat-value.green,
+html[data-theme="dark"] .value.green  { color: var(--success) !important; }
+html[data-theme="dark"] .stat-value.red,
+html[data-theme="dark"] .value.red    { color: var(--danger) !important; }
+html[data-theme="dark"] .stat-sub, html[data-theme="dark"] .topbar p,
+html[data-theme="dark"] .muted, html[data-theme="dark"] .muted-text,
+html[data-theme="dark"] .text-muted, html[data-theme="dark"] .action-desc,
+html[data-theme="dark"] .no-data, html[data-theme="dark"] .desc-text {
+    color: var(--text-muted) !important;
+}
+
+/* ── Inputs y formularios ── */
+html[data-theme="dark"] input:not([type="radio"]):not([type="checkbox"]):not([type="submit"]):not([type="button"]):not([type="range"]),
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+    background: #151b27 !important;
+    border-color: rgba(255,255,255,0.10) !important;
+    color: var(--text-primary) !important;
+}
+html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.7);
+}
+html[data-theme="dark"] .form-input, html[data-theme="dark"] .form-select,
+html[data-theme="dark"] .form-textarea, html[data-theme="dark"] .field input,
+html[data-theme="dark"] .table-search, html[data-theme="dark"] .date-input {
+    background: #151b27 !important;
+    border-color: rgba(255,255,255,0.10) !important;
+    color: var(--text-primary) !important;
+}
+html[data-theme="dark"] .form-label, html[data-theme="dark"] .field label,
+html[data-theme="dark"] .filter-label, html[data-theme="dark"] .date-group label {
+    color: var(--text-muted) !important;
+}
+html[data-theme="dark"] .info-card {
+    background: rgba(216,174,72,0.07) !important;
+    border-color: rgba(216,174,72,0.15) !important;
+    color: var(--text-secondary) !important;
+}
+
+/* ── Barras de filtro y periodo ── */
+html[data-theme="dark"] .filter-bar,
+html[data-theme="dark"] .date-row {
+    background: var(--card-bg) !important;
+    border-color: var(--card-border) !important;
+}
+html[data-theme="dark"] .filter-btn,
+html[data-theme="dark"] .period-btn {
+    color: var(--text-primary) !important;
+    border-color: rgba(255,255,255,0.13) !important;
+}
+html[data-theme="dark"] .filter-btn:hover,
+html[data-theme="dark"] .period-btn:hover {
+    background: rgba(255,255,255,0.04) !important;
+    border-color: rgba(255,255,255,0.22) !important;
+}
+html[data-theme="dark"] .filter-btn.active,
+html[data-theme="dark"] .period-btn.active {
+    background: #D8AE48 !important;
+    color: #0D1E3B !important;
+    border-color: #D8AE48 !important;
+}
+
+/* ── Encabezado de tabla ── */
+html[data-theme="dark"] .table-header {
+    background: rgba(255,255,255,0.02) !important;
+    border-bottom-color: var(--card-border) !important;
+}
+html[data-theme="dark"] .table-header h2,
+html[data-theme="dark"] .table-header h3,
+html[data-theme="dark"] .card-header h3 { color: var(--text-primary) !important; }
+html[data-theme="dark"] .table-count,
+html[data-theme="dark"] .card-count    { color: var(--text-muted) !important; }
+
+/* ── Paginación ── */
+html[data-theme="dark"] .pag-btn {
+    background: var(--card-bg) !important;
+    border-color: var(--card-border) !important;
+    color: var(--text-secondary) !important;
+}
+html[data-theme="dark"] .pag-info,
+html[data-theme="dark"] .pag-jump-of { color: var(--text-muted) !important; }
+html[data-theme="dark"] .pag-jump-input {
+    background: #111827 !important;
+    border-color: var(--card-border) !important;
+    color: var(--text-primary) !important;
+}
+
+/* ── Badges de estado ── */
+html[data-theme="dark"] .badge-abierto   { background: rgba(216,174,72,0.16) !important; }
+html[data-theme="dark"] .badge-canjeado  { background: rgba(99,143,255,0.16) !important; }
+html[data-theme="dark"] .badge-pagado    { background: rgba(76,201,112,0.16) !important; }
+html[data-theme="dark"] .badge-expirado  { background: rgba(240,160,122,0.16) !important; }
+html[data-theme="dark"] .badge-cancelado { background: rgba(155,139,122,0.16) !important; }
+html[data-theme="dark"] .badge-active    { background: rgba(76,201,112,0.14) !important; }
+html[data-theme="dark"] .badge-inactive  { background: rgba(240,122,122,0.14) !important; }
+html[data-theme="dark"] .badge-in-use    { background: rgba(216,174,72,0.15) !important; }
+html[data-theme="dark"] .badge-free {
+    background: rgba(255,255,255,0.05) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    color: var(--text-muted) !important;
+}
+
+/* ── Filas resaltadas (tickets) ── */
+html[data-theme="dark"] tr.row-canjeado > td {
+    background: rgba(99,143,255,0.08) !important;
+}
+html[data-theme="dark"] tr.row-expirado > td { opacity: 0.45 !important; }
+
+/* ── Filas expandibles ── */
+html[data-theme="dark"] .productos-expand td {
+    background: rgba(255,255,255,0.015) !important;
+}
+html[data-theme="dark"] .cobro-expand td {
+    background: rgba(76,201,112,0.04) !important;
+}
+html[data-theme="dark"] .producto-item {
+    background: rgba(255,255,255,0.04) !important;
+    border-color: rgba(255,255,255,0.06) !important;
+    color: var(--text-secondary) !important;
+}
+html[data-theme="dark"] .producto-item b { color: var(--text-primary) !important; }
+html[data-theme="dark"] .productos-badge {
+    background: rgba(255,255,255,0.05) !important;
+    border-color: rgba(255,255,255,0.08) !important;
+    color: var(--text-secondary) !important;
+}
+html[data-theme="dark"] .cobro-method {
+    border-color: rgba(255,255,255,0.09) !important;
+    color: var(--text-secondary) !important;
+}
+html[data-theme="dark"] .cobro-summary { color: var(--text-secondary) !important; }
+
+/* ── Botones de acción en tablas ── */
+html[data-theme="dark"] .btn-action,
+html[data-theme="dark"] .mini-btn,
+html[data-theme="dark"] .btn-edit,
+html[data-theme="dark"] .btn-toggle,
+html[data-theme="dark"] .btn-back,
+html[data-theme="dark"] .btn-secondary {
+    background: transparent !important;
+    border-color: rgba(255,255,255,0.10) !important;
+    color: var(--text-secondary) !important;
+}
+html[data-theme="dark"] .btn-del {
+    background: transparent !important;
+    border-color: rgba(240,122,122,0.25) !important;
+}
+
+/* ── Top 5 productos / clientes ── */
+html[data-theme="dark"] .bar-track,
+html[data-theme="dark"] .sales-bar-track { background: rgba(255,255,255,0.06) !important; }
+html[data-theme="dark"] .client-item {
+    background: rgba(255,255,255,0.03) !important;
+    border-color: rgba(255,255,255,0.06) !important;
+}
+html[data-theme="dark"] .client-name,
+html[data-theme="dark"] .client-rank,
+html[data-theme="dark"] .top-name { color: var(--text-primary) !important; }
+
+/* ── Alertas ── */
+html[data-theme="dark"] .alert-success, html[data-theme="dark"] .alert.success {
+    background: rgba(76,201,112,0.08) !important;
+    border-color: rgba(76,201,112,0.18) !important;
+}
+html[data-theme="dark"] .alert-error, html[data-theme="dark"] .alert.error {
+    background: rgba(240,122,122,0.08) !important;
+    border-color: rgba(240,122,122,0.18) !important;
+}
+
+/* ── Vacío / sin datos ── */
+html[data-theme="dark"] .empty,
+html[data-theme="dark"] .empty-td,
+html[data-theme="dark"] .empty-row td,
+html[data-theme="dark"] .empty-state { color: var(--text-muted) !important; }
+
+/* ── Mono y precios ── */
+html[data-theme="dark"] .mono       { color: var(--text-primary); }
+html[data-theme="dark"] .price-col  { color: var(--accent) !important; }
+html[data-theme="dark"] .discount-col { color: var(--success) !important; }
+html[data-theme="dark"] .price-tag  { color: var(--accent) !important; }

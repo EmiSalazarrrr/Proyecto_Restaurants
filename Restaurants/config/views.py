@@ -52,6 +52,8 @@ def menu_admin_view(request):
     ventas_hoy = tickets_pagados_hoy.aggregate(total=Sum("precio_final"))["total"] or 0
     clientes_hoy = tickets_hoy.values("nombre_usuario").distinct().count()
     promociones_activas = Promocion.objects.filter(activo=True).count()
+    # Tickets canjeados por el cliente pero aún no cobrados → requieren atención del admin
+    canjeados_pendientes = Ticket.objects.filter(canjeado=1, pagado=False).count()
 
     desde_7 = today - timedelta(days=6)
     labels_7, data_7 = _build_daily_series(
@@ -71,6 +73,7 @@ def menu_admin_view(request):
         "tickets_hoy": tickets_hoy.count(),
         "clientes_hoy": clientes_hoy,
         "promociones_activas": promociones_activas,
+        "canjeados_pendientes": canjeados_pendientes,
         "chart_bar": json.dumps({"labels": labels_7, "data": data_7}),
         "chart_donut": json.dumps({
             "labels": ["Pagados", "Abiertos"],
@@ -159,6 +162,8 @@ def metricas_view(request):
         .order_by("-total")[:5]
     )
     max_top = top_productos[0]["total"] if top_productos else 1
+    for prod in top_productos:
+        prod["bar_pct"] = round((prod["total"] / max_top) * 100, 1) if max_top else 0
 
     top_clientes = list(
         tickets

@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <script>!function(){var t=localStorage.getItem('theme');t&&document.documentElement.setAttribute('data-theme',t)}();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metricas | Restaurants</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,9 +38,40 @@
         .nav-item.active { color: #0D1E3B; background: #D8AE48; border-left-color: #D8AE48; }
         .nav-item:hover { color: #F4F0E8; background: #1A2F50; border-left-color: transparent; }
         .nav-icon { width: 20px; text-align: center; }
-        .sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--card-border); }
+        .sidebar-bottom { margin-top: auto; padding: 20px 24px 20px; border-top: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 10px; }
         .btn-logout { display: block; text-decoration: none; color: rgba(244,240,232,0.75); border: 1px solid rgba(244,240,232,0.15); border-radius: 8px; padding: 10px 14px; text-align: center; transition: all 0.15s; }
         .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
+        /* Botón tema — inline para evitar caché */
+        .btn-theme { display: flex; align-items: center; gap: 8px; justify-content: center; width: 100%; background: transparent; border: 1px solid rgba(244,240,232,0.12); border-radius: 8px; padding: 9px 14px; color: rgba(244,240,232,0.65); cursor: pointer; font: 500 13px "DM Sans", sans-serif; transition: all 0.15s; line-height: 1; white-space: nowrap; }
+        .btn-theme:hover { border-color: var(--accent, #D8AE48); color: var(--accent, #D8AE48); }
+        /* Modo oscuro — variables inline */
+        html[data-theme="dark"] {
+            --bg: #111827; --card-bg: #1a2035; --card-border: rgba(255,255,255,0.07);
+            --text-primary: #e2ddd5; --text-secondary: #a08870; --text-muted: #6e5e52;
+            --sidebar-bg: #090d14; --accent: #D8AE48; --accent-dim: rgba(216,174,72,0.11);
+            --success: #4cc970; --success-dim: rgba(76,201,112,0.10);
+            --danger: #f07a7a; --danger-dim: rgba(240,122,122,0.08);
+        }
+        html[data-theme="dark"] th { background: rgba(255,255,255,0.04) !important; color: var(--text-primary) !important; }
+        html[data-theme="dark"] td { border-top-color: rgba(255,255,255,0.05) !important; }
+        html[data-theme="dark"] .stat-card, html[data-theme="dark"] .chart-card,
+        html[data-theme="dark"] .card { background: var(--card-bg) !important; border-color: var(--card-border) !important; }
+        html[data-theme="dark"] h1, html[data-theme="dark"] h2, html[data-theme="dark"] h3,
+        html[data-theme="dark"] .stat-label, html[data-theme="dark"] .chart-title { color: var(--text-primary) !important; }
+        html[data-theme="dark"] .stat-value { color: var(--text-primary) !important; }
+        html[data-theme="dark"] .stat-sub, html[data-theme="dark"] .topbar p,
+        html[data-theme="dark"] .no-data, html[data-theme="dark"] .range-label { color: var(--text-muted) !important; }
+        html[data-theme="dark"] .period-btn { color: var(--text-primary) !important; border-color: rgba(255,255,255,0.13) !important; }
+        html[data-theme="dark"] .period-btn:hover { background: rgba(255,255,255,0.04) !important; }
+        html[data-theme="dark"] .period-btn.active { background: #D8AE48 !important; color: #0D1E3B !important; border-color: #D8AE48 !important; }
+        html[data-theme="dark"] .date-row { background: var(--card-bg) !important; border-color: var(--card-border) !important; }
+        html[data-theme="dark"] .date-input { background: #151b27 !important; border-color: rgba(255,255,255,0.10) !important; color: var(--text-primary) !important; }
+        html[data-theme="dark"] .date-group label { color: var(--text-muted) !important; }
+        html[data-theme="dark"] .bar-track, html[data-theme="dark"] .sales-bar-track { background: rgba(255,255,255,0.06) !important; }
+        html[data-theme="dark"] .client-item { background: rgba(255,255,255,0.03) !important; border-color: rgba(255,255,255,0.06) !important; }
+        html[data-theme="dark"] .client-name, html[data-theme="dark"] .top-name { color: var(--text-primary) !important; }
+        html[data-theme="dark"] .client-rank { color: var(--text-primary) !important; }
+        html[data-theme="dark"] .client-tickets-label, html[data-theme="dark"] .client-user { color: var(--text-muted) !important; }
 
         /* ── Main ── */
         .main { margin-left: 220px; flex: 1; padding: 36px 40px; }
@@ -122,6 +154,38 @@
         /* Date range label */
         .range-label { font: 500 12px "DM Mono", monospace; color: var(--text-muted); }
 
+        /* ── Sales chart (barras verticales custom) ── */
+        .sales-chart {
+            display: flex; align-items: flex-end; gap: 4px;
+            height: 180px; padding: 0 2px; overflow: hidden;
+        }
+        .sales-bar {
+            flex: 1; min-width: 0;
+            display: flex; flex-direction: column; align-items: center; gap: 4px;
+        }
+        .sales-bar-track {
+            width: 100%; flex: 1;
+            background: rgba(13,30,59,0.06); border-radius: 4px;
+            display: flex; align-items: flex-end; overflow: hidden;
+        }
+        .sales-bar-fill {
+            width: 100%; height: 0;          /* arranca en 0, JS lo anima */
+            background: linear-gradient(to top, #D8AE48 0%, rgba(216,174,72,0.50) 100%);
+            border-radius: 4px 4px 0 0;
+            transition: height 0.85s cubic-bezier(.17,.67,.35,1);
+            min-height: 0;
+        }
+        .sales-value {
+            font: 500 9px "DM Mono", monospace; color: var(--accent);
+            text-align: center; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+        }
+        .sales-label {
+            font-size: 9px; color: var(--text-muted);
+            text-align: center; white-space: nowrap;
+            overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+        }
+
         @media (max-width: 1100px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
         @media (max-width: 960px) { .bottom-grid { grid-template-columns: 1fr; } }
         @media (max-width: 720px) {
@@ -145,6 +209,7 @@
     <a class="nav-item" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
     <a class="nav-item active" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
     <div class="sidebar-bottom">
+        <button class="btn-theme" id="theme-toggle" onclick="toggleTheme()">🌙 Modo oscuro</button>
         <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
     </div>
 </aside>
@@ -268,7 +333,7 @@
                                 <span class="top-count">{{ prod.total }}x</span>
                             </div>
                             <div class="bar-track">
-                                <div class="bar-fill" style="width: {% widthratio prod.total max_top 100 %}%;"></div>
+                                <div class="bar-fill" style="width: {{ prod.bar_pct }}%;"></div>
                             </div>
                         </div>
                     {% endfor %}
@@ -308,18 +373,34 @@
 </main>
 
 <script>
-    // Counter animation
+    // ── Tema oscuro/claro ──────────────────────────────────────────
+    function toggleTheme() {
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var next = dark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateThemeBtn();
+    }
+    function updateThemeBtn() {
+        var btn = document.getElementById('theme-toggle');
+        if (!btn) return;
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.textContent = dark ? '☀️ Modo claro' : '🌙 Modo oscuro';
+    }
+    updateThemeBtn();
+
+    // Animación de contadores
     document.querySelectorAll('[data-count]').forEach(el => {
-        const target = parseFloat(el.dataset.count) || 0;
-        const prefix = el.dataset.prefix || '';
+        const target   = parseFloat(el.dataset.count) || 0;
+        const prefix   = el.dataset.prefix || '';
         const decimals = parseInt(el.dataset.decimals || '0');
         if (!target) return;
         let start = null;
         const step = ts => {
             if (!start) start = ts;
-            const p = Math.min((ts - start) / 900, 1);
+            const p     = Math.min((ts - start) / 900, 1);
             const eased = 1 - Math.pow(1 - p, 3);
-            const val = eased * target;
+            const val   = eased * target;
             el.textContent = prefix + (decimals ? val.toFixed(decimals) : Math.round(val));
             if (p < 1) requestAnimationFrame(step);
             else el.textContent = prefix + (decimals ? target.toFixed(decimals) : target);
@@ -327,69 +408,40 @@
         requestAnimationFrame(step);
     });
 
-    // Bar chart
-    const chartData = {{ chart_data|safe }};
-    document.getElementById('chart-title').textContent = chartData.label;
-    new Chart(document.getElementById('barChart'), {
-        type: 'bar',
-        data: {
-            labels: chartData.labels,
-            datasets: [{
-                label: 'Ventas ($)',
-                data: chartData.data,
-                backgroundColor: 'rgba(216,174,72,0.25)',
-                borderColor: '#D8AE48',
-                borderWidth: 2,
-                borderRadius: 6,
-                borderSkipped: false,
-                hoverBackgroundColor: 'rgba(216,174,72,0.45)',
-            }]
-        },
-        options: {
-            responsive: true,
-            animation: { duration: 900, easing: 'easeOutQuart' },
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: '#212842',
-                    borderColor: 'rgba(216,174,72,0.35)',
-                    borderWidth: 1,
-                    titleColor: '#F0E7D5',
-                    bodyColor: '#D8AE48',
-                    titleFont: { size: 13, family: 'DM Sans' },
-                    bodyFont: { size: 15, family: 'DM Mono', weight: '600' },
-                    padding: 12,
-                    cornerRadius: 10,
-                    displayColors: false,
-                    callbacks: { label: ctx => ` $${ctx.parsed.y.toFixed(2)}` }
-                }
-            },
-            scales: {
-                x: { grid: { color: 'rgba(13,30,59,0.07)' }, ticks: { color: '#9B8B7A', font: { size: 12, family: 'DM Sans' } } },
-                y: { grid: { color: 'rgba(13,30,59,0.07)' }, ticks: { color: '#9B8B7A', font: { size: 12, family: 'DM Mono' }, callback: v => '$' + v, maxTicksLimit: 6 } }
-            }
-        }
-    });
-
-    // Progress bars
-    setTimeout(() => {
-        document.querySelectorAll('.bar-fill').forEach(bar => {
-            const w = parseFloat(bar.dataset.width);
-            const m = parseFloat(bar.dataset.max) || 1;
-            bar.style.width = (w / m * 100).toFixed(1) + '%';
+    // Animación de barras del gráfico de ventas (.sales-bar-fill)
+    // Las alturas están calculadas en el servidor; las animamos desde 0.
+    setTimeout(function () {
+        document.querySelectorAll('.sales-bar-fill').forEach(function (bar) {
+            var target = bar.style.height;   // e.g. "72.5%"
+            bar.style.height = '0';
+            void bar.offsetHeight;           // forzar reflow
+            bar.style.height = target;
         });
-    }, 400);
+    }, 120);
 
+    // Animación de barras de top-productos (.bar-fill)
+    setTimeout(function () {
+        document.querySelectorAll('.bar-fill').forEach(function (bar) {
+            var target = bar.style.width;    // ya calculado por Django (porcentaje precalculado en la vista)
+            bar.style.width = '0';
+            void bar.offsetWidth;
+            bar.style.width = target;
+        });
+    }, 300);
 
-    // Date picker toggles
+    // ── Toggles de filtros de fecha ──────────────────────────────────────
+    // Los pickers "fecha exacta" y "rango" están dentro del mismo <form>.
+    // Al mostrar uno se oculta el otro para que nunca se envíen ambos a la vez.
     function toggleDatePicker(type) {
-        const single = document.getElementById('picker-single');
-        const range  = document.getElementById('picker-range');
+        var single = document.getElementById('picker-single');
+        var range  = document.getElementById('picker-range');
         if (type === 'single') {
-            single.style.display = single.style.display === 'none' ? 'flex' : 'none';
-            range.style.display = 'none';
+            var showing = single.style.display !== 'none';
+            single.style.display = showing ? 'none' : 'flex';
+            range.style.display  = 'none';
         } else {
-            range.style.display  = range.style.display  === 'none' ? 'flex' : 'none';
+            var showing = range.style.display !== 'none';
+            range.style.display  = showing ? 'none' : 'flex';
             single.style.display = 'none';
         }
     }

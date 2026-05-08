@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <script>!function(){var t=localStorage.getItem('theme');t&&document.documentElement.setAttribute('data-theme',t)}();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Promociones | Restaurants</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -37,9 +38,45 @@
         .nav-item.active { color: #0D1E3B; background: #D8AE48; border-left-color: #D8AE48; }
         .nav-item:hover { color: #F4F0E8; background: #1A2F50; border-left-color: transparent; }
         .nav-icon { width: 20px; text-align: center; }
-        .sidebar-bottom { margin-top: auto; padding: 20px 24px 0; border-top: 1px solid var(--card-border); }
+        .sidebar-bottom { margin-top: auto; padding: 20px 24px 20px; border-top: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 10px; }
         .btn-logout { display: block; text-decoration: none; color: rgba(244,240,232,0.75); border: 1px solid rgba(244,240,232,0.15); border-radius: 8px; padding: 10px 14px; text-align: center; transition: all 0.15s; }
         .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
+        /* Botón tema — inline para evitar caché */
+        .btn-theme { display: flex; align-items: center; gap: 8px; justify-content: center; width: 100%; background: transparent; border: 1px solid rgba(244,240,232,0.12); border-radius: 8px; padding: 9px 14px; color: rgba(244,240,232,0.65); cursor: pointer; font: 500 13px "DM Sans", sans-serif; transition: all 0.15s; line-height: 1; white-space: nowrap; }
+        .btn-theme:hover { border-color: var(--accent, #D8AE48); color: var(--accent, #D8AE48); }
+        /* Modo oscuro — variables inline */
+        html[data-theme="dark"] {
+            --bg: #111827; --card-bg: #1a2035; --card-border: rgba(255,255,255,0.07);
+            --text-primary: #e2ddd5; --text-secondary: #a08870; --text-muted: #6e5e52;
+            --sidebar-bg: #090d14; --accent: #D8AE48; --accent-dim: rgba(216,174,72,0.11);
+            --success: #4cc970; --success-dim: rgba(76,201,112,0.10);
+            --danger: #f07a7a; --danger-dim: rgba(240,122,122,0.08);
+        }
+        html[data-theme="dark"] th { background: rgba(255,255,255,0.04) !important; color: var(--text-primary) !important; }
+        html[data-theme="dark"] td { border-top-color: rgba(255,255,255,0.05) !important; }
+        html[data-theme="dark"] tbody tr:hover td { background: rgba(255,255,255,0.025) !important; }
+        html[data-theme="dark"] .stat-card, html[data-theme="dark"] .table-card,
+        html[data-theme="dark"] .chart-card, html[data-theme="dark"] .card { background: var(--card-bg) !important; border-color: var(--card-border) !important; }
+        html[data-theme="dark"] h1, html[data-theme="dark"] h2, html[data-theme="dark"] h3,
+        html[data-theme="dark"] .stat-label, html[data-theme="dark"] .chart-title,
+        html[data-theme="dark"] .section-title, html[data-theme="dark"] .section-sub { color: var(--text-primary) !important; }
+        html[data-theme="dark"] .stat-value { color: var(--text-primary) !important; }
+        html[data-theme="dark"] .stat-sub, html[data-theme="dark"] .topbar p,
+        html[data-theme="dark"] .text-muted { color: var(--text-muted) !important; }
+        html[data-theme="dark"] .table-header { background: rgba(255,255,255,0.02) !important; border-bottom-color: var(--card-border) !important; }
+        html[data-theme="dark"] .table-header h3 { color: var(--text-primary) !important; }
+        html[data-theme="dark"] .form-input, html[data-theme="dark"] .form-select, html[data-theme="dark"] .form-textarea { background: #151b27 !important; border-color: rgba(255,255,255,0.10) !important; color: var(--text-primary) !important; }
+        html[data-theme="dark"] .form-label { color: var(--text-muted) !important; }
+        html[data-theme="dark"] .filter-bar { background: var(--card-bg) !important; border-color: var(--card-border) !important; }
+        html[data-theme="dark"] #f-nombre, html[data-theme="dark"] #f-desc, html[data-theme="dark"] #f-rest, html[data-theme="dark"] #f-estado { background: #151b27 !important; border-color: rgba(255,255,255,0.10) !important; color: var(--text-primary) !important; }
+        html[data-theme="dark"] .badge-active  { background: rgba(76,201,112,0.14) !important; }
+        html[data-theme="dark"] .badge-inactive{ background: rgba(240,122,122,0.14) !important; }
+        html[data-theme="dark"] .mini-btn { background: transparent !important; border-color: rgba(255,255,255,0.10) !important; color: var(--text-secondary) !important; }
+        html[data-theme="dark"] .pag-btn { background: var(--card-bg) !important; border-color: var(--card-border) !important; color: var(--text-secondary) !important; }
+        html[data-theme="dark"] .pag-jump-input { background: #111827 !important; border-color: var(--card-border) !important; color: var(--text-primary) !important; }
+        html[data-theme="dark"] .pag-info, html[data-theme="dark"] .pag-jump-of { color: var(--text-muted) !important; }
+        html[data-theme="dark"] .alert.success { background: rgba(76,201,112,0.08) !important; border-color: rgba(76,201,112,0.18) !important; }
+        html[data-theme="dark"] .alert.error   { background: rgba(240,122,122,0.08) !important; border-color: rgba(240,122,122,0.18) !important; }
 
         /* ── Main ── */
         .main { margin-left: 220px; flex: 1; padding: 36px 40px; }
@@ -155,10 +192,19 @@
         /* ── Pagination ── */
         .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-top: 1px solid var(--card-border); }
         .pag-info { font: 500 12px "DM Mono", monospace; color: var(--text-secondary); }
-        .pag-btns { display: flex; gap: 6px; }
+        .pag-btns { display: flex; align-items: center; gap: 6px; }
         .pag-btn { padding: 6px 14px; border-radius: 7px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-secondary); font: 13px "DM Sans", sans-serif; cursor: pointer; transition: all 0.15s; }
         .pag-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
         .pag-btn:disabled { opacity: 0.3; cursor: default; }
+        .pag-jump { display: flex; align-items: center; gap: 4px; }
+        .pag-jump-input { width: 44px; padding: 5px 6px; border: 1px solid var(--card-border); border-radius: 7px; background: var(--bg); color: var(--text-primary); font: 13px "DM Mono", monospace; text-align: center; -moz-appearance: textfield; }
+        .pag-jump-input::-webkit-inner-spin-button,
+        .pag-jump-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .pag-jump-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px rgba(216,174,72,0.15); }
+        .pag-jump-of { font: 500 12px "DM Mono", monospace; color: var(--text-muted); white-space: nowrap; }
+        .pag-jump-btn { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--card-border); background: var(--card-bg); color: var(--text-secondary); font: 600 15px "DM Sans", sans-serif; cursor: pointer; transition: all 0.12s; display: flex; align-items: center; justify-content: center; flex-shrink: 0; line-height: 1; }
+        .pag-jump-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: rgba(216,174,72,0.08); }
+        .pag-jump-btn:disabled { opacity: 0.28; cursor: default; }
 
         /* Chart tooltip */
         .chart-title { font-size: 12px; letter-spacing: 0.10em; text-transform: uppercase; color: #0D1E3B; margin-bottom: 14px; align-self: flex-start; font-weight: 500; }
@@ -189,6 +235,7 @@
     <a class="nav-item active" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
     <a class="nav-item" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
     <div class="sidebar-bottom">
+        <button class="btn-theme" id="theme-toggle" onclick="toggleTheme()">🌙 Modo oscuro</button>
         <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
     </div>
 </aside>
@@ -410,6 +457,10 @@
             <span class="pag-info" id="pag-info-promo"></span>
             <div class="pag-btns">
                 <button class="pag-btn" id="pag-prev-promo">← Anterior</button>
+                <div class="pag-jump">
+                    <input type="number" class="pag-jump-input" id="pag-jump-promo" min="1" title="Ir a página">
+                    <span class="pag-jump-of" id="pag-of-promo"></span>
+                </div>
                 <button class="pag-btn" id="pag-next-promo">Siguiente →</button>
             </div>
         </div>
@@ -419,6 +470,22 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
+    // ── Tema oscuro/claro ──────────────────────────────────────────
+    function toggleTheme() {
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var next = dark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateThemeBtn();
+    }
+    function updateThemeBtn() {
+        var btn = document.getElementById('theme-toggle');
+        if (!btn) return;
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.textContent = dark ? '☀️ Modo claro' : '🌙 Modo oscuro';
+    }
+    updateThemeBtn();
+
     // Donut chart
     const donutData = {{ chart_donut|safe }};
     const totalPromos = donutData.data.reduce((a,b) => a+b, 0);
@@ -503,6 +570,8 @@
     const pagInfo   = document.getElementById('pag-info-promo');
     const pagPrev   = document.getElementById('pag-prev-promo');
     const pagNext   = document.getElementById('pag-next-promo');
+    const pagJump   = document.getElementById('pag-jump-promo');
+    const pagOf     = document.getElementById('pag-of-promo');
 
     function renderPage() {
         const start = (currentPage - 1) * PER_PAGE;
@@ -515,10 +584,19 @@
         pagInfo.textContent = filteredRows.length
             ? 'Página ' + currentPage + ' de ' + pages + ' (' + filteredRows.length + ' resultados)'
             : 'Sin resultados';
+        pagJump.value    = currentPage;
+        pagJump.max      = pages || 1;
+        pagOf.textContent = 'de ' + (pages || 1);
         pagPrev.disabled = currentPage <= 1;
         pagNext.disabled = currentPage >= pages;
         pagEl.style.display = filteredRows.length > PER_PAGE ? 'flex' : 'none';
         document.getElementById('filter-count').textContent = filteredRows.length + ' / ' + allRows.length;
+    }
+
+    function promoGoToPage(val) {
+        const pages = Math.ceil(filteredRows.length / PER_PAGE);
+        currentPage = Math.min(Math.max(parseInt(val, 10) || 1, 1), pages || 1);
+        renderPage();
     }
 
     pagPrev.addEventListener('click', function() { if (currentPage > 1) { currentPage--; renderPage(); } });
@@ -526,6 +604,8 @@
         const pages = Math.ceil(filteredRows.length / PER_PAGE);
         if (currentPage < pages) { currentPage++; renderPage(); }
     });
+    pagJump.addEventListener('change', function() { promoGoToPage(this.value); });
+    pagJump.addEventListener('keydown', function(e) { if (e.key === 'Enter') { promoGoToPage(this.value); this.blur(); } });
 
     function applyFilters() {
         const nombre  = document.getElementById('f-nombre').value.toLowerCase();
