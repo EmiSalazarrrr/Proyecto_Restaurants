@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <script>!function(){var t=localStorage.getItem('theme');t&&document.documentElement.setAttribute('data-theme',t)}();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Canjear Ticket | Restaurants</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -186,6 +187,64 @@
             margin-bottom: 8px;
         }
         .btn-ghost:hover { border-color: var(--blue); color: var(--blue); background: rgba(1,75,170,0.04); }
+
+        /* Modo oscuro heredado de la vista de usuario */
+        html[data-theme="dark"] {
+            --bg: #111827;
+            --card: #1a2035;
+            --border: rgba(255,255,255,0.07);
+            --blue: #D8AE48;
+            --blue-light: #D8AE48;
+            --amber: #D8AE48;
+            --dark: #e2ddd5;
+            --muted: #8f8173;
+            --success: #4cc970;
+            --danger: #f07a7a;
+        }
+        html[data-theme="dark"] .brand-tag {
+            background: #090d14;
+            border: 1px solid rgba(216,174,72,0.35);
+            color: var(--amber);
+        }
+        html[data-theme="dark"] .card {
+            background: var(--card);
+            border-color: var(--border);
+            box-shadow: 0 16px 42px rgba(0,0,0,0.30);
+        }
+        html[data-theme="dark"] .code-input {
+            background: #151b27;
+            border-color: rgba(255,255,255,0.10);
+            color: var(--dark);
+        }
+        html[data-theme="dark"] .code-input:focus {
+            background: #151b27;
+            border-color: rgba(216,174,72,0.65);
+            box-shadow: 0 0 0 3px rgba(216,174,72,0.12);
+        }
+        html[data-theme="dark"] .code-input::placeholder { color: rgba(226,221,213,0.25); }
+        html[data-theme="dark"] .btn-primary {
+            background: var(--amber);
+            color: #0D1E3B;
+        }
+        html[data-theme="dark"] .btn-ghost {
+            border-color: rgba(255,255,255,0.10);
+            color: var(--muted);
+        }
+        html[data-theme="dark"] .btn-ghost:hover {
+            border-color: rgba(216,174,72,0.45);
+            color: var(--amber);
+            background: rgba(216,174,72,0.08);
+        }
+        html[data-theme="dark"] .alert.success {
+            background: rgba(76,201,112,0.08);
+            border-color: rgba(76,201,112,0.18);
+            color: var(--success);
+        }
+        html[data-theme="dark"] .alert.error {
+            background: rgba(240,122,122,0.08);
+            border-color: rgba(240,122,122,0.18);
+            color: var(--danger);
+        }
 
     </style>
     <link rel="stylesheet" href="/static/css/performance.css">

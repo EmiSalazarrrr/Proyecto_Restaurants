@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <script>!function(){var t=localStorage.getItem('theme');t&&document.documentElement.setAttribute('data-theme',t)}();</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket Canjeado | Restaurants</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -229,6 +230,74 @@
         .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
         .btn-ghost { border: 1px solid rgba(0,32,91,0.15); color: var(--muted); background: transparent; }
         .btn-ghost:hover { border-color: var(--blue); color: var(--blue); background: rgba(1,75,170,0.04); }
+
+        /* Modo oscuro heredado de la vista de usuario */
+        html[data-theme="dark"] {
+            --bg: #111827;
+            --card: #1a2035;
+            --border: rgba(255,255,255,0.07);
+            --blue: #D8AE48;
+            --blue-light: #D8AE48;
+            --amber: #D8AE48;
+            --dark: #e2ddd5;
+            --muted: #8f8173;
+            --success: #4cc970;
+            --success-dim: rgba(76,201,112,0.10);
+            --danger: #f07a7a;
+        }
+        html[data-theme="dark"] .receipt {
+            background: var(--card);
+            border-color: var(--border);
+            box-shadow: 0 16px 42px rgba(0,0,0,0.30);
+        }
+        html[data-theme="dark"] .receipt-top {
+            background: linear-gradient(135deg, #090d14 0%, #111827 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        html[data-theme="dark"] .receipt-brand { color: var(--amber); }
+        html[data-theme="dark"] .receipt-id { color: rgba(226,221,213,0.62); }
+        html[data-theme="dark"] .client-info,
+        html[data-theme="dark"] .final-total {
+            background: rgba(255,255,255,0.03);
+            border-color: rgba(255,255,255,0.06);
+        }
+        html[data-theme="dark"] .product-row {
+            border-bottom-color: rgba(255,255,255,0.06);
+        }
+        html[data-theme="dark"] .totals {
+            border-top-color: var(--border);
+        }
+        html[data-theme="dark"] .total-row.promo-name .total-value {
+            background: rgba(216,174,72,0.14);
+            border-color: rgba(216,174,72,0.30);
+            color: var(--amber);
+        }
+        html[data-theme="dark"] .cashier-note {
+            background: rgba(216,174,72,0.08);
+            border-color: rgba(216,174,72,0.20);
+        }
+        html[data-theme="dark"] .note-text strong { color: var(--amber); }
+        html[data-theme="dark"] .code-display {
+            border-bottom-color: rgba(255,255,255,0.10);
+        }
+        html[data-theme="dark"] .code-tag {
+            background: rgba(76,201,112,0.10);
+            border-color: rgba(76,201,112,0.22);
+            color: var(--success);
+        }
+        html[data-theme="dark"] .btn-primary {
+            background: var(--amber);
+            color: #0D1E3B;
+        }
+        html[data-theme="dark"] .btn-ghost {
+            border-color: rgba(255,255,255,0.10);
+            color: var(--muted);
+        }
+        html[data-theme="dark"] .btn-ghost:hover {
+            border-color: rgba(216,174,72,0.45);
+            color: var(--amber);
+            background: rgba(216,174,72,0.08);
+        }
 
         @media (max-width: 540px) {
             .receipt-body { padding: 18px 16px; }
