@@ -477,6 +477,8 @@
         document.documentElement.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
         updateThemeBtn();
+        // Redibujar el canvas para que el número del centro cambie de color
+        if (window._donutChart) window._donutChart.update();
     }
     function updateThemeBtn() {
         var btn = document.getElementById('theme-toggle');
@@ -492,7 +494,7 @@
     document.getElementById('cnt-activas').textContent  = donutData.data[0];
     document.getElementById('cnt-inactivas').textContent = donutData.data[1];
 
-    new Chart(document.getElementById('donutChart'), {
+    window._donutChart = new Chart(document.getElementById('donutChart'), {
         type: 'doughnut',
         data: {
             labels: donutData.labels,
@@ -527,14 +529,15 @@
             id: 'center',
             afterDraw(chart) {
                 const { ctx, chartArea: { width, height, left, top } } = chart;
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
                 ctx.save();
                 ctx.font = 'bold 22px DM Mono, monospace';
-                ctx.fillStyle = '#0D1E3B';
+                ctx.fillStyle = isDark ? '#e2ddd5' : '#0D1E3B';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(totalPromos, left + width/2, top + height/2 - 8);
                 ctx.font = '13px DM Sans, sans-serif';
-                ctx.fillStyle = '#9B8B7A';
+                ctx.fillStyle = isDark ? '#6e5e52' : '#9B8B7A';
                 ctx.fillText('total', left + width/2, top + height/2 + 14);
                 ctx.restore();
             }
