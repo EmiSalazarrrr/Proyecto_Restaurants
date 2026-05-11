@@ -107,13 +107,70 @@
         .stat-label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: #0D1E3B; margin-bottom: 10px; font-weight: 500; }
         .stat-value { font: 600 30px "DM Mono", monospace; color: #212842; }
         .stat-sub { margin-top: 6px; color: #5C4A3A; font-size: 12px; }
+        /* Tarjeta de alerta "Por cobrar" */
+        .stat-card--alert { border-color: rgba(99,143,255,0.40) !important; }
+        .stat-card--alert .stat-label { color: #1a3acc; }
+        .stat-card--alert .stat-value { color: #1a3acc; }
+        html[data-theme="dark"] .stat-card--alert { border-color: rgba(120,160,255,0.30) !important; }
+        html[data-theme="dark"] .stat-card--alert .stat-label { color: #7B9FFF !important; }
+        html[data-theme="dark"] .stat-card--alert .stat-value { color: #7B9FFF !important; }
+        /* ── Tendencias ── */
+        .stat-trend { font: 500 12px "DM Mono", monospace; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+        .trend-up   { color: #22c55e; }
+        .trend-down { color: #ef4444; }
+        .trend-flat { color: var(--text-muted); }
+        html[data-theme="dark"] .trend-up   { color: #4ade80; }
+        html[data-theme="dark"] .trend-down { color: #f87171; }
 
         /* ── Charts row ── */
         .charts-row { display: grid; grid-template-columns: 1fr 280px; gap: 16px; margin-bottom: 24px; }
-        .chart-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; }
+        .chart-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; position: relative; }
         .chart-title { font-size: 12px; letter-spacing: 0.10em; text-transform: uppercase; color: #0D1E3B; margin-bottom: 16px; font-weight: 500; }
         .chart-empty { color: #0D1E3B; font-size: 12px; text-align: center; padding: 40px 0; }
         .donut-wrap { display: flex; flex-direction: column; align-items: center; }
+
+        /* ── Selector de rango de la gráfica ── */
+        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .chart-header .chart-title { margin-bottom: 0; }
+        .range-btns { display: flex; gap: 5px; }
+        .range-btn {
+            padding: 4px 13px;
+            border-radius: 7px;
+            border: 1px solid var(--card-border);
+            background: transparent;
+            color: var(--text-muted);
+            font: 500 12px "DM Sans", sans-serif;
+            cursor: pointer;
+            transition: all 0.15s;
+            line-height: 1.6;
+        }
+        .range-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .range-btn.active {
+            background: var(--accent-dim);
+            border-color: rgba(216,174,72,0.50);
+            color: var(--accent);
+            font-weight: 600;
+        }
+        html[data-theme="dark"] .range-btn { color: var(--text-muted); border-color: var(--card-border); }
+        html[data-theme="dark"] .range-btn.active { background: rgba(216,174,72,0.13); }
+
+        /* ── Custom bar tooltip ── */
+        #bar-tooltip {
+            position: absolute;
+            background: #212842;
+            border: 1px solid rgba(201,151,43,0.38);
+            border-radius: 10px;
+            padding: 9px 14px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s, top 0.08s;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            z-index: 20;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+        }
+        #bar-tooltip .tip-date  { font: 12px "DM Sans", sans-serif; color: rgba(240,231,213,0.65); margin-bottom: 3px; }
+        #bar-tooltip .tip-value { font: 700 16px "DM Mono", monospace; color: #C9972B; }
 
         /* ── Quick actions ── */
         .section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: #0D1E3B; margin-bottom: 14px; }
@@ -166,21 +223,49 @@
         <article class="stat-card anim d2">
             <div class="stat-label">Ventas hoy</div>
             <div class="stat-value" data-count="{{ ventas_hoy }}" data-prefix="$">${{ ventas_hoy }}</div>
+            {% if ventas_trend_dir == 'up' %}
+                <div class="stat-trend trend-up">↑ {% if ventas_trend_pct %}{{ ventas_trend_pct }}%{% else %}Nuevo{% endif %} vs ayer</div>
+            {% elif ventas_trend_dir == 'down' %}
+                <div class="stat-trend trend-down">↓ {{ ventas_trend_pct }}% vs ayer</div>
+            {% else %}
+                <div class="stat-trend trend-flat">— Sin cambio vs ayer</div>
+            {% endif %}
             <div class="stat-sub">Ingresos cobrados del dia</div>
         </article>
         <article class="stat-card anim d3">
             <div class="stat-label">Tickets hoy</div>
             <div class="stat-value" data-count="{{ tickets_hoy }}">{{ tickets_hoy }}</div>
+            {% if tickets_trend_dir == 'up' %}
+                <div class="stat-trend trend-up">↑ {% if tickets_trend_pct %}{{ tickets_trend_pct }}%{% else %}Nuevo{% endif %} vs ayer</div>
+            {% elif tickets_trend_dir == 'down' %}
+                <div class="stat-trend trend-down">↓ {{ tickets_trend_pct }}% vs ayer</div>
+            {% else %}
+                <div class="stat-trend trend-flat">— Sin cambio vs ayer</div>
+            {% endif %}
             <div class="stat-sub">Pedidos abiertos y cobrados</div>
         </article>
         <article class="stat-card anim d4">
             <div class="stat-label">Clientes hoy</div>
             <div class="stat-value" data-count="{{ clientes_hoy }}">{{ clientes_hoy }}</div>
+            {% if clientes_trend_dir == 'up' %}
+                <div class="stat-trend trend-up">↑ {% if clientes_trend_pct %}{{ clientes_trend_pct }}%{% else %}Nuevo{% endif %} vs ayer</div>
+            {% elif clientes_trend_dir == 'down' %}
+                <div class="stat-trend trend-down">↓ {{ clientes_trend_pct }}% vs ayer</div>
+            {% else %}
+                <div class="stat-trend trend-flat">— Sin cambio vs ayer</div>
+            {% endif %}
             <div class="stat-sub">Clientes distintos atendidos</div>
         </article>
-        <article class="stat-card anim d5" {% if canjeados_pendientes %}style="border-color:rgba(99,143,255,0.40);"{% endif %}>
-            <div class="stat-label" {% if canjeados_pendientes %}style="color:#1a3acc;"{% endif %}>Por cobrar</div>
-            <div class="stat-value" data-count="{{ canjeados_pendientes }}" {% if canjeados_pendientes %}style="color:#1a3acc;"{% endif %}>{{ canjeados_pendientes }}</div>
+        <article class="stat-card anim d5{% if canjeados_pendientes %} stat-card--alert{% endif %}">
+            <div class="stat-label">Por cobrar</div>
+            <div class="stat-value" data-count="{{ canjeados_pendientes }}">{{ canjeados_pendientes }}</div>
+            {% if por_cobrar_trend_dir == 'up' %}
+                <div class="stat-trend trend-up">↑ {% if por_cobrar_trend_pct %}{{ por_cobrar_trend_pct }}%{% else %}Nuevo{% endif %} vs ayer</div>
+            {% elif por_cobrar_trend_dir == 'down' %}
+                <div class="stat-trend trend-down">↓ {{ por_cobrar_trend_pct }}% vs ayer</div>
+            {% else %}
+                <div class="stat-trend trend-flat">— Sin cambio vs ayer</div>
+            {% endif %}
             <div class="stat-sub">Tickets canjeados sin cobrar</div>
         </article>
     </section>
@@ -188,8 +273,16 @@
     <!-- Charts -->
     <div class="charts-row">
         <div class="chart-card anim d6">
-            <div class="chart-title">Ventas cobradas - ultimos 7 dias</div>
-            <canvas id="barChart" height="110"></canvas>
+            <div class="chart-header">
+                <div class="chart-title">Ventas cobradas</div>
+                <div class="range-btns">
+                    <button class="range-btn active" data-dias="7">7 días</button>
+                    <button class="range-btn" data-dias="14">14 días</button>
+                    <button class="range-btn" data-dias="30">30 días</button>
+                </div>
+            </div>
+            <div id="bar-tooltip"><div class="tip-date"></div><div class="tip-value"></div></div>
+            <canvas id="ventas-chart" height="110"></canvas>
         </div>
         <div class="chart-card anim d7">
             <div class="chart-title">Tickets de hoy</div>
@@ -221,7 +314,7 @@
     </section>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
     // Counter animation — delayed so numbers count up while cards are already visible
     // Last stat card is d5 (0.25s delay + 0.5s animation = 0.75s total), start at 0.35s
@@ -245,47 +338,112 @@
         });
     }, 350);
 
-    // Bar chart
-    const barData = {{ chart_bar|safe }};
-    new Chart(document.getElementById('barChart'), {
+    // ── Helpers de color conscientes del tema ──────────────────────
+    function isDarkMode() {
+        return document.documentElement.getAttribute('data-theme') === 'dark';
+    }
+    function chartTickColor() {
+        return isDarkMode() ? '#a09080' : '#5C4A3A';
+    }
+    function chartGridColor() {
+        return isDarkMode() ? 'rgba(255,255,255,0.07)' : 'rgba(13,30,59,0.07)';
+    }
+
+    // ── Bar chart — ventas últimos 7 días ──────────────────────────
+    const labels = {{ labels|safe }};
+    const values = {{ values|safe }};
+
+    // Plugin: gradiente vertical aplicado antes de cada dibujado
+    const gradientPlugin = {
+        id: 'barGradient',
+        beforeDatasetsDraw(chart) {
+            const { ctx, chartArea } = chart;
+            if (!chartArea) return;
+            const grad = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+            grad.addColorStop(0, 'rgba(201,151,43,0.55)');
+            grad.addColorStop(1, 'rgba(201,151,43,0.04)');
+            chart.data.datasets[0].backgroundColor = grad;
+        }
+    };
+
+    // Tooltip personalizado posicionado con CSS
+    const tooltipEl   = document.getElementById('bar-tooltip');
+    const tipDate     = tooltipEl.querySelector('.tip-date');
+    const tipValue    = tooltipEl.querySelector('.tip-value');
+
+    function externalTooltip({ chart, tooltip }) {
+        if (tooltip.opacity === 0) { tooltipEl.style.opacity = '0'; return; }
+        const x = chart.canvas.offsetLeft + tooltip.caretX;
+        const y = chart.canvas.offsetTop  + tooltip.caretY - 68;
+        tipDate.textContent  = tooltip.title[0] || '';
+        tipValue.textContent = '$' + Number(tooltip.dataPoints[0].parsed.y).toFixed(2);
+        tooltipEl.style.left    = x + 'px';
+        tooltipEl.style.top     = y + 'px';
+        tooltipEl.style.opacity = '1';
+    }
+
+    window._ventasChart = new Chart(document.getElementById('ventas-chart'), {
         type: 'bar',
         data: {
-            labels: barData.labels,
+            labels,
             datasets: [{
                 label: 'Ventas ($)',
-                data: barData.data,
-                backgroundColor: 'rgba(216,174,72,0.25)',
-                borderColor: '#D8AE48',
-                borderWidth: 2,
-                borderRadius: 6,
+                data: values,
+                backgroundColor: 'rgba(201,151,43,0.25)', // reemplazado por el plugin
+                borderColor: '#C9972B',
+                borderWidth: { top: 2, right: 0, bottom: 0, left: 0 },
+                borderRadius: { topLeft: 4, topRight: 4 },
                 borderSkipped: false,
-                hoverBackgroundColor: 'rgba(216,174,72,0.45)',
+                hoverBackgroundColor: 'rgba(201,151,43,0.65)',
             }]
         },
         options: {
             responsive: true,
-            animation: { duration: 900, easing: 'easeOutQuart' },
+            animation: { duration: 700, easing: 'easeOutQuart' },
             plugins: {
                 legend: { display: false },
-                tooltip: {
-                    backgroundColor: '#212842',
-                    borderColor: 'rgba(216,174,72,0.35)',
-                    borderWidth: 1,
-                    titleColor: '#F0E7D5',
-                    bodyColor: '#D8AE48',
-                    titleFont: { size: 13, family: 'DM Sans' },
-                    bodyFont: { size: 15, family: 'DM Mono', weight: '600' },
-                    padding: 12,
-                    cornerRadius: 10,
-                    displayColors: false,
-                    callbacks: { label: ctx => ` $${ctx.parsed.y.toFixed(2)}` }
-                }
+                tooltip: { enabled: false, external: externalTooltip }
             },
             scales: {
-                x: { grid: { color: 'rgba(13,30,59,0.05)' }, ticks: { color: '#9B8B7A', font: { size: 12, family: 'DM Sans' } } },
-                y: { grid: { color: 'rgba(13,30,59,0.05)' }, ticks: { color: '#9B8B7A', font: { size: 12, family: 'DM Mono' }, callback: v => '$' + v, maxTicksLimit: 6 } }
+                x: {
+                    grid: { display: false },
+                    border: { display: false },
+                    ticks: { color: chartTickColor(), font: { size: 12, family: 'DM Sans' } }
+                },
+                y: {
+                    grid: { color: chartGridColor(), lineWidth: 0.5 },
+                    border: { display: false },
+                    ticks: {
+                        color: chartTickColor(),
+                        font: { size: 12, family: 'DM Mono' },
+                        callback: v => '$' + v,
+                        maxTicksLimit: 6
+                    }
+                }
             }
-        }
+        },
+        plugins: [gradientPlugin]
+    });
+
+    // ── Selector de rango: fetch + actualización de chart ─────────
+    function loadVentas(dias) {
+        fetch('/dashboard/ventas-data/?dias=' + dias)
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                _ventasChart.data.labels                 = data.labels;
+                _ventasChart.data.datasets[0].data       = data.values;
+                _ventasChart.update();
+            });
+    }
+
+    document.querySelectorAll('.range-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.range-btn').forEach(function(b) {
+                b.classList.remove('active');
+            });
+            this.classList.add('active');
+            loadVentas(parseInt(this.dataset.dias, 10));
+        });
     });
 
     // ── Tema oscuro/claro ──────────────────────────────────────────
@@ -295,6 +453,15 @@
         document.documentElement.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
         updateThemeBtn();
+        // Actualizar colores del gráfico de barras al cambiar tema
+        if (window._ventasChart) {
+            var tc = chartTickColor();
+            var gc = chartGridColor();
+            _ventasChart.options.scales.x.ticks.color = tc;
+            _ventasChart.options.scales.y.ticks.color = tc;
+            _ventasChart.options.scales.y.grid.color  = gc;
+            _ventasChart.update('none');
+        }
     }
     function updateThemeBtn() {
         var btn = document.getElementById('theme-toggle');

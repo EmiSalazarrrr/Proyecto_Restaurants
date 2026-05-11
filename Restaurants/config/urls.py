@@ -28,6 +28,7 @@ urlpatterns = [
     path('promociones/', promociones_views.promociones_view, name='promociones'),
     path('restricciones/', promociones_views.restricciones_view, name='restricciones'),
     path('metricas/', views.metricas_view, name='metricas'),
+    path('dashboard/ventas-data/', views.ventas_data_view, name='ventas_data'),
 ]
 
 admin.site.site_header = 'Restaurants Admin'
