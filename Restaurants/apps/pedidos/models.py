@@ -28,7 +28,7 @@ class Ticket(models.Model):
     codigounico = models.IntegerField(unique=True)
     metodo_pago = models.CharField(max_length=10, default='pendiente')
     pago_efectivo = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    pago_tarjeta = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    pago_tarjeta = models.DecimalField(max_digits=10, decimal_places=2, default=7do0)
     efectivo_recibido = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     cambio = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     pagado = models.BooleanField(default=False)

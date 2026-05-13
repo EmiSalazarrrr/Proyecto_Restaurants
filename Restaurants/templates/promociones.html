@@ -224,6 +224,44 @@
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
+
+        /* ── Modal de confirmación ── */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 200;
+            background: rgba(0,0,0,0.45);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-box {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 28px 32px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+            transform: translateY(14px) scale(0.97);
+            opacity: 0;
+            transition: transform 0.22s cubic-bezier(0.22,0.61,0.36,1), opacity 0.22s;
+        }
+        .modal-overlay.open .modal-box { transform: translateY(0) scale(1); opacity: 1; }
+        .modal-title { font-size: 17px; font-weight: 600; margin-bottom: 10px; color: var(--text-primary); }
+        .modal-body  { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 22px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+        .modal-btn-cancel {
+            padding: 9px 18px; border-radius: 8px; border: 1px solid var(--card-border);
+            background: transparent; color: var(--text-primary);
+            font: 500 13px "DM Sans", sans-serif; cursor: pointer; transition: all 0.15s;
+        }
+        .modal-btn-cancel:hover { border-color: var(--accent); color: var(--accent); }
+        .modal-btn-confirm {
+            padding: 9px 18px; border-radius: 8px; border: none;
+            background: #dc2626; color: #ffffff;
+            font: 600 13px "DM Sans", sans-serif; cursor: pointer; transition: background 0.15s;
+        }
+        .modal-btn-confirm:hover { background: #b91c1c; }
     </style>
     <link rel="stylesheet" href="/static/css/performance.css">
 </head>
@@ -444,9 +482,13 @@
                                         {% csrf_token %}
                                         <input type="hidden" name="action" value="toggle_promocion">
                                         <input type="hidden" name="promocion_id" value="{{ promocion.id_promocion }}">
-                                        <button class="mini-btn {% if promocion.activo %}toggle-on{% else %}toggle-off{% endif %}" type="submit">
-                                            {% if promocion.activo %}Inactivar{% else %}Activar{% endif %}
-                                        </button>
+                                        {% if promocion.activo %}
+                                            <button class="mini-btn toggle-on" type="button"
+                                                    data-nombre="{{ promocion.nombre }}"
+                                                    onclick="abrirModalInactivar(this)">Inactivar</button>
+                                        {% else %}
+                                            <button class="mini-btn toggle-off" type="submit">Activar</button>
+                                        {% endif %}
                                     </form>
                                 </div>
                             </td>
@@ -470,6 +512,18 @@
         </div>
     </div>
 </main>
+
+<!-- Modal de confirmación: Inactivar promoción -->
+<div id="modal-inactivar" class="modal-overlay" onclick="cerrarModal(event)">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+        <h3 class="modal-title" id="modal-titulo">¿Inactivar promoción?</h3>
+        <p class="modal-body">Estás por inactivar <strong id="modal-nombre"></strong>. Podrás reactivarla después.</p>
+        <div class="modal-actions">
+            <button class="modal-btn-cancel" onclick="cerrarModalDirecto()">Cancelar</button>
+            <button class="modal-btn-confirm" id="modal-confirmar">Sí, inactivar</button>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
@@ -638,6 +692,33 @@
     }
 
     applyFilters();
+
+    // ── Modal Inactivar ────────────────────────────────────────────
+    let _modalForm = null;
+
+    function abrirModalInactivar(btn) {
+        _modalForm = btn.closest('form');
+        document.getElementById('modal-nombre').textContent = btn.dataset.nombre;
+        document.getElementById('modal-inactivar').classList.add('open');
+    }
+
+    function cerrarModalDirecto() {
+        document.getElementById('modal-inactivar').classList.remove('open');
+        _modalForm = null;
+    }
+
+    function cerrarModal(e) {
+        if (e.target === document.getElementById('modal-inactivar')) cerrarModalDirecto();
+    }
+
+    document.getElementById('modal-confirmar').addEventListener('click', function () {
+        if (_modalForm) _modalForm.submit();
+        cerrarModalDirecto();
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') cerrarModalDirecto();
+    });
 </script>
 </body>
 </html>
