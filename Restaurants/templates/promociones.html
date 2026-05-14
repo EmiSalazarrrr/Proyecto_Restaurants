@@ -145,6 +145,11 @@
 
         form.styled-form { display: grid; gap: 14px; }
         .form-label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: #222222; margin-bottom: 7px; }
+        /* ── Validación frontend ── */
+        .field-error { display: block; color: #dc2626; font-size: 12px; margin-top: 5px; line-height: 1.4; }
+        .field-warn  { display: block; color: #d97706; font-size: 12px; margin-top: 5px; line-height: 1.4; }
+        html[data-theme="dark"] .field-warn { color: #fbbf24; }
+        .form-input.input-error, .form-textarea.input-error, .form-select.input-error { border-color: #dc2626 !important; }
         .form-input, .form-textarea, .form-select {
             width: 100%;
             background: #FAFAF8;
@@ -170,6 +175,22 @@
         table { width: 100%; border-collapse: collapse; }
         th { padding: 11px 18px; font-size: 10px; color: #1a1a1a; text-transform: uppercase; letter-spacing: 1.2px; text-align: left; background: rgba(13,30,59,0.05); }
         td { padding: 14px 18px; font-size: 13.5px; border-top: 1px solid rgba(13,30,59,0.08); }
+        /* ── Column widths ── */
+        table th:nth-child(1), table td:nth-child(1) { width: 150px; }
+        table th:nth-child(2), table td:nth-child(2) { width: 220px; }
+        table th:nth-child(3), table td:nth-child(3) { width: 90px;  white-space: nowrap; }
+        table th:nth-child(5), table td:nth-child(5) { width: 130px; white-space: nowrap; }
+        table th:nth-child(6), table td:nth-child(6) { width: 95px;  white-space: nowrap; }
+        table th:nth-child(7), table td:nth-child(7) { width: 145px; white-space: nowrap; }
+        /* Truncado de descripción */
+        .desc-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: default; }
+        /* Badge Vencida */
+        .badge-vencida { background: #ea580c; color: #ffffff; border: none; }
+        html[data-theme="dark"] .badge-vencida { background: rgba(234,88,12,0.22) !important; color: #fb923c !important; border: 1px solid rgba(234,88,12,0.38) !important; }
+        /* Vigencia cell */
+        .vigencia-cell { font: 500 12px "DM Mono", monospace; color: var(--text-secondary); }
+        .vigencia-cell.vencida { color: #ea580c; }
+        html[data-theme="dark"] .vigencia-cell.vencida { color: #fb923c; }
         tbody tr { transition: background 0.12s; }
         tbody tr:hover { background: rgba(13,30,59,0.03); }
         tbody tr[data-hidden="true"] { display: none; }
@@ -329,7 +350,7 @@
         <section class="card anim d6">
             <h3 class="section-title">{% if promocion_editar %}Editar promocion{% else %}Nueva promocion{% endif %}</h3>
             <p class="section-sub">Define el porcentaje de descuento y la restriccion que debe cumplirse para aplicarlo.</p>
-            <form class="styled-form" method="post">
+            <form class="styled-form" method="post" id="promo-form" novalidate>
                 {% csrf_token %}
                 <input type="hidden" name="action" value="{% if promocion_editar %}update_promocion{% else %}create_promocion{% endif %}">
                 {% if promocion_editar %}
@@ -337,18 +358,20 @@
                 {% endif %}
                 <div>
                     <label class="form-label" for="nombre">Nombre</label>
-                    <input class="form-input" id="nombre" name="nombre" type="text" value="{{ promocion_editar.nombre|default:'' }}" required>
+                    <input class="form-input" id="nombre" name="nombre" type="text" value="{{ promocion_editar.nombre|default:'' }}">
+                    <span class="field-error" id="err-nombre"></span>
                 </div>
                 <div>
                     <label class="form-label" for="descripcion">Descripcion</label>
-                    <textarea class="form-textarea" id="descripcion" name="descripcion" required>{{ promocion_editar.descripcion|default:'' }}</textarea>
+                    <textarea class="form-textarea" id="descripcion" name="descripcion">{{ promocion_editar.descripcion|default:'' }}</textarea>
                 </div>
                 <div>
                     <label class="form-label" for="porcentaje">Porcentaje de descuento</label>
-                    <input class="form-input" id="porcentaje" name="porcentaje" type="number" min="0" max="100" step="0.01" value="{{ promocion_editar.porcentaje_a_reducir|default:'' }}" required>
+                    <input class="form-input" id="porcentaje" name="porcentaje" type="number" min="0" max="100" step="0.01" value="{{ promocion_editar.porcentaje_a_reducir|default:'' }}">
+                    <span class="field-error" id="err-porcentaje"></span>
                 </div>
                 <div>
-                    <label class="form-label" for="restriccion">Restriccion</label>
+                    <label class="form-label" for="restriccion">Restriccion <span style="font-size:10px;color:var(--text-muted);text-transform:none;letter-spacing:0;">(opcional)</span></label>
                     <select class="form-select" id="restriccion" name="restriccion">
                         <option value="" {% if promocion_editar and not promocion_editar.id_restriccion %}selected{% endif %}>Sin restriccion</option>
                         {% for restriccion in restricciones %}
@@ -357,6 +380,20 @@
                             </option>
                         {% endfor %}
                     </select>
+                    <span class="field-warn" id="warn-restriccion"></span>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div>
+                        <label class="form-label" for="fecha_inicio">Fecha inicio <span style="font-size:10px;color:var(--text-muted);text-transform:none;letter-spacing:0;">(opcional)</span></label>
+                        <input class="form-input" id="fecha_inicio" name="fecha_inicio" type="date"
+                               value="{{ promocion_editar.fecha_inicio|date:'Y-m-d'|default:'' }}">
+                    </div>
+                    <div>
+                        <label class="form-label" for="fecha_fin">Fecha fin <span style="font-size:10px;color:var(--text-muted);text-transform:none;letter-spacing:0;">(opcional)</span></label>
+                        <input class="form-input" id="fecha_fin" name="fecha_fin" type="date"
+                               value="{{ promocion_editar.fecha_fin|date:'Y-m-d'|default:'' }}">
+                        <span class="field-error" id="err-fechas"></span>
+                    </div>
                 </div>
                 <div class="form-actions">
                     <button class="btn-primary" type="submit">{% if promocion_editar %}Guardar cambios{% else %}Crear promocion{% endif %}</button>
@@ -433,6 +470,7 @@
                     <option value="">Todos</option>
                     <option value="activa">Activas</option>
                     <option value="inactiva">Inactivas</option>
+                    <option value="vencida">Vencidas</option>
                 </select>
             </div>
             <button class="filter-reset" onclick="resetFilters()">Limpiar</button>
@@ -446,6 +484,7 @@
                         <th>Descripcion</th>
                         <th>Descuento</th>
                         <th>Restriccion</th>
+                        <th>Vigencia</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -457,10 +496,10 @@
                             data-desc="{{ promocion.descripcion|lower }}"
                             data-porcentaje="{{ promocion.porcentaje_a_reducir }}"
                             data-rest="{% if promocion.id_restriccion %}{{ promocion.id_restriccion.id_restriccion }}{% else %}none{% endif %}"
-                            data-estado="{% if promocion.activo %}activa{% else %}inactiva{% endif %}"
+                            data-estado="{% if promocion.esta_vencida %}vencida{% elif promocion.activo %}activa{% else %}inactiva{% endif %}"
                         >
                             <td><strong>{{ promocion.nombre }}</strong></td>
-                            <td class="text-muted">{{ promocion.descripcion }}</td>
+                            <td class="text-muted"><div class="desc-cell" title="{{ promocion.descripcion }}">{{ promocion.descripcion }}</div></td>
                             <td class="mono" style="color: var(--accent);">{{ promocion.porcentaje_a_reducir }}%</td>
                             <td class="text-muted">
                                 {% if promocion.id_restriccion %}
@@ -471,9 +510,18 @@
                                 {% endif %}
                             </td>
                             <td>
-                                <span class="status-badge {% if promocion.activo %}badge-active{% else %}badge-inactive{% endif %}">
-                                    {% if promocion.activo %}Activa{% else %}Inactiva{% endif %}
+                                <span class="vigencia-cell{% if promocion.esta_vencida %} vencida{% endif %}">
+                                    {{ promocion.vigencia_display }}
                                 </span>
+                            </td>
+                            <td>
+                                {% if promocion.esta_vencida %}
+                                    <span class="status-badge badge-vencida">Vencida</span>
+                                {% elif promocion.activo %}
+                                    <span class="status-badge badge-active">Activa</span>
+                                {% else %}
+                                    <span class="status-badge badge-inactive">Inactiva</span>
+                                {% endif %}
                             </td>
                             <td>
                                 <div class="mini-actions">
@@ -692,6 +740,85 @@
     }
 
     applyFilters();
+
+    // ── Validación formulario de promoción ────────────────────────
+    (function () {
+        var form        = document.getElementById('promo-form');
+        if (!form) return;
+
+        var fNombre     = document.getElementById('nombre');
+        var fPorcentaje = document.getElementById('porcentaje');
+        var fRestriccion= document.getElementById('restriccion');
+        var fFechaInicio= document.getElementById('fecha_inicio');
+        var fFechaFin   = document.getElementById('fecha_fin');
+        var errNombre   = document.getElementById('err-nombre');
+        var errPct      = document.getElementById('err-porcentaje');
+        var errFechas   = document.getElementById('err-fechas');
+        var warnRest    = document.getElementById('warn-restriccion');
+
+        function setError(input, span, msg) {
+            span.textContent = msg;
+            input.classList.add('input-error');
+        }
+        function clearError(input, span) {
+            span.textContent = '';
+            input.classList.remove('input-error');
+        }
+
+        function validateNombre() {
+            if (!fNombre.value.trim()) {
+                setError(fNombre, errNombre, 'El nombre es obligatorio.');
+                return false;
+            }
+            clearError(fNombre, errNombre);
+            return true;
+        }
+
+        function validatePorcentaje() {
+            var v = fPorcentaje.value;
+            var n = parseFloat(v);
+            if (v === '' || isNaN(n) || n < 0 || n > 100) {
+                setError(fPorcentaje, errPct, 'El descuento debe ser un número entre 0 y 100.');
+                return false;
+            }
+            clearError(fPorcentaje, errPct);
+            return true;
+        }
+
+        function updateWarnRestriccion() {
+            warnRest.textContent = fRestriccion.value === ''
+                ? '⚠ Sin restricción: la promoción se aplicará a cualquier pedido.'
+                : '';
+        }
+
+        function validateFechas() {
+            if (fFechaInicio.value && fFechaFin.value && fFechaFin.value < fFechaInicio.value) {
+                errFechas.textContent = 'La fecha de fin no puede ser anterior a la de inicio.';
+                fFechaFin.classList.add('input-error');
+                return false;
+            }
+            errFechas.textContent = '';
+            fFechaFin.classList.remove('input-error');
+            return true;
+        }
+
+        // Validación al perder foco
+        fNombre.addEventListener('blur', validateNombre);
+        fPorcentaje.addEventListener('blur', validatePorcentaje);
+        fFechaFin.addEventListener('blur', validateFechas);
+        fFechaInicio.addEventListener('change', validateFechas);
+        fRestriccion.addEventListener('change', updateWarnRestriccion);
+
+        // Mostrar aviso inicial si ya viene sin restricción (carga de página)
+        updateWarnRestriccion();
+
+        // Validación al enviar
+        form.addEventListener('submit', function (e) {
+            // Usar & (no &&) para que todas las validaciones corran y muestren sus errores
+            var ok = validateNombre() & validatePorcentaje() & validateFechas();
+            if (!ok) e.preventDefault();
+        });
+    })();
 
     // ── Modal Inactivar ────────────────────────────────────────────
     let _modalForm = null;

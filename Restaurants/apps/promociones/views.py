@@ -1,4 +1,5 @@
 import json
+from datetime import date as date_type
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
@@ -14,6 +15,16 @@ def _parse_decimal(value):
     try:
         return Decimal(value)
     except (TypeError, InvalidOperation):
+        return None
+
+
+def _parse_date(value):
+    """Convierte string 'YYYY-MM-DD' a date, o None si está vacío/inválido."""
+    if not value:
+        return None
+    try:
+        return date_type.fromisoformat(value)
+    except (ValueError, TypeError):
         return None
 
 
@@ -49,6 +60,8 @@ def promociones_view(request):
             descripcion = (request.POST.get("descripcion") or "").strip()
             porcentaje = _parse_decimal(request.POST.get("porcentaje"))
             restriccion_id = request.POST.get("restriccion")
+            fecha_inicio = _parse_date(request.POST.get("fecha_inicio"))
+            fecha_fin = _parse_date(request.POST.get("fecha_fin"))
 
             if not all([nombre, descripcion, porcentaje is not None]):
                 messages.error(request, "Completa todos los campos de la promocion.")
@@ -56,6 +69,10 @@ def promociones_view(request):
 
             if porcentaje < 0 or porcentaje > 100:
                 messages.error(request, "El porcentaje debe estar entre 0 y 100.")
+                return redirect("promociones")
+
+            if fecha_inicio and fecha_fin and fecha_fin < fecha_inicio:
+                messages.error(request, "La fecha de fin no puede ser anterior a la de inicio.")
                 return redirect("promociones")
 
             restriccion = None
@@ -71,6 +88,8 @@ def promociones_view(request):
                         descripcion=descripcion,
                         porcentaje_a_reducir=porcentaje,
                         id_restriccion=restriccion,
+                        fecha_inicio=fecha_inicio,
+                        fecha_fin=fecha_fin,
                         activo=True,
                     )
                     messages.success(request, "Promocion creada correctamente.")
@@ -84,6 +103,8 @@ def promociones_view(request):
                 promocion.descripcion = descripcion
                 promocion.porcentaje_a_reducir = porcentaje
                 promocion.id_restriccion = restriccion
+                promocion.fecha_inicio = fecha_inicio
+                promocion.fecha_fin = fecha_fin
                 promocion.save()
                 messages.success(request, "Promocion actualizada correctamente.")
             return redirect("promociones")
