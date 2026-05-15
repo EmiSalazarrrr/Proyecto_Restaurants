@@ -172,25 +172,60 @@
         .table-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden; }
         .table-header { padding: 18px 22px 14px; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; }
         .table-header h3 { font-size: 15px; font-weight: 600; }
-        table { width: 100%; border-collapse: collapse; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         th { padding: 11px 18px; font-size: 10px; color: #1a1a1a; text-transform: uppercase; letter-spacing: 1.2px; text-align: left; background: rgba(13,30,59,0.05); }
         td { padding: 14px 18px; font-size: 13.5px; border-top: 1px solid rgba(13,30,59,0.08); }
-        /* ── Column widths ── */
-        table th:nth-child(1), table td:nth-child(1) { width: 150px; }
-        table th:nth-child(2), table td:nth-child(2) { width: 220px; }
-        table th:nth-child(3), table td:nth-child(3) { width: 90px;  white-space: nowrap; }
-        table th:nth-child(5), table td:nth-child(5) { width: 130px; white-space: nowrap; }
-        table th:nth-child(6), table td:nth-child(6) { width: 95px;  white-space: nowrap; }
-        table th:nth-child(7), table td:nth-child(7) { width: 145px; white-space: nowrap; }
+        /* ── Column widths (table-layout: fixed — % sobre th, td hereda) ── */
+        table th:nth-child(1) { width: 15%; min-width: 160px; }
+        table th:nth-child(2) { width: 25%; }
+        table th:nth-child(3) { width: 10%; white-space: nowrap; }
+        table th:nth-child(4) { width: 13%; white-space: nowrap; }
+        table th:nth-child(5) { width: 14%; white-space: nowrap; }
+        table th:nth-child(6) { width: 12%; white-space: nowrap; }
+        table th:nth-child(7) { width: 11%; white-space: nowrap; }
+        /* Nombre: máximo 2 líneas con ellipsis */
+        .nombre-cell { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; cursor: default; }
+        /* ── Sortable headers ── */
+        .th-sortable { cursor: pointer; user-select: none; }
+        .th-sortable:hover { color: var(--accent); }
+        .th-sortable .sort-icon { margin-left: 4px; opacity: 0.30; display: inline-block; transition: opacity 0.15s, color 0.15s; }
+        .th-sortable.sort-asc .sort-icon,
+        .th-sortable.sort-desc .sort-icon { opacity: 1; color: var(--accent); }
+        /* ── Toggle switch ── */
+        .toggle-wrap { position: relative; display: inline-block; width: 36px; height: 20px; cursor: pointer; flex-shrink: 0; vertical-align: middle; }
+        .toggle-input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .toggle-slider { position: absolute; inset: 0; border-radius: 20px; background: #dc2626; transition: background 0.25s; }
+        .toggle-slider::before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: transform 0.25s; }
+        .toggle-input:checked + .toggle-slider { background: #16a34a; }
+        .toggle-input:checked + .toggle-slider::before { transform: translateX(16px); }
+        .toggle-input:disabled + .toggle-slider { opacity: 0.5; cursor: not-allowed; }
+        .badge-estado-wrap { display: flex; align-items: center; gap: 8px; }
         /* Truncado de descripción */
         .desc-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: default; }
+        /* Truncado de restricción */
+        .restriccion-cell { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: default; }
         /* Badge Vencida */
         .badge-vencida { background: #ea580c; color: #ffffff; border: none; }
         html[data-theme="dark"] .badge-vencida { background: rgba(234,88,12,0.22) !important; color: #fb923c !important; border: 1px solid rgba(234,88,12,0.38) !important; }
         /* Vigencia cell */
-        .vigencia-cell { font: 500 12px "DM Mono", monospace; color: var(--text-secondary); }
+        .vigencia-cell { font-size: 12.5px; color: var(--text-primary); }
+        .vigencia-cell.sin-fecha { color: #9ca3af; font-style: italic; }
         .vigencia-cell.vencida { color: #ea580c; }
+        html[data-theme="dark"] .vigencia-cell.sin-fecha { color: #6b7280; }
         html[data-theme="dark"] .vigencia-cell.vencida { color: #fb923c; }
+        /* ── Modal de confirmación (toggle) ── */
+        .confirm-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .confirm-overlay.open { opacity: 1; pointer-events: all; }
+        .confirm-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 28px 32px; max-width: 380px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.28); text-align: center; transform: translateY(-8px); opacity: 0; transition: transform 0.2s cubic-bezier(0.22,0.61,0.36,1), opacity 0.2s; }
+        .confirm-overlay.open .confirm-box { transform: translateY(0); opacity: 1; }
+        .confirm-icon { font-size: 30px; margin-bottom: 10px; }
+        .confirm-title { font-size: 17px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+        .confirm-body { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 22px; }
+        .confirm-actions { display: flex; justify-content: center; gap: 10px; }
+        .confirm-cancel-btn { padding: 9px 20px; border-radius: 8px; border: 1px solid var(--card-border); background: transparent; color: var(--text-primary); font: 500 13px "DM Sans", sans-serif; cursor: pointer; transition: all 0.15s; }
+        .confirm-cancel-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .confirm-ok-btn { padding: 9px 20px; border-radius: 8px; border: none; background: #dc2626; color: #fff; font: 600 13px "DM Sans", sans-serif; cursor: pointer; transition: background 0.15s; }
+        .confirm-ok-btn:hover { background: #b91c1c; }
         tbody tr { transition: background 0.12s; }
         tbody tr:hover { background: rgba(13,30,59,0.03); }
         tbody tr[data-hidden="true"] { display: none; }
@@ -480,12 +515,12 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Nombre</th>
+                        <th class="th-sortable" data-col="0">Nombre <i class="sort-icon">↕</i></th>
                         <th>Descripcion</th>
-                        <th>Descuento</th>
+                        <th class="th-sortable" data-col="2">Descuento <i class="sort-icon">↕</i></th>
                         <th>Restriccion</th>
                         <th>Vigencia</th>
-                        <th>Estado</th>
+                        <th class="th-sortable" data-col="5">Estado <i class="sort-icon">↕</i></th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -498,46 +533,47 @@
                             data-rest="{% if promocion.id_restriccion %}{{ promocion.id_restriccion.id_restriccion }}{% else %}none{% endif %}"
                             data-estado="{% if promocion.esta_vencida %}vencida{% elif promocion.activo %}activa{% else %}inactiva{% endif %}"
                         >
-                            <td><strong>{{ promocion.nombre }}</strong></td>
+                            <td><strong class="nombre-cell" title="{{ promocion.nombre }}">{{ promocion.nombre }}</strong></td>
                             <td class="text-muted"><div class="desc-cell" title="{{ promocion.descripcion }}">{{ promocion.descripcion }}</div></td>
                             <td class="mono" style="color: var(--accent);">{{ promocion.porcentaje_a_reducir }}%</td>
                             <td class="text-muted">
-                                {% if promocion.id_restriccion %}
-                                    {{ promocion.id_restriccion.nombre }}
-                                    <span class="mono" style="color: var(--text-muted); font-size: 11px;">(min. {{ promocion.id_restriccion.consumo_minimo_para_aplicar }})</span>
-                                {% else %}
-                                    <span style="color: var(--text-muted);">—</span>
-                                {% endif %}
+                                <div class="restriccion-cell" title="{% if promocion.id_restriccion %}{{ promocion.id_restriccion.nombre }} — min. {{ promocion.id_restriccion.consumo_minimo_para_aplicar }}{% endif %}">
+                                    {% if promocion.id_restriccion %}
+                                        {{ promocion.id_restriccion.nombre }}
+                                        <span style="color: var(--text-muted); font-size: 11px;">(min. {{ promocion.id_restriccion.consumo_minimo_para_aplicar }})</span>
+                                    {% else %}
+                                        <span style="color: var(--text-muted);">—</span>
+                                    {% endif %}
+                                </div>
                             </td>
                             <td>
-                                <span class="vigencia-cell{% if promocion.esta_vencida %} vencida{% endif %}">
+                                <span class="vigencia-cell{% if promocion.esta_vencida %} vencida{% elif not promocion.fecha_inicio and not promocion.fecha_fin %} sin-fecha{% endif %}">
                                     {{ promocion.vigencia_display }}
                                 </span>
                             </td>
                             <td>
-                                {% if promocion.esta_vencida %}
-                                    <span class="status-badge badge-vencida">Vencida</span>
-                                {% elif promocion.activo %}
-                                    <span class="status-badge badge-active">Activa</span>
-                                {% else %}
-                                    <span class="status-badge badge-inactive">Inactiva</span>
-                                {% endif %}
+                                <div class="badge-estado-wrap">
+                                    {% if promocion.esta_vencida %}
+                                        <span class="status-badge badge-vencida" id="badge-{{ promocion.id_promocion }}">Vencida</span>
+                                    {% elif promocion.activo %}
+                                        <span class="status-badge badge-active" id="badge-{{ promocion.id_promocion }}">Activa</span>
+                                    {% else %}
+                                        <span class="status-badge badge-inactive" id="badge-{{ promocion.id_promocion }}">Inactiva</span>
+                                    {% endif %}
+                                    {% if not promocion.esta_vencida %}
+                                        <label class="toggle-wrap" title="{% if promocion.activo %}Inactivar{% else %}Activar{% endif %}">
+                                            <input type="checkbox" class="toggle-input"
+                                                   data-id="{{ promocion.id_promocion }}"
+                                                   data-nombre="{{ promocion.nombre }}"
+                                                   {% if promocion.activo %}checked{% endif %}>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    {% endif %}
+                                </div>
                             </td>
                             <td>
                                 <div class="mini-actions">
                                     <a class="mini-btn" href="{% url 'promociones' %}?editar={{ promocion.id_promocion }}">Editar</a>
-                                    <form class="inline-form" method="post">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="action" value="toggle_promocion">
-                                        <input type="hidden" name="promocion_id" value="{{ promocion.id_promocion }}">
-                                        {% if promocion.activo %}
-                                            <button class="mini-btn toggle-on" type="button"
-                                                    data-nombre="{{ promocion.nombre }}"
-                                                    onclick="abrirModalInactivar(this)">Inactivar</button>
-                                        {% else %}
-                                            <button class="mini-btn toggle-off" type="submit">Activar</button>
-                                        {% endif %}
-                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -817,6 +853,153 @@
             // Usar & (no &&) para que todas las validaciones corran y muestren sus errores
             var ok = validateNombre() & validatePorcentaje() & validateFechas();
             if (!ok) e.preventDefault();
+        });
+    })();
+
+    // ── Ordenamiento de tabla ──────────────────────────────────────
+    (function () {
+        var sortHeaders = document.querySelectorAll('.th-sortable');
+        var tbody = document.getElementById('promo-tbody');
+        var activeCol = null;
+        var activeDir = 'asc';
+
+        function getCellText(row, colIdx) {
+            var cells = row.querySelectorAll('td');
+            if (!cells[colIdx]) return '';
+            return (cells[colIdx].textContent || '').trim().toLowerCase();
+        }
+
+        sortHeaders.forEach(function (th) {
+            th.addEventListener('click', function () {
+                var col = parseInt(th.dataset.col, 10);
+                if (activeCol === col) {
+                    activeDir = activeDir === 'asc' ? 'desc' : 'asc';
+                } else {
+                    activeCol = col;
+                    activeDir = 'asc';
+                }
+                sortHeaders.forEach(function (h) {
+                    h.classList.remove('sort-asc', 'sort-desc');
+                    h.querySelector('.sort-icon').textContent = '↕';
+                });
+                th.classList.add('sort-' + activeDir);
+                th.querySelector('.sort-icon').textContent = activeDir === 'asc' ? '↑' : '↓';
+
+                var rows = Array.from(tbody.querySelectorAll('tr[data-nombre]'));
+                rows.sort(function (a, b) {
+                    var av = getCellText(a, col);
+                    var bv = getCellText(b, col);
+                    return activeDir === 'asc'
+                        ? av.localeCompare(bv, 'es', { numeric: true })
+                        : bv.localeCompare(av, 'es', { numeric: true });
+                });
+                rows.forEach(function (r) { tbody.appendChild(r); });
+                applyFilters(); // re-paginar tras ordenar
+            });
+        });
+    })();
+
+    // ── Modal de confirmación (singleton, construido en JS) ────────
+    var _confirmResolve = null;
+    var _confirmEl = null;
+
+    function buildConfirmModal() {
+        if (_confirmEl) return;
+        var el = document.createElement('div');
+        el.className = 'confirm-overlay';
+        el.innerHTML =
+            '<div class="confirm-box" role="dialog" aria-modal="true">' +
+            '  <div class="confirm-icon">⚠️</div>' +
+            '  <div class="confirm-title">¿Inactivar promoción?</div>' +
+            '  <p class="confirm-body" id="confirm-body"></p>' +
+            '  <div class="confirm-actions">' +
+            '    <button class="confirm-cancel-btn" id="confirm-cancel">Cancelar</button>' +
+            '    <button class="confirm-ok-btn" id="confirm-ok">Sí, inactivar</button>' +
+            '  </div>' +
+            '</div>';
+        document.body.appendChild(el);
+        _confirmEl = el;
+        document.getElementById('confirm-cancel').addEventListener('click', function () { closeConfirmModal(false); });
+        document.getElementById('confirm-ok').addEventListener('click', function () { closeConfirmModal(true); });
+        el.addEventListener('click', function (e) { if (e.target === el) closeConfirmModal(false); });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && _confirmEl && _confirmEl.classList.contains('open')) closeConfirmModal(false);
+        });
+    }
+
+    function openConfirmModal(nombre) {
+        buildConfirmModal();
+        document.getElementById('confirm-body').innerHTML =
+            'Estás por inactivar <strong>' + nombre + '</strong>. Podrás reactivarla después.';
+        _confirmEl.classList.add('open');
+        return new Promise(function (resolve) { _confirmResolve = resolve; });
+    }
+
+    function closeConfirmModal(result) {
+        if (_confirmEl) _confirmEl.classList.remove('open');
+        if (_confirmResolve) { _confirmResolve(result); _confirmResolve = null; }
+    }
+
+    // ── Toggle AJAX ────────────────────────────────────────────────
+    (function () {
+        function getCsrf() {
+            var m = document.cookie.match(/csrftoken=([^;]+)/);
+            return m ? m[1] : '';
+        }
+
+        function doToggle(toggle, id) {
+            toggle.disabled = true;
+            fetch('/promociones/' + id + '/toggle-estado/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCsrf() },
+            })
+            .then(function (r) {
+                if (!r.ok) throw new Error('Error ' + r.status);
+                return r.json();
+            })
+            .then(function (data) {
+                var badge = document.getElementById('badge-' + id);
+                var row   = toggle.closest('tr');
+                if (data.estado === 'activa') {
+                    badge.className   = 'status-badge badge-active';
+                    badge.textContent = 'Activa';
+                    toggle.checked    = true;
+                    toggle.closest('label').title = 'Inactivar';
+                    if (row) row.dataset.estado = 'activa';
+                } else {
+                    badge.className   = 'status-badge badge-inactive';
+                    badge.textContent = 'Inactiva';
+                    toggle.checked    = false;
+                    toggle.closest('label').title = 'Activar';
+                    if (row) row.dataset.estado = 'inactiva';
+                }
+            })
+            .catch(function () {
+                toggle.checked = !toggle.checked;
+                alert('No se pudo cambiar el estado. Intenta de nuevo.');
+            })
+            .finally(function () { toggle.disabled = false; });
+        }
+
+        document.querySelectorAll('.toggle-input').forEach(function (chk) {
+            chk.addEventListener('change', function () {
+                var id       = this.dataset.id;
+                var nombre   = this.dataset.nombre;
+                var activando = this.checked;
+                var toggle   = this;
+
+                if (!activando) {
+                    // Revertir visualmente mientras espera confirmación
+                    toggle.checked = true;
+                    openConfirmModal(nombre).then(function (ok) {
+                        if (!ok) return; // cancelado — toggle ya está revertido
+                        toggle.checked = false;
+                        doToggle(toggle, id);
+                    });
+                } else {
+                    doToggle(toggle, id);
+                }
+            });
         });
     })();
 

@@ -4,7 +4,9 @@ from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
 from django.db.models import Count
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from apps.usuarios.views import login_required
 
@@ -138,6 +140,16 @@ def promociones_view(request):
         }),
     }
     return render(request, "promociones.html", context)
+
+
+@login_required(role="admin")
+@require_POST
+def toggle_estado_view(request, promocion_id):
+    """Endpoint AJAX: alterna activo/inactivo y devuelve JSON."""
+    promocion = get_object_or_404(Promocion, pk=promocion_id)
+    promocion.activo = not promocion.activo
+    promocion.save(update_fields=["activo"])
+    return JsonResponse({"estado": "activa" if promocion.activo else "inactiva"})
 
 
 @login_required(role="admin")

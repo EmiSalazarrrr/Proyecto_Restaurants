@@ -97,8 +97,33 @@
         .form-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px; }
         .btn-primary { padding: 12px 24px; border-radius: 10px; border: none; background: var(--accent); color: #0D1E3B; font-size: 14px; font-weight: 600; cursor: pointer; font-family: "DM Sans", sans-serif; }
         .btn-primary:hover { background: #b8942e; }
+        .btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
         .btn-secondary { padding: 12px 24px; border-radius: 10px; border: 1px solid var(--card-border); background: transparent; color: var(--text-secondary); font-size: 14px; cursor: pointer; font-family: "DM Sans", sans-serif; text-decoration: none; display: inline-flex; align-items: center; }
         .btn-secondary:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+
+        /* ── Botón eliminar ítem ── */
+        .btn-del { padding: 4px 9px; border-radius: 7px; border: 1px solid rgba(240,122,122,0.25); background: transparent; color: var(--danger); cursor: pointer; font-size: 14px; line-height: 1.4; transition: all 0.15s; }
+        .btn-del:hover { background: rgba(240,122,122,0.10); border-color: var(--danger); }
+
+        /* ── Modal confirmación eliminar ── */
+        .del-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(13,30,59,0.55); display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(2px); }
+        .del-overlay.open { display: flex; }
+        .del-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 28px 24px 22px; max-width: 360px; width: 100%; text-align: center; box-shadow: 0 8px 32px rgba(13,30,59,0.18); animation: popIn 0.25s cubic-bezier(0.22,0.61,0.36,1) both; }
+        @keyframes popIn { from { opacity:0; transform:scale(0.92); } to { opacity:1; transform:scale(1); } }
+        .del-icon { font-size: 32px; margin-bottom: 12px; }
+        .del-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
+        .del-body { font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px; }
+        .del-actions { display: flex; gap: 10px; }
+        .del-cancel { flex: 1; padding: 11px; border-radius: 9px; border: 1px solid var(--card-border); background: transparent; color: var(--text-secondary); font: 13px "DM Sans", sans-serif; cursor: pointer; transition: all 0.15s; }
+        .del-cancel:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+        .del-ok { flex: 1; padding: 11px; border-radius: 9px; border: none; background: var(--danger); color: #fff; font: 600 13px "DM Sans", sans-serif; cursor: pointer; transition: opacity 0.15s; }
+        .del-ok:hover { opacity: 0.87; }
+
+        /* ── Toast ── */
+        .toast { position: fixed; top: 20px; right: 20px; z-index: 200; padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 500; animation: toastIn 0.3s ease both; max-width: 320px; pointer-events: none; }
+        .toast-warn { background: rgba(216,174,72,0.14); border: 1px solid rgba(216,174,72,0.32); color: #7a5c00; }
+        .toast-err  { background: rgba(240,122,122,0.12); border: 1px solid rgba(240,122,122,0.28); color: #8b2020; }
+        @keyframes toastIn { from { opacity:0; transform:translateX(16px); } to { opacity:1; transform:translateX(0); } }
 
         /* ── Entrance animation ── */
         @keyframes fadeInUp {
@@ -179,28 +204,33 @@
                     <th>Cant.</th>
                     <th>P.Unit</th>
                     <th>Importe</th>
+                    <th></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="productos-tbody">
                 {% for p in productos_actuales %}
-                <tr>
+                <tr data-alimento-id="{{ p.alimento_id }}" data-nombre="{{ p.nombre|escapejs }}">
                     <td>{{ p.nombre }}</td>
                     <td>{{ p.cantidad }}</td>
                     <td class="mono">${{ p.precio_unitario }}</td>
                     <td class="mono">${{ p.importe }}</td>
+                    <td style="text-align:right;">
+                        <button type="button" class="btn-del" title="Eliminar del ticket"
+                            onclick="abrirModalEliminar({{ p.alimento_id }}, '{{ p.nombre|escapejs }}', this.closest('tr'))">🗑</button>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        <div class="total-row">
+        <div class="total-row" id="total-row">
             <span>Total actual</span>
-            <span>${{ ticket.precio_final }}</span>
+            <span id="total-actual">${{ ticket.precio_final }}</span>
         </div>
         {% if ticket.id_promocion %}
-        <div class="promo-note">✓ Promoción aplicada: {{ ticket.id_promocion.nombre }} (-{{ ticket.id_promocion.porcentaje_a_reducir }}%)</div>
+        <div class="promo-note" id="promo-note">✓ Promoción aplicada: {{ ticket.id_promocion.nombre }} (-{{ ticket.id_promocion.porcentaje_a_reducir }}%)</div>
         {% endif %}
         {% else %}
-        <p style="color:var(--text-muted);font-size:13px;">Sin productos registrados.</p>
+        <p id="empty-msg" style="color:var(--text-muted);font-size:13px;">Sin productos registrados.</p>
         {% endif %}
     </div>
 
@@ -256,10 +286,23 @@
 
         <div class="form-actions anim d5">
             <a href="{% url 'lista_tickets' %}" class="btn-secondary">Cancelar</a>
-            <button type="submit" class="btn-primary">Guardar cambios</button>
+            <button type="submit" class="btn-primary" id="btn-guardar">Guardar cambios</button>
         </div>
     </form>
 </main>
+
+<!-- ── Modal: confirmar eliminación de ítem ── -->
+<div class="del-overlay" id="del-modal" onclick="closeDelModalOutside(event)">
+    <div class="del-box">
+        <div class="del-icon">🗑</div>
+        <p class="del-title">¿Eliminar producto?</p>
+        <p class="del-body" id="del-modal-body">Se eliminarán todas las unidades del ticket.</p>
+        <div class="del-actions">
+            <button class="del-cancel" onclick="closeDelModal()">Cancelar</button>
+            <button class="del-ok" onclick="confirmDelete()">Sí, eliminar</button>
+        </div>
+    </div>
+</div>
 
 <script>
     const alimentosData = [
@@ -309,6 +352,100 @@
 
     function usarRecomendada(id) {
         document.getElementById('promocion_id').value = id;
+    }
+
+    // ── Eliminar ítem del ticket ───────────────────────────────────
+    const TICKET_ID = {{ ticket.id_ticket }};
+    let _delAlimentoId = null;
+    let _delRow = null;
+
+    function getCsrf() {
+        for (const c of document.cookie.split(';')) {
+            const [k, v] = c.trim().split('=');
+            if (k === 'csrftoken') return decodeURIComponent(v);
+        }
+        return '';
+    }
+
+    function mostrarToast(msg, tipo) {
+        const t = document.createElement('div');
+        t.className = `toast toast-${tipo}`;
+        t.textContent = msg;
+        document.body.appendChild(t);
+        setTimeout(() => t.remove(), 4500);
+    }
+
+    function abrirModalEliminar(alimentoId, nombre, row) {
+        _delAlimentoId = alimentoId;
+        _delRow = row;
+        document.getElementById('del-modal-body').textContent =
+            `Se eliminarán todas las unidades de "${nombre}" del ticket.`;
+        document.getElementById('del-modal').classList.add('open');
+    }
+
+    function closeDelModal() {
+        document.getElementById('del-modal').classList.remove('open');
+        _delAlimentoId = null;
+        _delRow = null;
+    }
+
+    function closeDelModalOutside(e) {
+        if (e.target === document.getElementById('del-modal')) closeDelModal();
+    }
+
+    async function confirmDelete() {
+        if (!_delAlimentoId) return;
+        const alimentoId = _delAlimentoId;
+        const row = _delRow;
+        closeDelModal();
+
+        try {
+            const res = await fetch(`/tickets/${TICKET_ID}/eliminar-item/${alimentoId}/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCsrf() },
+            });
+            const data = await res.json().catch(() => ({}));
+
+            if (!res.ok || !data.ok) {
+                mostrarToast(data.error || 'Error al eliminar el producto.', 'err');
+                return;
+            }
+
+            // Quitar la fila del DOM
+            row.remove();
+
+            // Actualizar total visible
+            const totalEl = document.getElementById('total-actual');
+            if (totalEl) totalEl.textContent = `$${data.nuevo_total.toFixed(2)}`;
+
+            // Promo removida
+            if (data.promo_removida) {
+                const promoNote = document.getElementById('promo-note');
+                if (promoNote) promoNote.remove();
+                // Limpiar select de promoción
+                const promoSelect = document.getElementById('promocion_id');
+                if (promoSelect) promoSelect.value = '';
+                mostrarToast('Se quitó el descuento porque ya no se cumple la condición mínima.', 'warn');
+            }
+
+            // Ticket vacío
+            if (data.ticket_vacio) {
+                const tbody = document.getElementById('productos-tbody');
+                if (tbody) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px 0;font-size:13px;">Este ticket no tiene productos.</td></tr>';
+                }
+                const totalRow = document.getElementById('total-row');
+                if (totalRow) totalRow.style.display = 'none';
+                const btnGuardar = document.getElementById('btn-guardar');
+                if (btnGuardar) {
+                    btnGuardar.disabled = true;
+                    btnGuardar.title = 'El ticket no tiene productos';
+                }
+            }
+
+        } catch (e) {
+            mostrarToast('Error de red. Intenta de nuevo.', 'err');
+        }
     }
 </script>
 </body>

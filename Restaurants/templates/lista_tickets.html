@@ -161,6 +161,28 @@
         .btn-action { display: inline-block; padding: 5px 11px; border-radius: 6px; font-size: 11px; font-weight: 600; text-decoration: none; border: 1px solid; cursor: pointer; font-family: "DM Sans", sans-serif; transition: opacity 0.15s; white-space: nowrap; background: transparent; }
         .btn-imprimir  { color: var(--accent); border-color: rgba(216,174,72,0.3); }
         .btn-imprimir:hover  { background: rgba(216,174,72,0.1); }
+        .btn-ver       { color: #a78bfa; border-color: rgba(167,139,250,0.3); }
+        .btn-ver:hover { background: rgba(167,139,250,0.08); }
+        .btn-reabrir   { color: #38bdf8; border-color: rgba(56,189,248,0.30); }
+        .btn-reabrir:hover { background: rgba(56,189,248,0.08); }
+
+        /* ── Modal Reabrir ── */
+        .reabrir-overlay { position: fixed; inset: 0; z-index: 100; background: rgba(13,30,59,0.55); display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(3px); }
+        .reabrir-overlay.open { display: flex; }
+        .reabrir-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; padding: 32px 28px 26px; max-width: 380px; width: 100%; text-align: center; box-shadow: 0 12px 48px rgba(13,30,59,0.22); animation: reabrirPop 0.28s cubic-bezier(0.22,0.61,0.36,1) both; }
+        @keyframes reabrirPop { from { opacity: 0; transform: scale(0.90) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        html[data-theme="dark"] .reabrir-box { box-shadow: 0 12px 48px rgba(0,0,0,0.45); }
+        .reabrir-icon { font-size: 38px; margin-bottom: 14px; display: block; }
+        .reabrir-title { font-size: 17px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+        .reabrir-id { font: 500 13px "DM Mono", monospace; color: var(--accent); margin-bottom: 12px; }
+        .reabrir-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 14px; }
+        .reabrir-warn { background: rgba(56,189,248,0.08); border: 1px solid rgba(56,189,248,0.22); border-radius: 10px; padding: 10px 14px; font-size: 12px; color: #0369a1; text-align: left; margin-bottom: 20px; line-height: 1.55; }
+        html[data-theme="dark"] .reabrir-warn { background: rgba(56,189,248,0.07); border-color: rgba(56,189,248,0.18); color: #38bdf8; }
+        .reabrir-actions { display: flex; gap: 10px; }
+        .reabrir-cancel { flex: 1; padding: 11px; border-radius: 10px; border: 1px solid var(--card-border); background: transparent; color: var(--text-secondary); font: 13px "DM Sans", sans-serif; cursor: pointer; transition: all 0.15s; }
+        .reabrir-cancel:hover { border-color: var(--text-secondary); color: var(--text-primary); }
+        .reabrir-ok { flex: 1; padding: 11px; border-radius: 10px; border: none; background: #38bdf8; color: #0c2a3a; font: 600 13px "DM Sans", sans-serif; cursor: pointer; transition: opacity 0.15s; }
+        .reabrir-ok:hover { opacity: 0.88; }
         .btn-modificar { color: #7eb3ff; border-color: rgba(126,179,255,0.3); }
         .btn-modificar:hover { background: rgba(126,179,255,0.08); }
         .btn-cobrar    { color: var(--success); border-color: rgba(76,201,112,0.35); }
@@ -401,6 +423,7 @@
                     <td>
                         <div class="actions">
                             <a href="{% url 'imprimir_ticket' ticket.id_ticket %}" target="_blank" class="btn-action btn-imprimir">Imprimir</a>
+                            <a href="{% url 'ver_ticket' ticket.id_ticket %}" target="_blank" class="btn-action btn-ver">Ver ticket</a>
                             {% if estado == "abierto" %}
                                 {# Abierto: se puede modificar, cobrar y cancelar #}
                                 <a href="{% url 'modificar_ticket' ticket.id_ticket %}" class="btn-action btn-modificar">Modificar</a>
@@ -410,8 +433,10 @@
                                     <button type="submit" class="btn-action btn-cancelar">Cancelar</button>
                                 </form>
                             {% elif estado == "canjeado" %}
-                                {# Canjeado: cliente ya lo registró — solo cobrar o cancelar (no modificar) #}
+                                {# Canjeado: cliente ya lo registró — cobrar, reabrir o cancelar #}
                                 <button type="button" class="btn-action btn-cobrar" onclick="toggleCobro({{ ticket.id_ticket }})">Cobrar</button>
+                                <button type="button" class="btn-action btn-reabrir"
+                                    onclick="abrirModalReabrir({{ ticket.id_ticket }})">Reabrir ↺</button>
                                 <form method="POST" action="{% url 'cancelar_ticket' ticket.id_ticket %}" class="btn-cancelar-form" onsubmit="return confirm('¿Cancelar el ticket #{{ ticket.id_ticket }}? El cliente ya lo canjeó.')">
                                     {% csrf_token %}
                                     <button type="submit" class="btn-action btn-cancelar">Cancelar</button>
@@ -489,6 +514,28 @@
         </div>
     </div>
 </main>
+
+<!-- ── Modal: Reabrir ticket ── -->
+<div class="reabrir-overlay" id="reabrir-modal" onclick="closeReabrirOutside(event)">
+    <div class="reabrir-box">
+        <span class="reabrir-icon">🔓</span>
+        <p class="reabrir-title">¿Reabrir ticket?</p>
+        <p class="reabrir-id" id="reabrir-ticket-id"></p>
+        <p class="reabrir-desc">
+            El ticket volverá a estado <strong>Abierto</strong>. El cliente podrá canjearlo de nuevo desde su perfil.
+        </p>
+        <div class="reabrir-warn">
+            ℹ️ Úsalo cuando el cliente pida cambios en su pedido antes de pagar. Una vez reabierto, podrás modificarlo normalmente.
+        </div>
+        <div class="reabrir-actions">
+            <button class="reabrir-cancel" onclick="closeReabrir()">Cancelar</button>
+            <form id="reabrir-form" method="POST" style="flex:1;display:contents;">
+                {% csrf_token %}
+                <button type="submit" class="reabrir-ok">↺ Sí, reabrir</button>
+            </form>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
@@ -604,6 +651,21 @@
         const cashReceived = Number(cashInput.value || 0);
         const change = Math.max(cashReceived - total, 0);
         summary.textContent = `Total a cobrar: $${total.toFixed(2)}. Cambio: $${change.toFixed(2)}`;
+    }
+
+    // ── Modal Reabrir ──────────────────────────────────────────────
+    function abrirModalReabrir(ticketId) {
+        document.getElementById('reabrir-ticket-id').textContent = 'Ticket #' + ticketId;
+        document.getElementById('reabrir-form').action = '/tickets/' + ticketId + '/reabrir/';
+        document.getElementById('reabrir-modal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeReabrir() {
+        document.getElementById('reabrir-modal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+    function closeReabrirOutside(e) {
+        if (e.target === document.getElementById('reabrir-modal')) closeReabrir();
     }
 
     // Gráfica Chart.js

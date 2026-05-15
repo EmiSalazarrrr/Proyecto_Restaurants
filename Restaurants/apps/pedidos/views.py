@@ -6,9 +6,11 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 
 from django.contrib import messages
 from django.db.models import Case, Count, IntegerField, Sum, Value, When
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.utils.timezone import localdate
+from django.views.decorators.http import require_POST
 
 from apps.menu.models import Alimentosbebidas
 from apps.promociones.models import Promocion
@@ -375,13 +377,14 @@ def modificar_ticket(request, id_ticket):
         return redirect("lista_tickets")
 
     agrupados = defaultdict(lambda: {
-        "nombre": "", "precio_unitario": Decimal("0"), "cantidad": 0, "importe": Decimal("0"),
+        "alimento_id": None, "nombre": "", "precio_unitario": Decimal("0"), "cantidad": 0, "importe": Decimal("0"),
     })
     for detalle in ticket.detalleticket_set.all():
         if not detalle.id_productopedido or not detalle.id_productopedido.id_alimentosbebidas:
             continue
         alimento = detalle.id_productopedido.id_alimentosbebidas
         key = alimento.id_alimentosbebidas
+        agrupados[key]["alimento_id"] = alimento.id_alimentosbebidas
         agrupados[key]["nombre"] = alimento.nombre
         agrupados[key]["precio_unitario"] = alimento.costo
         agrupados[key]["cantidad"] += 1
@@ -396,6 +399,74 @@ def modificar_ticket(request, id_ticket):
         "alimentos": alimentos,
         "promociones": promociones,
         "promocion_recomendada": recomendada,
+    })
+
+
+@login_required(role="admin")
+@require_POST
+def eliminar_item_ticket(request, id_ticket, alimento_id):
+    """AJAX: elimina todas las unidades de un alimento del ticket y recalcula total."""
+    ticket = get_object_or_404(
+        Ticket.objects.select_related("id_promocion__id_restriccion", "nombre_usuario"),
+        id_ticket=id_ticket,
+    )
+
+    if _get_estado(ticket, timezone.now()) != "abierto":
+        return JsonResponse({"ok": False, "error": "El ticket no está en estado abierto."}, status=400)
+
+    # Buscar los Detalleticket de ese alimento en este ticket
+    detalles_qs = ticket.detalleticket_set.filter(
+        id_productopedido__id_alimentosbebidas_id=alimento_id
+    )
+    if not detalles_qs.exists():
+        return JsonResponse({"ok": False, "error": "El producto no existe en este ticket."}, status=404)
+
+    # Guardar IDs de Productopedido antes de borrar
+    pp_ids = list(detalles_qs.values_list("id_productopedido_id", flat=True))
+
+    # Borrar Detalleticket primero (tienen FK a Productopedido)
+    detalles_qs.delete()
+
+    # Borrar Productopedido huérfanos
+    Productopedido.objects.filter(id_productopedido__in=pp_ids).delete()
+
+    # Verificar si la promoción sigue siendo válida tras la eliminación
+    promo_removida = False
+    if ticket.id_promocion:
+        total_restante = ticket.detalleticket_set.count()
+        cliente_ticket = ticket.nombre_usuario
+        if cliente_ticket:
+            elegibles = _promociones_elegibles(cliente_ticket, total_restante)
+            promo_sigue = any(p.id_promocion == ticket.id_promocion.id_promocion for p in elegibles)
+        else:
+            restriccion = ticket.id_promocion.id_restriccion
+            if restriccion and "frecuente" not in (restriccion.nombre or "").lower():
+                promo_sigue = total_restante >= (restriccion.consumo_minimo_para_aplicar or 0)
+            else:
+                promo_sigue = True
+
+        if not promo_sigue:
+            ticket.id_promocion = None
+            promo_removida = True
+
+    # Recalcular total (limpiar caché de prefetch)
+    if hasattr(ticket, "_prefetched_objects_cache"):
+        ticket._prefetched_objects_cache = {}
+
+    nuevo_total = ticket.calcular_total()
+    ticket.precio_final = nuevo_total
+    fields = ["precio_final"]
+    if promo_removida:
+        fields.append("id_promocion")
+    ticket.save(update_fields=fields)
+
+    ticket_vacio = ticket.detalleticket_set.count() == 0
+
+    return JsonResponse({
+        "ok": True,
+        "nuevo_total": float(nuevo_total),
+        "promo_removida": promo_removida,
+        "ticket_vacio": ticket_vacio,
     })
 
 
@@ -452,6 +523,104 @@ def cobrar_ticket(request, id_ticket):
         "pagado",
     ])
     messages.success(request, f"Ticket #{ticket.id_ticket} cobrado correctamente. Cambio: ${ticket.cambio}.")
+    return redirect("lista_tickets")
+
+
+@login_required(role="cliente")
+def mis_tickets_view(request):
+    """Página del cliente: tickets activos en tiempo real + recientes."""
+    cliente = request.current_cliente
+    now = timezone.now()
+
+    tickets_qs = (
+        Ticket.objects
+        .filter(nombre_usuario=cliente)
+        .select_related("id_promocion")
+        .prefetch_related("detalleticket_set__id_productopedido__id_alimentosbebidas")
+        .order_by("-fecha")[:20]
+    )
+
+    activos = []
+    recientes = []
+
+    for ticket in tickets_qs:
+        estado = _get_estado(ticket, now)
+
+        agrupados = defaultdict(lambda: {
+            "nombre": "", "precio_unitario": Decimal("0"), "cantidad": 0, "importe": Decimal("0"),
+        })
+        for detalle in ticket.detalleticket_set.all():
+            if not detalle.id_productopedido or not detalle.id_productopedido.id_alimentosbebidas:
+                continue
+            alimento = detalle.id_productopedido.id_alimentosbebidas
+            key = alimento.id_alimentosbebidas
+            agrupados[key]["nombre"] = alimento.nombre
+            agrupados[key]["precio_unitario"] = alimento.costo
+            agrupados[key]["cantidad"] += 1
+            agrupados[key]["importe"] += alimento.costo
+
+        lineas = list(agrupados.values())
+        subtotal = sum(l["importe"] for l in lineas)
+        descuento = (subtotal - ticket.precio_final) if subtotal > ticket.precio_final else Decimal("0")
+
+        entry = {
+            "ticket": ticket,
+            "estado": estado,
+            "lineas": lineas,
+            "subtotal": subtotal,
+            "descuento": descuento,
+        }
+
+        if estado in ("abierto", "canjeado"):
+            activos.append(entry)
+        else:
+            recientes.append(entry)
+
+    return render(request, "mis_tickets.html", {
+        "activos": activos,
+        "recientes": recientes[:5],
+        "cliente": cliente,
+    })
+
+
+@login_required(role="cliente")
+def canjear_directo(request, ticket_id):
+    """Canjear desde /mis-tickets/ sin necesidad de ingresar el código."""
+    if request.method != "POST":
+        return redirect("mis_tickets")
+
+    ticket = get_object_or_404(Ticket, id_ticket=ticket_id)
+    cliente = request.current_cliente
+
+    if ticket.nombre_usuario != cliente:
+        messages.error(request, "No tienes permiso para canjear este ticket.")
+        return redirect("mis_tickets")
+
+    estado = _get_estado(ticket, timezone.now())
+    if estado != "abierto":
+        messages.error(request, "Este ticket no se puede canjear en este momento.")
+        return redirect("mis_tickets")
+
+    ticket.canjeado = 1
+    ticket.save(update_fields=["canjeado"])
+    return redirect("confirmacion_canje", id_ticket=ticket.id_ticket)
+
+
+@login_required(role="admin")
+def reabrir_ticket(request, id_ticket):
+    """Permite al admin revertir un ticket canjeado a abierto para poder modificarlo."""
+    if request.method != "POST":
+        return redirect("lista_tickets")
+
+    ticket = get_object_or_404(Ticket, id_ticket=id_ticket)
+
+    if ticket.canjeado != 1 or ticket.pagado:
+        messages.error(request, "Solo se pueden reabrir tickets canjeados sin cobrar.")
+        return redirect("lista_tickets")
+
+    ticket.canjeado = 0
+    ticket.save(update_fields=["canjeado"])
+    messages.success(request, f"Ticket #{ticket.id_ticket} reabierto. El cliente podrá canjearlo de nuevo cuando esté listo.")
     return redirect("lista_tickets")
 
 
@@ -530,6 +699,57 @@ def confirmacion_canje(request, id_ticket):
         "lineas": lineas,
         "subtotal": subtotal,
         "descuento_amount": descuento_amount,
+    })
+
+
+def ver_ticket(request, ticket_id):
+    """Vista de detalle de ticket — accesible para admin y cliente propietario."""
+    from apps.usuarios.views import get_current_cliente, is_admin
+    from django.http import HttpResponseForbidden
+
+    cliente = get_current_cliente(request)
+    if not cliente:
+        from django.contrib import messages as _messages
+        _messages.info(request, "Inicia sesion para continuar.")
+        return redirect("login")
+
+    ticket = get_object_or_404(
+        Ticket.objects
+        .select_related("nombre_usuario", "id_promocion")
+        .prefetch_related("detalleticket_set__id_productopedido__id_alimentosbebidas"),
+        id_ticket=ticket_id,
+    )
+
+    es_admin = is_admin(cliente)
+
+    # Cliente solo puede ver su propio ticket
+    if not es_admin:
+        if ticket.nombre_usuario != cliente:
+            return HttpResponseForbidden("No tienes permiso para ver este ticket.")
+
+    agrupados = defaultdict(lambda: {
+        "nombre": "", "precio_unitario": Decimal("0"), "cantidad": 0, "importe": Decimal("0"),
+    })
+    for detalle in ticket.detalleticket_set.all():
+        if not detalle.id_productopedido or not detalle.id_productopedido.id_alimentosbebidas:
+            continue
+        alimento = detalle.id_productopedido.id_alimentosbebidas
+        key = alimento.id_alimentosbebidas
+        agrupados[key]["nombre"] = alimento.nombre
+        agrupados[key]["precio_unitario"] = alimento.costo
+        agrupados[key]["cantidad"] += 1
+        agrupados[key]["importe"] += alimento.costo
+
+    lineas = list(agrupados.values())
+    subtotal = sum(l["importe"] for l in lineas)
+    descuento_amount = (subtotal - ticket.precio_final) if subtotal > ticket.precio_final else Decimal("0")
+
+    return render(request, "ticket_detalle.html", {
+        "ticket": ticket,
+        "lineas": lineas,
+        "subtotal": subtotal,
+        "descuento_amount": descuento_amount,
+        "es_admin": es_admin,
     })
 
 
