@@ -32,6 +32,10 @@ def lista_alimentos(request):
     )
     max_veces = top_productos[0].veces if top_productos else 1
     sin_movimiento = Alimentosbebidas.objects.filter(activo=True, productopedido__isnull=True).count()
+    ids_sin_movimiento = list(
+        Alimentosbebidas.objects.filter(activo=True, productopedido__isnull=True)
+        .values_list('id_alimentosbebidas', flat=True)
+    )
 
     return render(request, 'alimentos_bebidas.html', {
         'alimentos': alimentos,
@@ -39,6 +43,7 @@ def lista_alimentos(request):
         'top_productos': top_productos,
         'max_veces': max_veces,
         'sin_movimiento': sin_movimiento,
+        'ids_sin_movimiento': ids_sin_movimiento,
     })
 
 

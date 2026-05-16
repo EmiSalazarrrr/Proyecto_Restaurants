@@ -41,10 +41,10 @@
         .sidebar-bottom { margin-top: auto; padding: 20px 24px 20px; border-top: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 10px; }
         .btn-logout { display: block; text-decoration: none; color: rgba(244,240,232,0.75); border: 1px solid rgba(244,240,232,0.15); border-radius: 8px; padding: 10px 14px; text-align: center; transition: all 0.15s; }
         .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
-        /* Botón tema — inline para evitar caché */
         .btn-theme { display: flex; align-items: center; gap: 8px; justify-content: center; width: 100%; background: transparent; border: 1px solid rgba(244,240,232,0.12); border-radius: 8px; padding: 9px 14px; color: rgba(244,240,232,0.65); cursor: pointer; font: 500 13px "DM Sans", sans-serif; transition: all 0.15s; line-height: 1; white-space: nowrap; }
         .btn-theme:hover { border-color: var(--accent, #D8AE48); color: var(--accent, #D8AE48); }
-        /* Modo oscuro — variables inline */
+
+        /* ── Modo oscuro ── */
         html[data-theme="dark"] {
             --bg: #111827; --card-bg: #1a2035; --card-border: rgba(255,255,255,0.07);
             --text-primary: #e2ddd5; --text-secondary: #a08870; --text-muted: #6e5e52;
@@ -61,27 +61,29 @@
         html[data-theme="dark"] .stat-label, html[data-theme="dark"] .card-title { color: var(--text-primary) !important; }
         html[data-theme="dark"] .stat-value { color: var(--text-primary) !important; }
         html[data-theme="dark"] .stat-sub, html[data-theme="dark"] .topbar p,
-        html[data-theme="dark"] .desc-text, html[data-theme="dark"] .no-data { color: var(--text-muted) !important; }
+        html[data-theme="dark"] .no-data { color: var(--text-muted) !important; }
         html[data-theme="dark"] .table-header { background: rgba(255,255,255,0.02) !important; border-bottom-color: var(--card-border) !important; }
         html[data-theme="dark"] .table-header h3 { color: var(--text-primary) !important; }
         html[data-theme="dark"] .table-search { background: #151b27 !important; border-color: rgba(255,255,255,0.10) !important; color: var(--text-primary) !important; }
-        html[data-theme="dark"] .badge-active  { background: rgba(76,201,112,0.14) !important; }
-        html[data-theme="dark"] .badge-inactive{ background: rgba(240,122,122,0.14) !important; }
         html[data-theme="dark"] .price-tag { color: var(--accent) !important; }
         html[data-theme="dark"] .bar-track { background: rgba(255,255,255,0.06) !important; }
         html[data-theme="dark"] .pag-btn { background: var(--card-bg) !important; border-color: var(--card-border) !important; color: var(--text-secondary) !important; }
         html[data-theme="dark"] .pag-jump-input { background: #111827 !important; border-color: var(--card-border) !important; color: var(--text-primary) !important; }
         html[data-theme="dark"] .pag-info, html[data-theme="dark"] .pag-jump-of { color: var(--text-muted) !important; }
         html[data-theme="dark"] .empty-state { color: var(--text-muted) !important; }
+        html[data-theme="dark"] .cat-select { background: #151b27; border-color: rgba(255,255,255,0.10); color: var(--text-primary); }
+        html[data-theme="dark"] .modal-card { background: #1a2035; border-color: rgba(255,255,255,0.07); }
+        html[data-theme="dark"] .modal-desc { color: var(--text-secondary); }
+        html[data-theme="dark"] .modal-cat-tag { background: rgba(216,174,72,0.12); color: var(--accent); }
+        html[data-theme="dark"] .cat-filter-select { background: #151b27 !important; border-color: rgba(255,255,255,0.10) !important; color: var(--text-primary) !important; }
+        html[data-theme="dark"] .sin-mov-label { color: var(--text-muted) !important; }
+        html[data-theme="dark"] .sortable-th:hover { background: rgba(216,174,72,0.08) !important; }
 
         /* ── Main ── */
         .main { margin-left: 220px; flex: 1; padding: 36px 40px; }
 
         /* ── Animations ── */
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
         .anim { opacity: 0; animation: fadeInUp 0.5s ease forwards; }
         .d1 { animation-delay: 0.05s; } .d2 { animation-delay: 0.1s; }
         .d3 { animation-delay: 0.15s; } .d4 { animation-delay: 0.2s; }
@@ -124,7 +126,24 @@
         .no-data { color: var(--text-muted); font-size: 13px; padding: 12px 0; }
         .sin-mov { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; }
         .sin-mov-label { font-size: 12px; color: var(--text-secondary); }
+        .sin-mov-right { display: flex; align-items: center; gap: 10px; }
         .sin-mov-count { font: 600 18px "DM Mono", monospace; color: var(--danger); }
+
+        /* Ver cuáles button */
+        .btn-ver-cuales {
+            padding: 4px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--danger);
+            background: transparent;
+            color: var(--danger);
+            font: 500 11px "DM Sans", sans-serif;
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+            line-height: 1.6;
+        }
+        .btn-ver-cuales:hover { background: var(--danger); color: #fff; }
+        .btn-ver-cuales.active { background: var(--danger); color: #fff; }
 
         /* Quick action cards */
         .actions-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -136,13 +155,25 @@
 
         /* ── Catalog table ── */
         .table-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden; }
-        .table-header { padding: 18px 22px; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; }
+        .table-header { padding: 18px 22px; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .table-header h3 { font-size: 15px; font-weight: 600; }
-        .table-count { font: 500 12px "DM Mono", monospace; color: var(--text-muted); }
-
-        /* Search bar inside table header */
-        .table-search { padding: 9px 14px; background: #FAFAF8; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); font: 13px "DM Sans", sans-serif; width: 220px; }
+        .table-count { font: 500 12px "DM Mono", monospace; color: var(--text-muted); white-space: nowrap; }
+        .table-search { padding: 9px 14px; background: #FAFAF8; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); font: 13px "DM Sans", sans-serif; width: 200px; }
         .table-search:focus { outline: none; border-color: var(--accent); }
+
+        /* Category filter select */
+        .cat-filter-select {
+            padding: 9px 10px;
+            background: #FAFAF8;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font: 13px "DM Sans", sans-serif;
+            min-width: 170px;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+        .cat-filter-select:focus { outline: none; border-color: var(--accent); }
 
         /* Pagination */
         .pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-top: 1px solid var(--card-border); }
@@ -161,34 +192,151 @@
         .pag-jump-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: rgba(216,174,72,0.08); }
         .pag-jump-btn:disabled { opacity: 0.28; cursor: default; }
 
-        table { width: 100%; border-collapse: collapse; }
-        th { padding: 11px 18px; font-size: 10px; color: #0D1E3B; text-transform: uppercase; letter-spacing: 1.2px; text-align: left; background: rgba(33,40,66,0.10); }
-        td { padding: 13px 18px; font-size: 13.5px; border-top: 1px solid rgba(13,30,59,0.08); }
+        /* ── FIX 1: Table layout fijo con anchos definidos ── */
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th {
+            padding: 11px 18px;
+            font-size: 10px;
+            color: #0D1E3B;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            text-align: left;
+            background: rgba(33,40,66,0.10);
+            white-space: nowrap;
+        }
+        td { padding: 13px 18px; font-size: 13.5px; border-top: 1px solid rgba(13,30,59,0.08); overflow: hidden; }
         tbody tr { transition: background 0.12s; }
-        tbody tr:hover { background: rgba(13,30,59,0.03); }
+        tbody tr:hover td { background: rgba(13,30,59,0.03); }
 
-        .price-tag { font-family: "DM Mono", monospace; color: var(--accent); font-size: 13px; }
-        .desc-text { color: var(--text-secondary); font-size: 12.5px; }
-        .mono-id { color: var(--text-muted); font: 12px "DM Mono", monospace; }
-        .status-badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-        .badge-active { background: var(--success-dim); color: var(--success); border: 1px solid rgba(76,201,112,0.25); }
-        .badge-inactive { background: var(--danger-dim); color: var(--danger); border: 1px solid rgba(224,92,92,0.25); }
+        /* ── Sortable column headers ── */
+        .sortable-th {
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+        .sortable-th:hover { background: rgba(216,174,72,0.13) !important; }
+        .sort-arrow {
+            display: inline-block;
+            font-size: 11px;
+            margin-left: 3px;
+            opacity: 0;
+            color: var(--accent);
+            transition: opacity 0.15s;
+            font-style: normal;
+        }
+        .sort-arrow.active { opacity: 1; }
 
-        .row-actions { display: flex; gap: 8px; }
-        .btn-edit, .btn-toggle { padding: 5px 12px; border-radius: 6px; font-size: 12px; font-family: "DM Sans", sans-serif; border: 1px solid var(--card-border); background: transparent; color: var(--text-secondary); text-decoration: none; transition: all 0.15s; }
-        .btn-edit:hover { border-color: var(--accent); color: var(--accent); }
-        .btn-toggle:hover { border-color: var(--accent); color: var(--accent); }
+        /* ── FIX 3: Precio nunca se parte ── */
+        .price-tag {
+            font-family: "DM Mono", monospace;
+            color: var(--accent);
+            font-size: 13px;
+            white-space: nowrap;
+            display: inline-block;
+            min-width: 60px;
+        }
 
+        /* ── FIX 2: Descripción truncada con click ── */
+        .desc-cell { cursor: pointer; position: relative; }
+        .desc-cell:hover .desc-text { color: var(--accent); }
+        .desc-text {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-secondary);
+            font-size: 12.5px;
+            transition: color 0.15s;
+        }
+
+        /* ── FIX 5: Badges con colores sólidos y sin partirse ── */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            border-radius: 99px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .badge-active  { background: #16a34a; color: #fff; }
+        .badge-inactive{ background: #dc2626; color: #fff; }
+
+        /* ── FIX 4: Botones Editar/Estado nunca se parten ── */
+        .row-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .btn-edit, .btn-toggle {
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: "DM Sans", sans-serif;
+            border: 1px solid var(--card-border);
+            background: transparent;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .btn-edit:hover  { border-color: var(--accent); color: var(--accent); }
+        .btn-toggle:hover{ border-color: var(--accent); color: var(--accent); }
+
+        .mono-id { color: var(--text-muted); font: 12px "DM Mono", monospace; text-align: center; }
         .empty-state { text-align: center; padding: 48px; color: var(--text-muted); font-size: 13px; }
         .empty-icon { font-size: 32px; margin-bottom: 12px; }
 
-        .cat-select { padding: 5px 8px; border-radius: 6px; border: 1px solid var(--card-border); background: transparent; font: 12px "DM Sans", sans-serif; color: var(--text-secondary); cursor: pointer; min-width: 140px; max-width: 190px; transition: border-color 0.15s; }
+        /* ── Categoria inline select ── */
+        .cat-select { padding: 5px 8px; border-radius: 6px; border: 1px solid var(--card-border); background: transparent; font: 12px "DM Sans", sans-serif; color: var(--text-secondary); cursor: pointer; width: 100%; transition: border-color 0.15s; }
         .cat-select:focus { outline: none; border-color: var(--accent); }
-        html[data-theme="dark"] .cat-select { background: #151b27; border-color: rgba(255,255,255,0.10); color: var(--text-primary); }
+
+        /* ── Toast ── */
         #cat-toast { position: fixed; bottom: 24px; right: 24px; padding: 10px 18px; border-radius: 9px; font-size: 13px; display: none; z-index: 9999; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
 
+        /* ── FIX 2: Modal de descripción ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.52);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 28px 28px 24px;
+            max-width: 480px;
+            width: calc(100% - 40px);
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.22);
+            animation: fadeInUp 0.2s ease;
+        }
+        .modal-close {
+            position: absolute;
+            top: 14px;
+            right: 14px;
+            width: 28px;
+            height: 28px;
+            border: 1px solid var(--card-border);
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-muted);
+            display: grid;
+            place-items: center;
+            transition: all 0.12s;
+        }
+        .modal-close:hover { background: var(--danger-dim); color: var(--danger); border-color: var(--danger); }
+        .modal-nombre { font-size: 17px; font-weight: 600; margin-bottom: 10px; padding-right: 32px; color: var(--text-primary); }
+        .modal-desc { color: var(--text-secondary); font-size: 14px; line-height: 1.65; margin-bottom: 18px; }
+        .modal-meta { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .modal-precio { font: 600 14px "DM Mono", monospace; color: var(--accent); }
+        .modal-cat-tag { font-size: 12px; color: var(--text-secondary); background: var(--accent-dim); border: 1px solid rgba(216,174,72,0.25); border-radius: 999px; padding: 3px 10px; }
+
         @media (max-width: 1100px) { .mid-row { grid-template-columns: 1fr; } }
-        @media (max-width: 960px) { .stats-row { grid-template-columns: 1fr 1fr; } .actions-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 960px)  { .stats-row { grid-template-columns: 1fr 1fr; } .actions-grid { grid-template-columns: 1fr; } }
         @media (max-width: 720px) {
             body { display: block; }
             .sidebar { position: static; width: 100%; min-height: auto; }
@@ -281,7 +429,10 @@
             {% if sin_movimiento %}
                 <div class="sin-mov">
                     <span class="sin-mov-label">Productos activos sin ningun pedido</span>
-                    <span class="sin-mov-count">{{ sin_movimiento }}</span>
+                    <div class="sin-mov-right">
+                        <span class="sin-mov-count">{{ sin_movimiento }}</span>
+                        <button class="btn-ver-cuales" id="btn-ver-cuales" onclick="toggleSinMov()">Ver cuáles</button>
+                    </div>
                 </div>
             {% endif %}
         </div>
@@ -313,30 +464,72 @@
     <div class="table-card anim d7">
         <div class="table-header">
             <h3>Catalogo completo</h3>
-            <div style="display: flex; gap: 12px; align-items: center;">
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <!-- Filtro por categoría -->
+                <select class="cat-filter-select" id="cat-filter" onchange="filterTable()">
+                    <option value="">Todas las categorías</option>
+                    {% for cat in categorias %}
+                        <option value="{{ cat.id_categoria }}">{{ cat.icono }} {{ cat.nombre }}</option>
+                    {% endfor %}
+                </select>
+                <!-- Buscador -->
                 <input class="table-search" type="text" id="search-input" placeholder="Buscar producto…" oninput="filterTable()">
                 <span class="table-count" id="table-count">{{ alimentos|length }} productos</span>
             </div>
         </div>
         <div style="overflow-x: auto;">
             <table>
+                <!-- Anchos de columna fijos -->
+                <colgroup>
+                    <col style="width: 4%">
+                    <col style="width: 14%">
+                    <col style="width: 25%">
+                    <col style="width: 9%">
+                    <col style="width: 19%">
+                    <col style="width: 10%">
+                    <col style="width: 19%">
+                </colgroup>
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Nombre</th>
+                        <!-- Columna ordenable: Nombre -->
+                        <th class="sortable-th" onclick="sortTable('nombre')" title="Ordenar por nombre">
+                            Nombre <span class="sort-arrow" id="sort-nombre"></span>
+                        </th>
                         <th>Descripcion</th>
-                        <th>Precio</th>
+                        <!-- Columna ordenable: Precio -->
+                        <th class="sortable-th" onclick="sortTable('precio')" title="Ordenar por precio">
+                            Precio <span class="sort-arrow" id="sort-precio"></span>
+                        </th>
                         <th>Categoria</th>
-                        <th>Estado</th>
+                        <!-- Columna ordenable: Estado -->
+                        <th class="sortable-th" onclick="sortTable('estado')" title="Ordenar por estado">
+                            Estado <span class="sort-arrow" id="sort-estado"></span>
+                        </th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="catalog-tbody">
                     {% for alimento in alimentos %}
-                    <tr data-name="{{ alimento.nombre|lower }}" data-desc="{{ alimento.descripcion|lower }}">
-                        <td class="mono-id">{{ alimento.id_alimentosbebidas }}</td>
+                    <tr data-name="{{ alimento.nombre|lower }}"
+                        data-desc="{{ alimento.descripcion|lower }}"
+                        data-id="{{ alimento.id_alimentosbebidas }}"
+                        data-cat-id="{{ alimento.categoria_id|default:0 }}"
+                        data-activo="{{ alimento.activo|yesno:'1,0' }}"
+                        data-precio="{{ alimento.costo }}">
+                        <!-- Número de fila (asignado por JS según página) -->
+                        <td class="mono-id"><span class="row-num"></span></td>
                         <td><strong>{{ alimento.nombre }}</strong></td>
-                        <td><span class="desc-text">{{ alimento.descripcion }}</span></td>
+                        <!-- Descripción truncada, clickeable -->
+                        <td class="desc-cell"
+                            data-nombre="{{ alimento.nombre }}"
+                            data-desc="{{ alimento.descripcion }}"
+                            data-precio="{{ alimento.costo }}"
+                            data-cat="{% if alimento.categoria %}{{ alimento.categoria.icono }} {{ alimento.categoria.nombre }}{% else %}Sin categoria{% endif %}"
+                            onclick="openDescModal(this)"
+                            title="Clic para ver descripcion completa">
+                            <span class="desc-text">{{ alimento.descripcion }}</span>
+                        </td>
                         <td><span class="price-tag">${{ alimento.costo }}</span></td>
                         <td>
                             <select class="cat-select" onchange="cambiarCategoria({{ alimento.id_alimentosbebidas }}, this)">
@@ -385,8 +578,28 @@
     </div>
 </main>
 
+<!-- Modal de descripción completa -->
+<div id="desc-modal" class="modal-overlay" onclick="closeDescModal(event)">
+    <div class="modal-card">
+        <button class="modal-close" onclick="closeDescModal()">✕</button>
+        <p class="modal-nombre" id="modal-nombre"></p>
+        <p class="modal-desc" id="modal-desc"></p>
+        <div class="modal-meta">
+            <span class="modal-precio" id="modal-precio"></span>
+            <span class="modal-cat-tag" id="modal-cat"></span>
+        </div>
+    </div>
+</div>
+
+<div id="cat-toast"></div>
+
+<!-- IDs de productos sin movimiento (para filtro JS) -->
 <script>
-    // ── Tema oscuro/claro ──────────────────────────────────────────
+const SIN_MOV_IDS = new Set({{ ids_sin_movimiento|safe }});
+</script>
+
+<script>
+    // ── Tema oscuro/claro ─────────────────────────────────────────
     function toggleTheme() {
         var dark = document.documentElement.getAttribute('data-theme') === 'dark';
         var next = dark ? 'light' : 'dark';
@@ -402,7 +615,7 @@
     }
     updateThemeBtn();
 
-    // Counter animation
+    // ── Counter animation ─────────────────────────────────────────
     document.querySelectorAll('[data-count]').forEach(el => {
         const target = parseInt(el.dataset.count) || 0;
         if (!target) return;
@@ -418,7 +631,7 @@
         requestAnimationFrame(step);
     });
 
-    // Progress bar animation
+    // ── Progress bars ─────────────────────────────────────────────
     const bars = document.querySelectorAll('.bar-fill');
     setTimeout(() => {
         bars.forEach(bar => {
@@ -428,34 +641,51 @@
         });
     }, 400);
 
-    // Table search + pagination
+    // ── Table: search + sort + pagination ────────────────────────
     const catalogRows = Array.from(document.querySelectorAll('#catalog-tbody tr[data-name]'));
     const CAT_PER_PAGE = 10;
     let catPage = 1;
     let catFiltered = [];
-    const catPag     = document.getElementById('cat-pagination');
-    const catInfo    = document.getElementById('pag-info-cat');
-    const catPrev    = document.getElementById('pag-prev-cat');
-    const catNext    = document.getElementById('pag-next-cat');
-    const catJump    = document.getElementById('pag-jump-cat');
-    const catOf      = document.getElementById('pag-of-cat');
+    let filterSinMov = false;    // estado del toggle "Ver cuáles"
+    let sortCol = null;           // columna activa de ordenamiento
+    let sortDir = 1;              // 1 = asc, -1 = desc
 
+    const catPag  = document.getElementById('cat-pagination');
+    const catInfo = document.getElementById('pag-info-cat');
+    const catPrev = document.getElementById('pag-prev-cat');
+    const catNext = document.getElementById('pag-next-cat');
+    const catJump = document.getElementById('pag-jump-cat');
+    const catOf   = document.getElementById('pag-of-cat');
+
+    // Renderiza la página actual de catFiltered
     function renderCatPage() {
         const start = (catPage - 1) * CAT_PER_PAGE;
         const end   = start + CAT_PER_PAGE;
         const pages = Math.ceil(catFiltered.length / CAT_PER_PAGE);
+
         catalogRows.forEach(r => r.style.display = 'none');
-        catFiltered.forEach(function(r, i) { r.style.display = (i >= start && i < end) ? '' : 'none'; });
+
+        let rowNum = start + 1;
+        catFiltered.forEach(function(r, i) {
+            const visible = (i >= start && i < end);
+            r.style.display = visible ? '' : 'none';
+            if (visible) {
+                const numEl = r.querySelector('.row-num');
+                if (numEl) numEl.textContent = rowNum++;
+            }
+        });
+
         catInfo.textContent = catFiltered.length
             ? 'Página ' + catPage + ' de ' + pages
             : 'Sin resultados';
-        catJump.value    = catPage;
-        catJump.max      = pages || 1;
+        catJump.value     = catPage;
+        catJump.max       = pages || 1;
         catOf.textContent = 'de ' + (pages || 1);
-        catPrev.disabled = catPage <= 1;
-        catNext.disabled = catPage >= pages;
+        catPrev.disabled  = catPage <= 1;
+        catNext.disabled  = catPage >= pages;
         catPag.style.display = catFiltered.length > CAT_PER_PAGE ? 'flex' : 'none';
-        document.getElementById('table-count').textContent = catFiltered.length + ' producto' + (catFiltered.length !== 1 ? 's' : '');
+        document.getElementById('table-count').textContent =
+            catFiltered.length + ' producto' + (catFiltered.length !== 1 ? 's' : '');
     }
 
     function catGoToPage(val) {
@@ -472,16 +702,111 @@
     catJump.addEventListener('change', function() { catGoToPage(this.value); });
     catJump.addEventListener('keydown', function(e) { if (e.key === 'Enter') { catGoToPage(this.value); this.blur(); } });
 
-    function filterTable() {
-        const q = document.getElementById('search-input').value.toLowerCase();
-        catFiltered = catalogRows.filter(row =>
-            !q || row.dataset.name.includes(q) || row.dataset.desc.includes(q)
-        );
+    // Aplica el ordenamiento activo sobre catFiltered (in-place)
+    function applySort() {
+        if (!sortCol) return;
+        catFiltered.sort(function(a, b) {
+            if (sortCol === 'nombre') {
+                return sortDir * a.dataset.name.localeCompare(b.dataset.name, 'es', { sensitivity: 'base' });
+            }
+            if (sortCol === 'precio') {
+                return sortDir * (parseFloat(a.dataset.precio) - parseFloat(b.dataset.precio));
+            }
+            if (sortCol === 'estado') {
+                // sortDir=1 → activos primero (1 > 0), sortDir=-1 → inactivos primero
+                return sortDir * (parseInt(b.dataset.activo) - parseInt(a.dataset.activo));
+            }
+            return 0;
+        });
+    }
+
+    // Actualiza las flechas visualmente
+    function updateSortArrows() {
+        ['nombre', 'precio', 'estado'].forEach(function(col) {
+            var el = document.getElementById('sort-' + col);
+            if (!el) return;
+            if (sortCol === col) {
+                el.textContent = sortDir === 1 ? '↑' : '↓';
+                el.classList.add('active');
+            } else {
+                el.textContent = '';
+                el.classList.remove('active');
+            }
+        });
+    }
+
+    // Click en encabezado ordenable
+    function sortTable(col) {
+        if (sortCol === col) {
+            sortDir = -sortDir;  // segundo clic: invierte
+        } else {
+            sortCol = col;
+            sortDir = 1;         // primera vez: ascendente
+        }
+        updateSortArrows();
+        applySort();
         catPage = 1;
         renderCatPage();
     }
 
+    // Aplica todos los filtros activos y recalcula catFiltered
+    function filterTable() {
+        const q = (document.getElementById('search-input').value || '').toLowerCase();
+        const selectedCat = document.getElementById('cat-filter').value; // '' o '5' etc.
+
+        catFiltered = catalogRows.filter(function(row) {
+            // Filtro texto: nombre o descripción
+            const matchSearch = !q ||
+                row.dataset.name.includes(q) ||
+                row.dataset.desc.includes(q);
+
+            // Filtro categoría: compara data-cat-id (string) con el value del select
+            const matchCat = !selectedCat ||
+                row.dataset.catId === selectedCat;
+
+            // Filtro "sin movimiento"
+            const matchSinMov = !filterSinMov ||
+                SIN_MOV_IDS.has(parseInt(row.dataset.id, 10));
+
+            return matchSearch && matchCat && matchSinMov;
+        });
+
+        applySort();    // respeta el ordenamiento activo
+        catPage = 1;
+        renderCatPage();
+    }
+
+    // Toggle del botón "Ver cuáles" / "Ver todos"
+    function toggleSinMov() {
+        filterSinMov = !filterSinMov;
+        var btn = document.getElementById('btn-ver-cuales');
+        if (btn) {
+            btn.textContent = filterSinMov ? 'Ver todos' : 'Ver cuáles';
+            btn.classList.toggle('active', filterSinMov);
+        }
+        filterTable();
+    }
+
     filterTable(); // render inicial
+
+    // ── Modal de descripción ──────────────────────────────────────
+    function openDescModal(cell) {
+        document.getElementById('modal-nombre').textContent = cell.dataset.nombre;
+        document.getElementById('modal-desc').textContent   = cell.dataset.desc;
+        document.getElementById('modal-precio').textContent = '$' + cell.dataset.precio;
+        document.getElementById('modal-cat').textContent    = cell.dataset.cat;
+        document.getElementById('desc-modal').classList.add('open');
+    }
+
+    function closeDescModal(e) {
+        if (!e || e.target === document.getElementById('desc-modal')) {
+            document.getElementById('desc-modal').classList.remove('open');
+        }
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') document.getElementById('desc-modal').classList.remove('open');
+    });
 
     // ── Cambio de categoría AJAX ──────────────────────────────────
     function getCsrf() {
@@ -494,12 +819,12 @@
         el.textContent = msg;
         if (ok) {
             el.style.background = 'var(--success-dim)';
-            el.style.border = '1px solid rgba(76,201,112,0.3)';
-            el.style.color = '#1a6030';
+            el.style.border     = '1px solid rgba(76,201,112,0.3)';
+            el.style.color      = '#1a6030';
         } else {
             el.style.background = 'var(--danger-dim)';
-            el.style.border = '1px solid rgba(224,92,92,0.28)';
-            el.style.color = '#8b2020';
+            el.style.border     = '1px solid rgba(224,92,92,0.28)';
+            el.style.color      = '#8b2020';
         }
         el.style.display = 'block';
         clearTimeout(el._timer);
@@ -519,7 +844,10 @@
         .then(r => r.json())
         .then(data => {
             if (data.ok) {
-                showToast(data.nombre ? `Categoria actualizada: ${data.nombre}` : 'Sin categoria asignada', true);
+                // Actualiza data-cat-id de la fila para que el filtro funcione sin recargar
+                const row = select.closest('tr');
+                if (row) row.dataset.catId = categoriaId || '0';
+                showToast(data.nombre ? `Categoria: ${data.nombre}` : 'Sin categoria asignada', true);
             } else {
                 showToast('Error al guardar la categoria.', false);
             }
@@ -527,6 +855,5 @@
         .catch(() => showToast('Error de conexion.', false));
     }
 </script>
-<div id="cat-toast"></div>
 </body>
 </html>
