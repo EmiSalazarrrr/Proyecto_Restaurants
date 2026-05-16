@@ -182,6 +182,11 @@
         .empty-state { text-align: center; padding: 48px; color: var(--text-muted); font-size: 13px; }
         .empty-icon { font-size: 32px; margin-bottom: 12px; }
 
+        .cat-select { padding: 5px 8px; border-radius: 6px; border: 1px solid var(--card-border); background: transparent; font: 12px "DM Sans", sans-serif; color: var(--text-secondary); cursor: pointer; min-width: 140px; max-width: 190px; transition: border-color 0.15s; }
+        .cat-select:focus { outline: none; border-color: var(--accent); }
+        html[data-theme="dark"] .cat-select { background: #151b27; border-color: rgba(255,255,255,0.10); color: var(--text-primary); }
+        #cat-toast { position: fixed; bottom: 24px; right: 24px; padding: 10px 18px; border-radius: 9px; font-size: 13px; display: none; z-index: 9999; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+
         @media (max-width: 1100px) { .mid-row { grid-template-columns: 1fr; } }
         @media (max-width: 960px) { .stats-row { grid-template-columns: 1fr 1fr; } .actions-grid { grid-template-columns: 1fr; } }
         @media (max-width: 720px) {
@@ -200,6 +205,7 @@
     <p class="sidebar-label">Panel</p>
     <a class="nav-item" href="{% url 'menu_admin' %}"><span class="nav-icon">⊞</span>Dashboard</a>
     <a class="nav-item active" href="/alimentos-bebidas/"><span class="nav-icon">🍽️</span>Alimentos / Bebidas</a>
+    <a class="nav-item" href="{% url 'lista_categorias' %}"><span class="nav-icon">🏷️</span>Categorias</a>
     <a class="nav-item" href="{% url 'atender_mesa' %}"><span class="nav-icon">🪑</span>Atender mesa</a>
     <a class="nav-item" href="{% url 'lista_tickets' %}"><span class="nav-icon">🎫</span>Tickets</a>
     <a class="nav-item" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
@@ -320,6 +326,7 @@
                         <th>Nombre</th>
                         <th>Descripcion</th>
                         <th>Precio</th>
+                        <th>Categoria</th>
                         <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
@@ -331,6 +338,14 @@
                         <td><strong>{{ alimento.nombre }}</strong></td>
                         <td><span class="desc-text">{{ alimento.descripcion }}</span></td>
                         <td><span class="price-tag">${{ alimento.costo }}</span></td>
+                        <td>
+                            <select class="cat-select" onchange="cambiarCategoria({{ alimento.id_alimentosbebidas }}, this)">
+                                <option value="">Sin categoria</option>
+                                {% for cat in categorias %}
+                                    <option value="{{ cat.id_categoria }}" {% if alimento.categoria_id == cat.id_categoria %}selected{% endif %}>{{ cat.icono }} {{ cat.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
                         <td>
                             <span class="status-badge {% if alimento.activo %}badge-active{% else %}badge-inactive{% endif %}">
                                 {% if alimento.activo %}Activo{% else %}Inactivo{% endif %}
@@ -345,7 +360,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="6">
+                        <td colspan="7">
                             <div class="empty-state">
                                 <div class="empty-icon">🍽️</div>
                                 No hay productos en el catalogo aun.<br>Usa <strong>Agregar</strong> para registrar el primero.
@@ -467,6 +482,51 @@
     }
 
     filterTable(); // render inicial
+
+    // ── Cambio de categoría AJAX ──────────────────────────────────
+    function getCsrf() {
+        const m = document.cookie.match(/csrftoken=([^;]+)/);
+        return m ? m[1] : '';
+    }
+
+    function showToast(msg, ok) {
+        const el = document.getElementById('cat-toast');
+        el.textContent = msg;
+        if (ok) {
+            el.style.background = 'var(--success-dim)';
+            el.style.border = '1px solid rgba(76,201,112,0.3)';
+            el.style.color = '#1a6030';
+        } else {
+            el.style.background = 'var(--danger-dim)';
+            el.style.border = '1px solid rgba(224,92,92,0.28)';
+            el.style.color = '#8b2020';
+        }
+        el.style.display = 'block';
+        clearTimeout(el._timer);
+        el._timer = setTimeout(() => el.style.display = 'none', 2500);
+    }
+
+    function cambiarCategoria(alimentoId, select) {
+        const categoriaId = select.value;
+        fetch(`/alimentos-bebidas/categorias/cambiar/${alimentoId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCsrf(),
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `categoria_id=${categoriaId}`,
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.ok) {
+                showToast(data.nombre ? `Categoria actualizada: ${data.nombre}` : 'Sin categoria asignada', true);
+            } else {
+                showToast('Error al guardar la categoria.', false);
+            }
+        })
+        .catch(() => showToast('Error de conexion.', false));
+    }
 </script>
+<div id="cat-toast"></div>
 </body>
 </html>

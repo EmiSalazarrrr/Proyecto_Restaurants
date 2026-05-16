@@ -157,7 +157,9 @@ def _calcular_cobro(request, total):
 
 @login_required(role="admin")
 def atender_mesa(request):
-    alimentos = Alimentosbebidas.objects.filter(activo=True).order_by("nombre")
+    from apps.menu.models import Categoria
+    alimentos = Alimentosbebidas.objects.filter(activo=True).select_related('categoria').order_by("nombre")
+    categorias = Categoria.objects.order_by('orden', 'nombre')
     clientes = Cliente.objects.filter(
         id_tipo_de_usuario__tipo_de_usuario__iexact="Cliente"
     ).order_by("nombre")
@@ -166,12 +168,29 @@ def atender_mesa(request):
         row["nombre_usuario"]: row["total"]
         for row in Ticket.objects.values("nombre_usuario").annotate(total=Count("id_ticket"))
     }
+
+    catalogo_data = [
+        {
+            "id": a.id_alimentosbebidas,
+            "nombre": a.nombre,
+            "precio": float(a.costo),
+            "categoria_id": a.categoria_id or 0,
+        }
+        for a in alimentos
+    ]
+    categorias_data = [
+        {"id": c.id_categoria, "nombre": c.nombre, "icono": c.icono}
+        for c in categorias
+    ]
+
     return render(request, "atender_mesa.html", {
         "alimentos": alimentos,
         "clientes": clientes,
         "promociones": promociones,
         "promociones_json": _promociones_json(promociones),
         "compras_clientes_json": json.dumps(compras_clientes),
+        "catalogo_json": json.dumps(catalogo_data),
+        "categorias_json": json.dumps(categorias_data),
     })
 
 
