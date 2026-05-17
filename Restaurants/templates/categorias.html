@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <script>!function(){var t=localStorage.getItem('theme');t&&document.documentElement.setAttribute('data-theme',t)}();</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categorías | Restaurants</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+    <style>
+        :root {
+            --bg: #F4F0E8; --sidebar-bg: #0D1E3B; --card-bg: #FDFAF7;
+            --card-border: rgba(33,40,66,0.18); --accent: #D8AE48; --accent-dim: rgba(216,174,72,0.12);
+            --text-primary: #0D1E3B; --text-secondary: #5C4A3A; --text-muted: #9B8B7A;
+            --success: #4cc970; --success-dim: rgba(76,201,112,0.12);
+            --danger: #e05c5c; --danger-dim: rgba(224,92,92,0.1);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--text-primary); display: flex; min-height: 100vh; }
+
+        html[data-theme="dark"] {
+            --bg: #111827; --card-bg: #1a2035; --card-border: rgba(255,255,255,0.07);
+            --text-primary: #e2ddd5; --text-secondary: #a08870; --text-muted: #6e5e52;
+            --sidebar-bg: #090d14; --accent: #D8AE48; --accent-dim: rgba(216,174,72,0.11);
+            --success: #4cc970; --success-dim: rgba(76,201,112,0.10);
+            --danger: #f07a7a; --danger-dim: rgba(240,122,122,0.08);
+        }
+        html[data-theme="dark"] .card, html[data-theme="dark"] .form-card { background: var(--card-bg) !important; border-color: var(--card-border) !important; }
+        html[data-theme="dark"] h2, html[data-theme="dark"] h3, html[data-theme="dark"] .card-title { color: var(--text-primary) !important; }
+        html[data-theme="dark"] .topbar p { color: var(--text-muted) !important; }
+        html[data-theme="dark"] th { background: rgba(255,255,255,0.04) !important; color: var(--text-primary) !important; }
+        html[data-theme="dark"] td { border-top-color: rgba(255,255,255,0.05) !important; }
+        html[data-theme="dark"] tbody tr:hover td { background: rgba(255,255,255,0.025) !important; }
+        html[data-theme="dark"] .form-input { background: #151b27 !important; border-color: rgba(255,255,255,0.10) !important; color: var(--text-primary) !important; }
+        html[data-theme="dark"] .form-label { color: var(--text-muted) !important; }
+        html[data-theme="dark"] .cat-count { color: var(--text-muted) !important; }
+
+        /* Sidebar */
+        .sidebar { width: 220px; background: var(--sidebar-bg); padding: 28px 0; position: fixed; inset: 0 auto 0 0; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.06); }
+        .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 20px; }
+        .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #F4F0E8; }
+        .sidebar-logo b { color: var(--accent); }
+        .sidebar-label { padding: 0 24px; margin-bottom: 8px; color: rgba(244,240,232,0.50); font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; color: #F4F0E8; text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
+        .nav-item.active { color: #0D1E3B; background: #D8AE48; border-left-color: #D8AE48; }
+        .nav-item:hover:not(.active) { background: #1A2F50; }
+        .nav-icon { width: 20px; text-align: center; }
+        .sidebar-bottom { margin-top: auto; padding: 20px 24px; border-top: 1px solid rgba(255,255,255,0.06); display: flex; flex-direction: column; gap: 10px; }
+        .btn-theme { display: flex; align-items: center; gap: 8px; justify-content: center; width: 100%; background: transparent; border: 1px solid rgba(244,240,232,0.12); border-radius: 8px; padding: 9px 14px; color: rgba(244,240,232,0.65); cursor: pointer; font: 500 13px "DM Sans", sans-serif; transition: all 0.15s; white-space: nowrap; }
+        .btn-theme:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-logout { display: block; text-decoration: none; color: rgba(244,240,232,0.75); border: 1px solid rgba(244,240,232,0.15); border-radius: 8px; padding: 10px 14px; text-align: center; transition: all 0.15s; }
+        .btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+        /* Main */
+        .main { margin-left: 220px; flex: 1; padding: 36px 40px; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+        .anim { opacity: 0; animation: fadeInUp 0.45s ease forwards; }
+        .d1 { animation-delay: 0.05s; } .d2 { animation-delay: 0.10s; } .d3 { animation-delay: 0.15s; }
+
+        /* Topbar */
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
+        .topbar h2 { font-size: 26px; }
+        .topbar p { color: var(--text-secondary); margin-top: 4px; }
+        .badge { background: var(--accent-dim); border: 1px solid rgba(216,174,72,0.35); color: var(--accent); border-radius: 999px; padding: 6px 14px; font: 500 12px "DM Mono", monospace; }
+
+        /* Alerts */
+        .alerts { margin-bottom: 18px; display: grid; gap: 10px; }
+        .alert { padding: 12px 16px; border-radius: 10px; font-size: 13px; }
+        .alert.success { background: var(--success-dim); border: 1px solid rgba(76,201,112,0.28); color: #1a6030; }
+        .alert.error   { background: var(--danger-dim);  border: 1px solid rgba(224,92,92,0.28);  color: #8b2020; }
+        html[data-theme="dark"] .alert.success { color: #7ed4a0; }
+        html[data-theme="dark"] .alert.error   { color: #f0a0a0; }
+
+        /* Layout */
+        .layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+        @media (max-width: 960px) { .layout { grid-template-columns: 1fr; } }
+
+        /* Cards */
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden; }
+        .card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-primary); padding: 18px 22px; border-bottom: 1px solid var(--card-border); font-weight: 600; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; }
+        th { padding: 11px 18px; font-size: 10px; color: var(--text-primary); text-transform: uppercase; letter-spacing: 1.2px; text-align: left; background: rgba(33,40,66,0.06); }
+        td { padding: 13px 18px; font-size: 13.5px; border-top: 1px solid rgba(13,30,59,0.07); }
+        tbody tr { transition: background 0.12s; }
+        tbody tr:hover td { background: rgba(13,30,59,0.025); }
+
+        .cat-icon { font-size: 20px; }
+        .cat-name { font-weight: 500; }
+        .cat-count { font: 500 12px "DM Mono", monospace; color: var(--text-secondary); }
+        .empty-state { text-align: center; padding: 40px; color: var(--text-muted); font-size: 13px; }
+
+        /* Delete form button */
+        .btn-delete { padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(224,92,92,0.35); background: transparent; color: var(--danger); font: 12px "DM Sans", sans-serif; cursor: pointer; transition: all 0.15s; }
+        .btn-delete:hover { background: var(--danger-dim); border-color: var(--danger); }
+
+        /* Form card */
+        .form-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; }
+        .form-card-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-primary); margin-bottom: 18px; font-weight: 600; }
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; }
+        .form-input { width: 100%; padding: 10px 14px; background: #FAFAF8; border: 1px solid var(--card-border); border-radius: 8px; color: var(--text-primary); font: 14px "DM Sans", sans-serif; transition: border-color 0.15s; }
+        .form-input:focus { outline: none; border-color: var(--accent); }
+        .form-hint { font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+        .btn-submit { width: 100%; padding: 11px; background: var(--accent); border: none; border-radius: 8px; color: #0D1E3B; font: 600 13px "DM Sans", sans-serif; cursor: pointer; transition: opacity 0.15s; margin-top: 4px; }
+        .btn-submit:hover { opacity: 0.85; }
+
+        .note { font-size: 12px; color: var(--text-muted); margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--card-border); line-height: 1.5; }
+    </style>
+    <link rel="stylesheet" href="/static/css/performance.css">
+</head>
+<body>
+<aside class="sidebar">
+    <div class="sidebar-logo"><span>REST<b>AU</b>RANTS</span></div>
+    <p class="sidebar-label">Panel</p>
+    <a class="nav-item" href="{% url 'menu_admin' %}"><span class="nav-icon">⊞</span>Dashboard</a>
+    <a class="nav-item" href="{% url 'lista_alimentos' %}"><span class="nav-icon">🍽️</span>Alimentos / Bebidas</a>
+    <a class="nav-item active" href="{% url 'lista_categorias' %}"><span class="nav-icon">🏷️</span>Categorias</a>
+    <a class="nav-item" href="{% url 'atender_mesa' %}"><span class="nav-icon">🪑</span>Atender mesa</a>
+    <a class="nav-item" href="{% url 'lista_tickets' %}"><span class="nav-icon">🎫</span>Tickets</a>
+    <a class="nav-item" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
+    <a class="nav-item" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
+    <div class="sidebar-bottom">
+        <button class="btn-theme" id="theme-toggle" onclick="toggleTheme()">🌙 Modo oscuro</button>
+        <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
+    </div>
+</aside>
+
+<main class="main">
+    <div class="topbar anim d1">
+        <div>
+            <h2>Categorias de productos</h2>
+            <p>Organiza el menu por categorias para una busqueda mas rapida.</p>
+        </div>
+        <div class="badge">{{ categorias|length }} categorias</div>
+    </div>
+
+    {% if messages %}
+        <div class="alerts anim d1">
+            {% for message in messages %}
+                <div class="alert {{ message.tags|default:'success' }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="layout">
+        <!-- Tabla de categorías -->
+        <div class="card anim d2">
+            <p class="card-title">Categorias registradas</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Icono</th>
+                        <th>Nombre</th>
+                        <th>Productos</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cat in categorias %}
+                    <tr>
+                        <td><span class="cat-icon">{{ cat.icono }}</span></td>
+                        <td><span class="cat-name">{{ cat.nombre }}</span></td>
+                        <td><span class="cat-count">{{ cat.total }} producto{{ cat.total|pluralize:"s" }}</span></td>
+                        <td>
+                            <form method="POST" onsubmit="return confirmarEliminar('{{ cat.nombre }}')">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="categoria_id" value="{{ cat.id_categoria }}">
+                                <button type="submit" class="btn-delete">Eliminar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">
+                            <div class="empty-state">No hay categorias registradas aun.</div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Formulario agregar categoría -->
+        <div class="anim d3">
+            <div class="form-card">
+                <p class="form-card-title">Nueva categoria</p>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="create">
+                    <div class="form-group">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" name="nombre" class="form-input" placeholder="Ej: Tacos y Antojitos" required maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Icono (emoji)</label>
+                        <input type="text" name="icono" class="form-input" placeholder="🍽️" maxlength="10" value="🍽️">
+                        <p class="form-hint">Escribe un emoji que represente la categoria.</p>
+                    </div>
+                    <button type="submit" class="btn-submit">Agregar categoria</button>
+                </form>
+                <p class="note">
+                    Solo se pueden eliminar categorias que no tengan productos asignados.
+                    Para reasignar productos usa la seccion de Alimentos / Bebidas.
+                </p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    function toggleTheme() {
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var next = dark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateThemeBtn();
+    }
+    function updateThemeBtn() {
+        var btn = document.getElementById('theme-toggle');
+        if (!btn) return;
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        btn.textContent = dark ? '☀️ Modo claro' : '🌙 Modo oscuro';
+    }
+    updateThemeBtn();
+
+    function confirmarEliminar(nombre) {
+        return confirm('¿Eliminar la categoria "' + nombre + '"?\nEsta accion no se puede deshacer.');
+    }
+</script>
+</body>
+</html>

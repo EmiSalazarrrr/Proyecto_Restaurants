@@ -31,14 +31,19 @@
                 radial-gradient(ellipse at 90% 85%, rgba(80,40,120,0.10), transparent 30%),
                 linear-gradient(135deg, #09091a, #111224 45%, #0d1c2e);
             color: var(--text);
-            display: grid;
-            /* Panel column: 440px fixed, hero takes the rest */
-            grid-template-columns: 1fr 440px;
+            /*
+             * display:flex en lugar de grid — más confiable para animar.
+             * El hero es flex:1 (llena todo), el panel empieza con width:0
+             * y se expande a 440px via JS → el hero se comprime naturalmente.
+             */
+            display: flex;
             overflow: hidden;
         }
 
         /* ─── Hero (left) ─── */
         .hero {
+            flex: 1;           /* ocupa todo el espacio disponible */
+            min-width: 0;      /* evita desbordamiento en flex */
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -70,16 +75,15 @@
             position: relative;
             z-index: 1;
             /*
-             * Start shifted right by ~220px (half of 440px panel) so it
-             * appears centered on the full viewport. Then slides to natural
-             * left-column center as panel slides in.
+             * El hero ocupa toda la pantalla al inicio → el contenido solo
+             * necesita aparecer centrado (sin desplazamiento X).
+             * El hero se moverá solo a la izquierda al expandirse el grid.
              */
-            animation: heroEntry 1.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+            animation: heroFadeIn 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) 0.1s both;
         }
-        @keyframes heroEntry {
-            0%   { transform: translateX(220px); opacity: 0; }
-            18%  { transform: translateX(220px); opacity: 1; }   /* hold at center */
-            100% { transform: translateX(0);     opacity: 1; }   /* slide left */
+        @keyframes heroFadeIn {
+            from { opacity: 0; transform: translateY(22px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         .brand-tag {
@@ -146,6 +150,13 @@
 
         /* ─── Panel (right) ─── */
         .panel {
+            /* Empieza con width:0, flex-shrink:0 para que no se comprima.
+               JS añade la clase .open → width:440px con transición suave.
+               El hero se comprime automáticamente al crecer el panel. */
+            width: 0;
+            flex-shrink: 0;
+            overflow: hidden;
+            opacity: 0;
             background: var(--panel-bg);
             border-left: 1px solid var(--border);
             display: flex;
@@ -153,12 +164,13 @@
             justify-content: center;
             padding: 48px 40px;
             backdrop-filter: blur(20px);
-            /* Slide in from the right after the hero has started moving */
-            animation: panelEntry 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.95s both;
+            /* width anima el "slide-in" del panel; opacity anima el contenido */
+            transition: width 0.95s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.65s ease 0.5s;
         }
-        @keyframes panelEntry {
-            from { opacity: 0; transform: translateX(32px); }
-            to   { opacity: 1; transform: translateX(0); }
+        .panel.open {
+            width: 440px;
+            opacity: 1;
         }
 
         .card {
@@ -183,15 +195,15 @@
         }
         .card-sub { color: var(--muted); font-size: 14px; line-height: 1.6; }
 
-        /* Card fields stagger in after panel appears */
+        /* Campos: aparecen cuando el panel ya es visible (≥2.05s) */
         .field {
             margin-bottom: 18px;
-            animation: fieldIn 0.5s ease both;
+            animation: fieldIn 0.45s ease both;
         }
-        .field:nth-child(1) { animation-delay: 1.3s; }
-        .field:nth-child(2) { animation-delay: 1.45s; }
-        .field:nth-child(3) { animation-delay: 1.6s; }
-        .field:nth-child(4) { animation-delay: 1.75s; }
+        .field:nth-child(1) { animation-delay: 2.22s; }
+        .field:nth-child(2) { animation-delay: 2.36s; }
+        .field:nth-child(3) { animation-delay: 2.50s; }
+        .field:nth-child(4) { animation-delay: 2.64s; }
         @keyframes fieldIn {
             from { opacity: 0; transform: translateY(10px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -205,7 +217,7 @@
             background: rgba(240,122,122,0.12);
             border: 1px solid rgba(240,122,122,0.22);
             color: #ffd5d5;
-            animation: fieldIn 0.4s ease 1.25s both;
+            /* timing definido abajo en la sección de animaciones */
         }
 
         label {
@@ -226,11 +238,7 @@
             font: 14px "DM Sans", sans-serif;
             transition: border-color 0.2s, background 0.2s;
         }
-        input:focus {
-            outline: none;
-            border-color: rgba(201,168,76,0.6);
-            background: rgba(201,168,76,0.04);
-        }
+        /* focus styles moved to animation section above */
 
         .btn-submit {
             width: 100%;
@@ -269,27 +277,88 @@
         }
         .foot a:hover { opacity: 0.78; }
 
+        /* ─── Hero sub-element stagger ─── */
+        /* Parent heroEntry brings opacity to 1 at ~18% (0.27s); children then stagger in */
+        @keyframes heroBit {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        /* Stagger cuando el padre ya es visible (~0.55s el padre está al 86% opacity) */
+        .brand-tag     { animation: heroBit 0.45s ease 0.52s both; }
+        .hero h1       { animation: heroBit 0.50s ease 0.66s both; }
+        .hero-divider  { animation: heroBit 0.35s ease 0.82s both; }
+        .hero p        { animation: heroBit 0.45s ease 0.88s both; }
+        .hero-features { animation: heroBit 0.45s ease 1.02s both; }
+
+        /* ─── Error shake ─── */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            15%  { transform: translateX(-7px); }
+            30%  { transform: translateX( 7px); }
+            45%  { transform: translateX(-5px); }
+            60%  { transform: translateX( 4px); }
+            75%  { transform: translateX(-3px); }
+            90%  { transform: translateX( 2px); }
+        }
+        .alert { animation: fieldIn 0.4s ease 2.12s both, shake 0.55s ease 2.62s both; }
+
+        /* ─── Input focus glow ─── */
+        input:focus {
+            outline: none;
+            border-color: rgba(201,168,76,0.65);
+            background: rgba(201,168,76,0.05);
+            box-shadow: 0 0 0 3px rgba(201,168,76,0.13);
+        }
+
+        /* ─── Submit press & loading ─── */
+        .btn-submit:active { transform: scale(0.98) translateY(0) !important; }
+        .btn-submit.loading { opacity: 0.70; cursor: not-allowed; }
+
         /* ─── Responsive ─── */
         @media (max-width: 900px) {
-            body { grid-template-columns: 1fr; overflow: auto; }
-            .hero { padding: 48px 32px 28px; }
+            body {
+                flex-direction: column;
+                overflow: auto;
+            }
+            /* Hero como "portada": ocupa buena parte de la pantalla */
+            .hero {
+                flex: none;
+                width: 100%;
+                min-height: 54vh;
+                padding: 48px 32px 36px;
+            }
             .hero-content {
-                animation: heroMobileEntry 0.7s ease forwards;
+                animation: heroFadeIn 0.7s ease 0.1s both;
             }
-            @keyframes heroMobileEntry {
-                from { opacity: 0; transform: translateY(16px); }
-                to   { opacity: 1; transform: translateY(0); }
-            }
+            /* En móvil el panel sube desde abajo — override completo del desktop */
             .panel {
+                width: 100% !important;   /* cancela width:0 del desktop */
+                flex-shrink: 1;
                 border-left: none;
                 border-top: 1px solid var(--border);
                 padding: 40px 24px;
-                animation: panelMobileEntry 0.6s ease 0.5s both;
+                transform: translateY(44px);
+                /* transition toma el lugar de la animación desktop */
+                transition: opacity 0.65s ease,
+                            transform 0.65s cubic-bezier(0.22, 0.61, 0.36, 1);
             }
-            @keyframes panelMobileEntry {
-                from { opacity: 0; transform: translateY(16px); }
-                to   { opacity: 1; transform: translateY(0); }
+            .panel.open {
+                width: 100% !important;
+                opacity: 1;
+                transform: translateY(0);
             }
+            /* Campos aparecen ~0.65s después de que .open se activa a 1.2s */
+            .field:nth-child(1) { animation-delay: 1.98s; }
+            .field:nth-child(2) { animation-delay: 2.12s; }
+            .field:nth-child(3) { animation-delay: 2.26s; }
+            .field:nth-child(4) { animation-delay: 2.40s; }
+            .alert { animation: fieldIn 0.4s ease 1.92s both, shake 0.55s ease 2.38s both; }
+            /* Sub-elementos del hero más rápidos en móvil */
+            .brand-tag     { animation-delay: 0.46s; }
+            .hero h1       { animation-delay: 0.58s; }
+            .hero-divider  { animation-delay: 0.72s; }
+            .hero p        { animation-delay: 0.78s; }
+            .hero-features { animation-delay: 0.90s; }
         }
     </style>
     <link rel="stylesheet" href="/static/css/performance.css">
@@ -342,5 +411,27 @@
             </div>
         </div>
     </section>
+<script>
+    // ── Animación principal: activa el panel tras ver la "portada" ──
+    var panel = document.querySelector('.panel');
+    var isMobile = window.innerWidth <= 900;
+    var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Con reduced-motion el delay de CSS es 0s (override de performance.css)
+    // así que usamos un delay mínimo para que siga siendo una secuencia visible
+    var revealDelay = prefersReduced ? 400 : (isMobile ? 1200 : 1500);
+
+    setTimeout(function () {
+        panel.classList.add('open');
+    }, revealDelay);
+
+    // ── Loading state al enviar ──
+    document.querySelector('form').addEventListener('submit', function () {
+        var btn = this.querySelector('.btn-submit');
+        btn.textContent = 'Entrando…';
+        btn.classList.add('loading');
+        btn.disabled = true;
+    });
+</script>
 </body>
 </html>

@@ -5,6 +5,7 @@ from functools import wraps
 from django.contrib import messages
 from django.db.models import Count, Sum
 from django.shortcuts import redirect, render
+from django.utils import timezone
 
 from apps.menu.models import Alimentosbebidas
 from apps.pedidos.models import Ticket
@@ -231,6 +232,7 @@ def historial_view(request):
     if fecha_filtro:
         tickets = tickets.filter(fecha__date=fecha_filtro)
 
+    now = timezone.now()
     historial = []
     for ticket in tickets:
         productos = [
@@ -244,11 +246,25 @@ def historial_view(request):
             if detalle.id_productopedido and detalle.id_productopedido.id_alimentosbebidas
         )
         descuento = subtotal - ticket.precio_final
+
+        # Calcular estado real (incluye "expirado" si pasaron +24 h sin canjear)
+        if ticket.canjeado == -1:
+            estado = "cancelado"
+        elif ticket.pagado:
+            estado = "pagado"
+        elif ticket.canjeado == 1:
+            estado = "canjeado"
+        elif (now - ticket.fecha).total_seconds() > 86400:
+            estado = "expirado"
+        else:
+            estado = "abierto"
+
         historial.append({
             "ticket": ticket,
             "productos": productos,
             "subtotal": subtotal,
             "descuento": descuento if descuento > 0 else 0,
+            "estado": estado,
         })
 
     resumen = tickets.aggregate(total=Sum("precio_final"))

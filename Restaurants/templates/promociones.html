@@ -69,9 +69,12 @@
         html[data-theme="dark"] .form-label { color: var(--text-muted) !important; }
         html[data-theme="dark"] .filter-bar { background: var(--card-bg) !important; border-color: var(--card-border) !important; }
         html[data-theme="dark"] #f-nombre, html[data-theme="dark"] #f-desc, html[data-theme="dark"] #f-rest, html[data-theme="dark"] #f-estado { background: #151b27 !important; border-color: rgba(255,255,255,0.10) !important; color: var(--text-primary) !important; }
-        html[data-theme="dark"] .badge-active  { background: rgba(76,201,112,0.14) !important; }
-        html[data-theme="dark"] .badge-inactive{ background: rgba(240,122,122,0.14) !important; }
+        html[data-theme="dark"] .badge-active   { background: rgba(22,163,74,0.20) !important; color: #4ade80 !important; border: 1px solid rgba(22,163,74,0.35) !important; }
+        html[data-theme="dark"] .badge-inactive { background: rgba(220,38,38,0.20) !important; color: #f87171 !important; border: 1px solid rgba(220,38,38,0.35) !important; }
         html[data-theme="dark"] .mini-btn { background: transparent !important; border-color: rgba(255,255,255,0.10) !important; color: var(--text-secondary) !important; }
+        html[data-theme="dark"] .mini-btn:hover { background: rgba(255,255,255,0.05) !important; }
+        html[data-theme="dark"] .mini-btn.toggle-on { background: rgba(220,38,38,0.15) !important; color: #f87171 !important; border-color: rgba(220,38,38,0.35) !important; }
+        html[data-theme="dark"] .mini-btn.toggle-on:hover { background: rgba(220,38,38,0.28) !important; color: #fca5a5 !important; }
         html[data-theme="dark"] .pag-btn { background: var(--card-bg) !important; border-color: var(--card-border) !important; color: var(--text-secondary) !important; }
         html[data-theme="dark"] .pag-jump-input { background: #111827 !important; border-color: var(--card-border) !important; color: var(--text-primary) !important; }
         html[data-theme="dark"] .pag-info, html[data-theme="dark"] .pag-jump-of { color: var(--text-muted) !important; }
@@ -108,14 +111,14 @@
         .overview { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)) 260px; gap: 16px; margin-bottom: 22px; }
         .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; transition: border-color 0.2s, transform 0.2s; }
         .stat-card:hover { border-color: rgba(216,174,72,0.35); transform: translateY(-2px); }
-        .stat-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: #0D1E3B; margin-bottom: 10px; }
+        .stat-label { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: #1a1a1a; margin-bottom: 10px; }
         .stat-value { font: 600 28px "DM Mono", monospace; color: #212842; }
-        .stat-sub { margin-top: 6px; color: #5C4A3A; font-size: 12px; }
+        .stat-sub { margin-top: 6px; color: #444444; font-size: 12px; }
         .stat-value.green { color: var(--success); }
         .stat-value.red { color: var(--danger); }
 
         .chart-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; display: flex; flex-direction: column; align-items: center; }
-        .chart-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: #0D1E3B; margin-bottom: 14px; align-self: flex-start; }
+        .chart-title { font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; color: #1a1a1a; margin-bottom: 14px; align-self: flex-start; }
 
         /* ── Filter bar ── */
         .filter-bar { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 16px 20px; display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; margin-bottom: 18px; }
@@ -138,10 +141,15 @@
         .content-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 16px; margin-bottom: 22px; }
         .card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 22px; }
         .section-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
-        .section-sub { color: var(--text-secondary); font-size: 13px; line-height: 1.6; margin-bottom: 18px; }
+        .section-sub { color: #444444; font-size: 13px; line-height: 1.6; margin-bottom: 18px; }
 
         form.styled-form { display: grid; gap: 14px; }
-        .form-label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); margin-bottom: 7px; }
+        .form-label { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: #222222; margin-bottom: 7px; }
+        /* ── Validación frontend ── */
+        .field-error { display: block; color: #dc2626; font-size: 12px; margin-top: 5px; line-height: 1.4; }
+        .field-warn  { display: block; color: #d97706; font-size: 12px; margin-top: 5px; line-height: 1.4; }
+        html[data-theme="dark"] .field-warn { color: #fbbf24; }
+        .form-input.input-error, .form-textarea.input-error, .form-select.input-error { border-color: #dc2626 !important; }
         .form-input, .form-textarea, .form-select {
             width: 100%;
             background: #FAFAF8;
@@ -164,9 +172,61 @@
         .table-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden; }
         .table-header { padding: 18px 22px 14px; border-bottom: 1px solid var(--card-border); display: flex; justify-content: space-between; align-items: center; }
         .table-header h3 { font-size: 15px; font-weight: 600; }
-        table { width: 100%; border-collapse: collapse; }
-        th { padding: 11px 18px; font-size: 10px; color: #0D1E3B; text-transform: uppercase; letter-spacing: 1.2px; text-align: left; background: rgba(13,30,59,0.05); }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th { padding: 11px 18px; font-size: 10px; color: #1a1a1a; text-transform: uppercase; letter-spacing: 1.2px; text-align: left; background: rgba(13,30,59,0.05); }
         td { padding: 14px 18px; font-size: 13.5px; border-top: 1px solid rgba(13,30,59,0.08); }
+        /* ── Column widths (table-layout: fixed) — ahora 8 columnas ── */
+        table th:nth-child(1) { width: 13%; min-width: 130px; }   /* Nombre     */
+        table th:nth-child(2) { width: 10%; white-space: nowrap; } /* Tipo       */
+        table th:nth-child(3) { width: 21%; }                      /* Descripcion*/
+        table th:nth-child(4) { width: 9%;  white-space: nowrap; } /* Descuento  */
+        table th:nth-child(5) { width: 12%; white-space: nowrap; } /* Restriccion*/
+        table th:nth-child(6) { width: 12%; white-space: nowrap; } /* Vigencia   */
+        table th:nth-child(7) { width: 12%; white-space: nowrap; } /* Estado     */
+        table th:nth-child(8) { width: 11%; white-space: nowrap; } /* Acciones   */
+        /* Nombre: máximo 2 líneas con ellipsis */
+        .nombre-cell { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word; cursor: default; }
+        /* ── Sortable headers ── */
+        .th-sortable { cursor: pointer; user-select: none; }
+        .th-sortable:hover { color: var(--accent); }
+        .th-sortable .sort-icon { margin-left: 4px; opacity: 0.30; display: inline-block; transition: opacity 0.15s, color 0.15s; }
+        .th-sortable.sort-asc .sort-icon,
+        .th-sortable.sort-desc .sort-icon { opacity: 1; color: var(--accent); }
+        /* ── Toggle switch ── */
+        .toggle-wrap { position: relative; display: inline-block; width: 36px; height: 20px; cursor: pointer; flex-shrink: 0; vertical-align: middle; }
+        .toggle-input { opacity: 0; width: 0; height: 0; position: absolute; }
+        .toggle-slider { position: absolute; inset: 0; border-radius: 20px; background: #dc2626; transition: background 0.25s; }
+        .toggle-slider::before { content: ''; position: absolute; width: 14px; height: 14px; left: 3px; top: 3px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: transform 0.25s; }
+        .toggle-input:checked + .toggle-slider { background: #16a34a; }
+        .toggle-input:checked + .toggle-slider::before { transform: translateX(16px); }
+        .toggle-input:disabled + .toggle-slider { opacity: 0.5; cursor: not-allowed; }
+        .badge-estado-wrap { display: flex; align-items: center; gap: 8px; }
+        /* Truncado de descripción */
+        .desc-cell { max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: default; }
+        /* Truncado de restricción */
+        .restriccion-cell { max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: default; }
+        /* Badge Vencida */
+        .badge-vencida { background: #ea580c; color: #ffffff; border: none; }
+        html[data-theme="dark"] .badge-vencida { background: rgba(234,88,12,0.22) !important; color: #fb923c !important; border: 1px solid rgba(234,88,12,0.38) !important; }
+        /* Vigencia cell */
+        .vigencia-cell { font-size: 12.5px; color: var(--text-primary); }
+        .vigencia-cell.sin-fecha { color: #9ca3af; font-style: italic; }
+        .vigencia-cell.vencida { color: #ea580c; }
+        html[data-theme="dark"] .vigencia-cell.sin-fecha { color: #6b7280; }
+        html[data-theme="dark"] .vigencia-cell.vencida { color: #fb923c; }
+        /* ── Modal de confirmación (toggle) ── */
+        .confirm-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .confirm-overlay.open { opacity: 1; pointer-events: all; }
+        .confirm-box { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 28px 32px; max-width: 380px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.28); text-align: center; transform: translateY(-8px); opacity: 0; transition: transform 0.2s cubic-bezier(0.22,0.61,0.36,1), opacity 0.2s; }
+        .confirm-overlay.open .confirm-box { transform: translateY(0); opacity: 1; }
+        .confirm-icon { font-size: 30px; margin-bottom: 10px; }
+        .confirm-title { font-size: 17px; font-weight: 600; color: var(--text-primary); margin-bottom: 8px; }
+        .confirm-body { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 22px; }
+        .confirm-actions { display: flex; justify-content: center; gap: 10px; }
+        .confirm-cancel-btn { padding: 9px 20px; border-radius: 8px; border: 1px solid var(--card-border); background: transparent; color: var(--text-primary); font: 500 13px "DM Sans", sans-serif; cursor: pointer; transition: all 0.15s; }
+        .confirm-cancel-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .confirm-ok-btn { padding: 9px 20px; border-radius: 8px; border: none; background: #dc2626; color: #fff; font: 600 13px "DM Sans", sans-serif; cursor: pointer; transition: background 0.15s; }
+        .confirm-ok-btn:hover { background: #b91c1c; }
         tbody tr { transition: background 0.12s; }
         tbody tr:hover { background: rgba(13,30,59,0.03); }
         tbody tr[data-hidden="true"] { display: none; }
@@ -174,17 +234,17 @@
         .mono { font-family: "DM Mono", monospace; }
         .text-muted { color: var(--text-secondary); font-size: 13px; }
 
-        .status-badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; }
-        .badge-active { background: var(--success-dim); color: var(--success); border: 1px solid rgba(76,201,112,0.25); }
-        .badge-inactive { background: var(--danger-dim); color: var(--danger); border: 1px solid rgba(240,122,122,0.25); }
+        .status-badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .badge-active  { background: #16a34a; color: #ffffff; border: none; }
+        .badge-inactive { background: #dc2626; color: #ffffff; border: none; }
 
         .mini-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-        .mini-btn { padding: 6px 11px; border-radius: 8px; font-size: 12px; font-family: "DM Sans", sans-serif; border: 1px solid var(--card-border); background: transparent; color: var(--text-secondary); cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.15s; }
-        .mini-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .mini-btn { padding: 6px 11px; border-radius: 8px; font-size: 12px; font-family: "DM Sans", sans-serif; border: 1px solid #d1d5db; background: transparent; color: #374151; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.15s; }
+        .mini-btn:hover { border-color: var(--accent); color: var(--accent); background: #f3f4f6; }
         .mini-btn.toggle-off { background: rgba(76,201,112,0.08); color: var(--success); border-color: rgba(76,201,112,0.3); }
         .mini-btn.toggle-off:hover { background: rgba(76,201,112,0.18); }
-        .mini-btn.toggle-on { background: var(--danger-dim); color: var(--danger); border-color: rgba(240,122,122,0.3); }
-        .mini-btn.toggle-on:hover { background: rgba(240,122,122,0.22); }
+        .mini-btn.toggle-on { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
+        .mini-btn.toggle-on:hover { background: #dc2626; color: #ffffff; border-color: #dc2626; }
         .inline-form { display: inline; }
 
         .empty-row td { text-align: center; padding: 36px; color: var(--text-muted); font-size: 13px; }
@@ -207,7 +267,7 @@
         .pag-jump-btn:disabled { opacity: 0.28; cursor: default; }
 
         /* Chart tooltip */
-        .chart-title { font-size: 12px; letter-spacing: 0.10em; text-transform: uppercase; color: #0D1E3B; margin-bottom: 14px; align-self: flex-start; font-weight: 500; }
+        .chart-title { font-size: 12px; letter-spacing: 0.10em; text-transform: uppercase; color: #1a1a1a; margin-bottom: 14px; align-self: flex-start; font-weight: 500; }
 
         @media (max-width: 1200px) { .overview { grid-template-columns: repeat(3, 1fr); } .overview .chart-card { grid-column: 1 / -1; flex-direction: row; gap: 20px; align-items: center; justify-content: center; } }
         @media (max-width: 980px) { .content-grid { grid-template-columns: 1fr; } }
@@ -221,6 +281,119 @@
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
+
+        /* ── Modal de confirmación ── */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 200;
+            background: rgba(0,0,0,0.45);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+        .modal-box {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 28px 32px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.28);
+            transform: translateY(14px) scale(0.97);
+            opacity: 0;
+            transition: transform 0.22s cubic-bezier(0.22,0.61,0.36,1), opacity 0.22s;
+        }
+        .modal-overlay.open .modal-box { transform: translateY(0) scale(1); opacity: 1; }
+        .modal-title { font-size: 17px; font-weight: 600; margin-bottom: 10px; color: var(--text-primary); }
+        .modal-body  { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 22px; }
+        .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
+        .modal-btn-cancel {
+            padding: 9px 18px; border-radius: 8px; border: 1px solid var(--card-border);
+            background: transparent; color: var(--text-primary);
+            font: 500 13px "DM Sans", sans-serif; cursor: pointer; transition: all 0.15s;
+        }
+        .modal-btn-cancel:hover { border-color: var(--accent); color: var(--accent); }
+        .modal-btn-confirm {
+            padding: 9px 18px; border-radius: 8px; border: none;
+            background: #dc2626; color: #ffffff;
+            font: 600 13px "DM Sans", sans-serif; cursor: pointer; transition: background 0.15s;
+        }
+        .modal-btn-confirm:hover { background: #b91c1c; }
+
+        /* ── Tipo badge ── */
+        .badge-tipo { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .tipo-total    { background: rgba(13,30,59,0.08); color: var(--text-secondary); }
+        .tipo-categoria{ background: rgba(216,174,72,0.18); color: #8b6914; border: 1px solid rgba(216,174,72,0.35); }
+        html[data-theme="dark"] .tipo-total     { background: rgba(255,255,255,0.07); color: var(--text-muted); }
+        html[data-theme="dark"] .tipo-categoria { background: rgba(216,174,72,0.13); color: var(--accent); border-color: rgba(216,174,72,0.28); }
+        .tipo-cat-sub { display: block; font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+
+        /* Campo categoria en el form (se muestra solo cuando tipo=CATEGORIA) */
+        #field-categoria { transition: opacity 0.15s; }
+
+        /* ── Tipo COMBO badge ── */
+        .tipo-combo { background: rgba(147,112,219,0.14); color: #4a2a7a; border: 1px solid rgba(147,112,219,0.28); }
+        html[data-theme="dark"] .tipo-combo { background: rgba(147,112,219,0.18) !important; color: #b39ddb !important; border-color: rgba(147,112,219,0.32) !important; }
+
+        /* ── Combo form rows ── */
+        .combo-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .combo-row .form-select { flex: 1; min-width: 0; }
+        .combo-row .combo-qty   { width: 72px; flex-shrink: 0; }
+        .combo-row-del {
+            width: 28px; height: 28px; flex-shrink: 0;
+            border-radius: 6px; border: 1px solid rgba(240,122,122,0.35);
+            background: transparent; color: var(--danger);
+            font-size: 13px; cursor: pointer; line-height: 1;
+            transition: all 0.15s; display: flex; align-items: center; justify-content: center;
+        }
+        .combo-row-del:hover { background: rgba(240,122,122,0.10); border-color: rgba(240,122,122,0.65); }
+        .btn-add-combo {
+            width: 100%; padding: 9px; margin-top: 4px;
+            background: transparent; border: 1px dashed var(--card-border);
+            border-radius: 8px; color: var(--text-secondary);
+            font: 13px "DM Sans", sans-serif; cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-add-combo:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* Combo items mini-list in table */
+        .combo-items-list { display: flex; flex-direction: column; gap: 2px; margin-top: 3px; }
+        .combo-item-tag { font-size: 10.5px; color: var(--text-muted); }
+
+        /* ── Restriction tipo badges (overview table) ── */
+        .badge-rtipo { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+        .rtipo-items   { background: rgba(76,201,112,0.12);  color: #1a6030; border: 1px solid rgba(76,201,112,0.25); }
+        .rtipo-visitas { background: rgba(100,149,237,0.12); color: #1a3a7a; border: 1px solid rgba(100,149,237,0.25); }
+        .rtipo-monto   { background: rgba(216,174,72,0.12);  color: #7a5a00; border: 1px solid rgba(216,174,72,0.25); }
+        html[data-theme="dark"] .rtipo-items   { color: #4cc970 !important; }
+        html[data-theme="dark"] .rtipo-visitas { color: #6495ED !important; }
+        html[data-theme="dark"] .rtipo-monto   { color: var(--accent) !important; }
+
+        /* ── Restricciones overview card ── */
+        .rest-overview-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 12px; overflow: hidden; margin-bottom: 22px; }
+        .rest-overview-header { padding: 14px 20px; border-bottom: 1px solid var(--card-border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+        .rest-overview-header h3 { font-size: 15px; font-weight: 600; }
+        .ro-filter-wrap { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .ro-filter-wrap input, .ro-filter-wrap select {
+            background: #FAFAF8; border: 1px solid var(--card-border); border-radius: 8px;
+            padding: 7px 12px; color: var(--text-primary); font: 13px "DM Sans", sans-serif;
+        }
+        .ro-filter-wrap input:focus, .ro-filter-wrap select:focus { outline: none; border-color: var(--accent); }
+        html[data-theme="dark"] .ro-filter-wrap input,
+        html[data-theme="dark"] .ro-filter-wrap select { background: #151b27 !important; border-color: rgba(255,255,255,0.10) !important; color: var(--text-primary) !important; }
+        .ro-usage-badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+        .ro-badge-in-use { background: var(--accent-dim); color: #7a5a00; border: 1px solid rgba(216,174,72,0.3); }
+        .ro-badge-free   { background: rgba(13,30,59,0.04); color: var(--text-muted); border: 1px solid var(--card-border); }
+        html[data-theme="dark"] .ro-badge-in-use { color: var(--accent) !important; }
+        html[data-theme="dark"] .ro-badge-free   { color: var(--text-muted) !important; }
+
+        /* ── Eliminar mini-btn ── */
+        .mini-btn-del { background: transparent !important; border-color: rgba(240,122,122,0.35) !important; color: var(--danger) !important; }
+        .mini-btn-del:hover { background: rgba(240,122,122,0.10) !important; border-color: rgba(240,122,122,0.65) !important; }
+
+        /* ── Modal eliminar promocion ── */
+        #modal-eliminar .modal-btn-confirm { background: #dc2626; }
+        #modal-eliminar .modal-btn-confirm:hover { background: #b91c1c; }
     </style>
     <link rel="stylesheet" href="/static/css/performance.css">
 </head>
@@ -230,6 +403,7 @@
     <p class="sidebar-label">Panel</p>
     <a class="nav-item" href="{% url 'menu_admin' %}"><span class="nav-icon">⊞</span>Dashboard</a>
     <a class="nav-item" href="/alimentos-bebidas/"><span class="nav-icon">🍽️</span>Alimentos / Bebidas</a>
+    <a class="nav-item" href="{% url 'lista_categorias' %}"><span class="nav-icon">🏷️</span>Categorias</a>
     <a class="nav-item" href="{% url 'atender_mesa' %}"><span class="nav-icon">🪑</span>Atender mesa</a>
     <a class="nav-item" href="{% url 'lista_tickets' %}"><span class="nav-icon">🎫</span>Tickets</a>
     <a class="nav-item active" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
@@ -287,8 +461,8 @@
     <div class="content-grid">
         <section class="card anim d6">
             <h3 class="section-title">{% if promocion_editar %}Editar promocion{% else %}Nueva promocion{% endif %}</h3>
-            <p class="section-sub">Define el porcentaje de descuento y la restriccion que debe cumplirse para aplicarlo.</p>
-            <form class="styled-form" method="post">
+            <p class="section-sub">Define el tipo, el descuento y la restriccion de la promocion.</p>
+            <form class="styled-form" method="post" id="promo-form" novalidate>
                 {% csrf_token %}
                 <input type="hidden" name="action" value="{% if promocion_editar %}update_promocion{% else %}create_promocion{% endif %}">
                 {% if promocion_editar %}
@@ -296,26 +470,91 @@
                 {% endif %}
                 <div>
                     <label class="form-label" for="nombre">Nombre</label>
-                    <input class="form-input" id="nombre" name="nombre" type="text" value="{{ promocion_editar.nombre|default:'' }}" required>
+                    <input class="form-input" id="nombre" name="nombre" type="text" value="{{ promocion_editar.nombre|default:'' }}">
+                    <span class="field-error" id="err-nombre"></span>
                 </div>
+
+                <!-- ── Tipo de promoción ── -->
+                <div>
+                    <label class="form-label" for="tipo">Tipo de promocion</label>
+                    <select class="form-select" id="tipo" name="tipo" onchange="toggleTipoFields()">
+                        <option value="TOTAL"
+                            {% if not promocion_editar or promocion_editar.tipo == 'TOTAL' %}selected{% endif %}>
+                            🎯 Total — descuento sobre todo el ticket
+                        </option>
+                        <option value="CATEGORIA"
+                            {% if promocion_editar and promocion_editar.tipo == 'CATEGORIA' %}selected{% endif %}>
+                            🏷️ Categoría — descuento en productos de una categoría
+                        </option>
+                        <option value="COMBO"
+                            {% if promocion_editar and promocion_editar.tipo == 'COMBO' %}selected{% endif %}>
+                            🔗 Combo — descuento al combinar categorías en el pedido
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Solo visible cuando tipo=CATEGORIA -->
+                <div id="field-categoria">
+                    <label class="form-label" for="categoria_id">
+                        Categoría a descontar
+                        <span style="font-size:10px;color:var(--text-muted);text-transform:none;letter-spacing:0;">(obligatorio para este tipo)</span>
+                    </label>
+                    <select class="form-select" id="categoria_id" name="categoria_id">
+                        <option value="">— Selecciona una categoría —</option>
+                        {% for cat in categorias %}
+                            <option value="{{ cat.id_categoria }}"
+                                {% if promocion_editar and promocion_editar.categoria_id == cat.id_categoria %}selected{% endif %}>
+                                {{ cat.icono }} {{ cat.nombre }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <span class="field-error" id="err-categoria"></span>
+                </div>
+
+                <!-- Solo visible cuando tipo=COMBO -->
+                <div id="field-combo">
+                    <label class="form-label">
+                        Componentes del combo
+                        <span style="font-size:10px;color:var(--text-muted);text-transform:none;letter-spacing:0;">(mín. 2 categorías)</span>
+                    </label>
+                    <div id="combo-rows"></div>
+                    <button type="button" class="btn-add-combo" onclick="addComboRow()">+ Agregar categoría al combo</button>
+                    <span class="field-error" id="err-combo"></span>
+                </div>
+
                 <div>
                     <label class="form-label" for="descripcion">Descripcion</label>
-                    <textarea class="form-textarea" id="descripcion" name="descripcion" required>{{ promocion_editar.descripcion|default:'' }}</textarea>
+                    <textarea class="form-textarea" id="descripcion" name="descripcion">{{ promocion_editar.descripcion|default:'' }}</textarea>
                 </div>
                 <div>
                     <label class="form-label" for="porcentaje">Porcentaje de descuento</label>
-                    <input class="form-input" id="porcentaje" name="porcentaje" type="number" min="0" max="100" step="0.01" value="{{ promocion_editar.porcentaje_a_reducir|default:'' }}" required>
+                    <input class="form-input" id="porcentaje" name="porcentaje" type="number" min="0" max="100" step="0.01" value="{{ promocion_editar.porcentaje_a_reducir|default:'' }}">
+                    <span class="field-error" id="err-porcentaje"></span>
                 </div>
                 <div>
-                    <label class="form-label" for="restriccion">Restriccion</label>
+                    <label class="form-label" for="restriccion">Restriccion <span style="font-size:10px;color:var(--text-muted);text-transform:none;letter-spacing:0;">(opcional)</span></label>
                     <select class="form-select" id="restriccion" name="restriccion">
                         <option value="" {% if promocion_editar and not promocion_editar.id_restriccion %}selected{% endif %}>Sin restriccion</option>
                         {% for restriccion in restricciones %}
                             <option value="{{ restriccion.id_restriccion }}" {% if promocion_editar and promocion_editar.id_restriccion_id == restriccion.id_restriccion %}selected{% endif %}>
-                                {{ restriccion.nombre }} — minimo {{ restriccion.consumo_minimo_para_aplicar }}
+                                {{ restriccion.nombre }} — {% if restriccion.tipo_restriccion == 'MONTO' %}${{ restriccion.consumo_minimo_para_aplicar }}{% elif restriccion.tipo_restriccion == 'VISITAS' %}{{ restriccion.consumo_minimo_para_aplicar }} visita{{ restriccion.consumo_minimo_para_aplicar|pluralize:"s" }}{% else %}{{ restriccion.consumo_minimo_para_aplicar }} pieza{{ restriccion.consumo_minimo_para_aplicar|pluralize:"s" }}{% endif %}
                             </option>
                         {% endfor %}
                     </select>
+                    <span class="field-warn" id="warn-restriccion"></span>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                    <div>
+                        <label class="form-label" for="fecha_inicio">Fecha inicio <span style="font-size:10px;color:var(--text-muted);text-transform:none;letter-spacing:0;">(opcional)</span></label>
+                        <input class="form-input" id="fecha_inicio" name="fecha_inicio" type="date"
+                               value="{{ promocion_editar.fecha_inicio|date:'Y-m-d'|default:'' }}">
+                    </div>
+                    <div>
+                        <label class="form-label" for="fecha_fin">Fecha fin <span style="font-size:10px;color:var(--text-muted);text-transform:none;letter-spacing:0;">(opcional)</span></label>
+                        <input class="form-input" id="fecha_fin" name="fecha_fin" type="date"
+                               value="{{ promocion_editar.fecha_fin|date:'Y-m-d'|default:'' }}">
+                        <span class="field-error" id="err-fechas"></span>
+                    </div>
                 </div>
                 <div class="form-actions">
                     <button class="btn-primary" type="submit">{% if promocion_editar %}Guardar cambios{% else %}Crear promocion{% endif %}</button>
@@ -328,39 +567,121 @@
 
         <section class="card anim d7">
             <h3 class="section-title">Nueva restriccion</h3>
-            <p class="section-sub">El sistema recomienda promociones segun estas reglas; el administrador decide cual aplicar.</p>
-            <form class="styled-form" method="post">
+            <p class="section-sub">Crea condiciones que el cliente debe cumplir para recibir una promocion.</p>
+            <form class="styled-form" method="post" id="form-rest-rapida">
                 {% csrf_token %}
                 <input type="hidden" name="action" value="create_restriccion">
                 <div>
-                    <label class="form-label" for="restriccion_nombre">Nombre</label>
-                    <input class="form-input" id="restriccion_nombre" name="restriccion_nombre" type="text" required>
+                    <label class="form-label" for="rr-nombre">Nombre</label>
+                    <input class="form-input" id="rr-nombre" name="restriccion_nombre" type="text" placeholder="Ej: Clientes frecuentes" required maxlength="25">
                 </div>
                 <div>
-                    <label class="form-label" for="consumo_minimo">Consumo minimo para aplicar</label>
-                    <input class="form-input" id="consumo_minimo" name="consumo_minimo" type="number" min="0" step="1" required>
+                    <label class="form-label" for="rr-tipo">Tipo de condicion</label>
+                    <select class="form-select" id="rr-tipo" name="tipo_restriccion" onchange="rrTipoChange()">
+                        <option value="ITEMS">🛒 Piezas en pedido</option>
+                        <option value="VISITAS">🔁 Compras anteriores</option>
+                        <option value="MONTO">💰 Monto gastado ($)</option>
+                    </select>
                 </div>
-                <button class="btn-primary" type="submit">Crear restriccion</button>
+                <div>
+                    <label class="form-label" id="rr-lbl-min">Minimo de piezas</label>
+                    <input class="form-input" id="rr-minimo" name="consumo_minimo" type="number" min="0" step="1" value="0" required>
+                    <span style="font-size:11px;color:var(--text-muted);margin-top:4px;display:block;" id="rr-hint">Cantidad de productos que el cliente debe llevar en este pedido.</span>
+                </div>
+                <div style="display:flex;gap:10px;">
+                    <button class="btn-primary" type="submit" style="flex:1;">Crear restriccion</button>
+                    <a class="btn-secondary" href="{% url 'restricciones' %}" style="padding:11px 14px;font-size:12px;white-space:nowrap;">Gestionar →</a>
+                </div>
             </form>
-
-            {% if restricciones %}
-            <div style="margin-top: 24px; border-top: 1px solid var(--card-border); padding-top: 18px;">
-                <p style="font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-muted); margin-bottom: 12px;">Restricciones activas</p>
-                <div style="display: grid; gap: 8px;">
-                    {% for r in restricciones %}
-                    <div style="background: rgba(13,30,59,0.04); border: 1px solid rgba(13,30,59,0.10); border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 13px;">{{ r.nombre }}</span>
-                        <span class="mono" style="font-size: 12px; color: var(--accent);">min. {{ r.consumo_minimo_para_aplicar }}</span>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
         </section>
     </div>
 
+    <!-- Restricciones overview table -->
+    {% if restricciones %}
+    <div class="rest-overview-card anim d8">
+        <div class="rest-overview-header">
+            <h3>Restricciones registradas <span class="mono" style="font-size:12px;color:var(--text-muted);font-weight:400;">{{ restricciones|length }}</span></h3>
+            <div class="ro-filter-wrap">
+                <input type="text" id="ro-search" placeholder="Buscar…" oninput="roFilter()" style="width:160px;">
+                <select id="ro-tipo-f" onchange="roFilter()">
+                    <option value="">Todos los tipos</option>
+                    <option value="ITEMS">🛒 Piezas</option>
+                    <option value="VISITAS">🔁 Visitas</option>
+                    <option value="MONTO">💰 Monto</option>
+                </select>
+            </div>
+        </div>
+        <div style="overflow-x:auto;">
+            <table style="table-layout:fixed;">
+                <colgroup>
+                    <col style="width:30%;">
+                    <col style="width:20%;">
+                    <col style="width:22%;">
+                    <col style="width:18%;">
+                    <col style="width:10%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Mínimo requerido</th>
+                        <th>En uso</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="ro-tbody">
+                    {% for r in restricciones %}
+                    <tr class="ro-row" data-nombre="{{ r.nombre|lower }}" data-tipo="{{ r.tipo_restriccion }}">
+                        <td style="font-weight:500;">{{ r.nombre }}</td>
+                        <td>
+                            {% if r.tipo_restriccion == 'ITEMS' %}
+                                <span class="badge-rtipo rtipo-items">🛒 Piezas</span>
+                            {% elif r.tipo_restriccion == 'VISITAS' %}
+                                <span class="badge-rtipo rtipo-visitas">🔁 Visitas</span>
+                            {% else %}
+                                <span class="badge-rtipo rtipo-monto">💰 Monto</span>
+                            {% endif %}
+                        </td>
+                        <td class="mono" style="font-size:13px;">
+                            {% if r.tipo_restriccion == 'MONTO' %}
+                                ${{ r.consumo_minimo_para_aplicar }}
+                            {% elif r.tipo_restriccion == 'VISITAS' %}
+                                {{ r.consumo_minimo_para_aplicar }} visita{{ r.consumo_minimo_para_aplicar|pluralize:"s" }}
+                            {% else %}
+                                {{ r.consumo_minimo_para_aplicar }} pieza{{ r.consumo_minimo_para_aplicar|pluralize:"s" }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if r.total_promociones > 0 %}
+                                <span class="ro-usage-badge ro-badge-in-use">{{ r.total_promociones }} promo{{ r.total_promociones|pluralize:"s" }}</span>
+                            {% else %}
+                                <span class="ro-usage-badge ro-badge-free">Sin uso</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'restricciones' %}?editar={{ r.id_restriccion }}" class="mini-btn" style="font-size:11px;padding:5px 10px;">Editar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination" id="ro-pagination" style="display:none;">
+            <span class="pag-info" id="ro-pag-info"></span>
+            <div class="pag-btns">
+                <button class="pag-btn" id="ro-pag-prev">← Anterior</button>
+                <div class="pag-jump">
+                    <input type="number" class="pag-jump-input" id="ro-pag-jump" min="1" title="Ir a página">
+                    <span class="pag-jump-of" id="ro-pag-of"></span>
+                </div>
+                <button class="pag-btn" id="ro-pag-next">Siguiente →</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Table -->
-    <div class="table-card anim d8">
+    <div class="table-card anim d8" style="animation-delay:0.45s;">
         <div class="table-header">
             <h3>Promociones registradas</h3>
             <span id="filter-count" class="mono"></span>
@@ -387,11 +708,21 @@
                 </select>
             </div>
             <div class="filter-group" style="max-width: 140px;">
+                <label>Tipo</label>
+                <select id="f-tipo" onchange="applyFilters()">
+                    <option value="">Todos</option>
+                    <option value="TOTAL">🎯 Total</option>
+                    <option value="CATEGORIA">🏷️ Categoría</option>
+                    <option value="COMBO">🔗 Combo</option>
+                </select>
+            </div>
+            <div class="filter-group" style="max-width: 140px;">
                 <label>Estado</label>
                 <select id="f-estado" onchange="applyFilters()">
                     <option value="">Todos</option>
                     <option value="activa">Activas</option>
                     <option value="inactiva">Inactivas</option>
+                    <option value="vencida">Vencidas</option>
                 </select>
             </div>
             <button class="filter-reset" onclick="resetFilters()">Limpiar</button>
@@ -401,11 +732,13 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Nombre</th>
+                        <th class="th-sortable" data-col="0">Nombre <i class="sort-icon">↕</i></th>
+                        <th>Tipo</th>
                         <th>Descripcion</th>
-                        <th>Descuento</th>
+                        <th class="th-sortable" data-col="3">Descuento <i class="sort-icon">↕</i></th>
                         <th>Restriccion</th>
-                        <th>Estado</th>
+                        <th>Vigencia</th>
+                        <th class="th-sortable" data-col="6">Estado <i class="sort-icon">↕</i></th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -416,35 +749,73 @@
                             data-desc="{{ promocion.descripcion|lower }}"
                             data-porcentaje="{{ promocion.porcentaje_a_reducir }}"
                             data-rest="{% if promocion.id_restriccion %}{{ promocion.id_restriccion.id_restriccion }}{% else %}none{% endif %}"
-                            data-estado="{% if promocion.activo %}activa{% else %}inactiva{% endif %}"
+                            data-estado="{% if promocion.esta_vencida %}vencida{% elif promocion.activo %}activa{% else %}inactiva{% endif %}"
+                            data-tipo="{{ promocion.tipo }}"
                         >
-                            <td><strong>{{ promocion.nombre }}</strong></td>
-                            <td class="text-muted">{{ promocion.descripcion }}</td>
-                            <td class="mono" style="color: var(--accent);">{{ promocion.porcentaje_a_reducir }}%</td>
-                            <td class="text-muted">
-                                {% if promocion.id_restriccion %}
-                                    {{ promocion.id_restriccion.nombre }}
-                                    <span class="mono" style="color: var(--text-muted); font-size: 11px;">(min. {{ promocion.id_restriccion.consumo_minimo_para_aplicar }})</span>
+                            <td><strong class="nombre-cell" title="{{ promocion.nombre }}">{{ promocion.nombre }}</strong></td>
+                            <td>
+                                {% if promocion.tipo == 'CATEGORIA' %}
+                                    <span class="badge-tipo tipo-categoria">🏷️ Categoría</span>
+                                    {% if promocion.categoria %}
+                                        <span class="tipo-cat-sub">{{ promocion.categoria.icono }} {{ promocion.categoria.nombre }}</span>
+                                    {% endif %}
+                                {% elif promocion.tipo == 'COMBO' %}
+                                    <span class="badge-tipo tipo-combo">🔗 Combo</span>
+                                    <div class="combo-items-list">
+                                        {% for ci in promocion.combo_items.all %}
+                                            <span class="combo-item-tag">{{ ci.categoria.icono }} {{ ci.categoria.nombre }} ×{{ ci.cantidad_minima }}</span>
+                                        {% endfor %}
+                                    </div>
                                 {% else %}
-                                    <span style="color: var(--text-muted);">—</span>
+                                    <span class="badge-tipo tipo-total">🎯 Total</span>
                                 {% endif %}
                             </td>
+                            <td class="text-muted"><div class="desc-cell" title="{{ promocion.descripcion }}">{{ promocion.descripcion }}</div></td>
+                            <td class="mono" style="color: var(--accent);">{{ promocion.porcentaje_a_reducir }}%</td>
+                            <td class="text-muted">
+                                <div class="restriccion-cell" title="{% if promocion.id_restriccion %}{{ promocion.id_restriccion.nombre }}{% endif %}">
+                                    {% if promocion.id_restriccion %}
+                                        {{ promocion.id_restriccion.nombre }}
+                                        <span style="color: var(--text-muted); font-size: 11px;">
+                                            ({% if promocion.id_restriccion.tipo_restriccion == 'MONTO' %}${{ promocion.id_restriccion.consumo_minimo_para_aplicar }}{% elif promocion.id_restriccion.tipo_restriccion == 'VISITAS' %}{{ promocion.id_restriccion.consumo_minimo_para_aplicar }} visita{{ promocion.id_restriccion.consumo_minimo_para_aplicar|pluralize:"s" }}{% else %}{{ promocion.id_restriccion.consumo_minimo_para_aplicar }} pieza{{ promocion.id_restriccion.consumo_minimo_para_aplicar|pluralize:"s" }}{% endif %})
+                                        </span>
+                                    {% else %}
+                                        <span style="color: var(--text-muted);">—</span>
+                                    {% endif %}
+                                </div>
+                            </td>
                             <td>
-                                <span class="status-badge {% if promocion.activo %}badge-active{% else %}badge-inactive{% endif %}">
-                                    {% if promocion.activo %}Activa{% else %}Inactiva{% endif %}
+                                <span class="vigencia-cell{% if promocion.esta_vencida %} vencida{% elif not promocion.fecha_inicio and not promocion.fecha_fin %} sin-fecha{% endif %}">
+                                    {{ promocion.vigencia_display }}
                                 </span>
+                            </td>
+                            <td>
+                                <div class="badge-estado-wrap">
+                                    {% if promocion.esta_vencida %}
+                                        <span class="status-badge badge-vencida" id="badge-{{ promocion.id_promocion }}">Vencida</span>
+                                    {% elif promocion.activo %}
+                                        <span class="status-badge badge-active" id="badge-{{ promocion.id_promocion }}">Activa</span>
+                                    {% else %}
+                                        <span class="status-badge badge-inactive" id="badge-{{ promocion.id_promocion }}">Inactiva</span>
+                                    {% endif %}
+                                    {% if not promocion.esta_vencida %}
+                                        <label class="toggle-wrap" title="{% if promocion.activo %}Inactivar{% else %}Activar{% endif %}">
+                                            <input type="checkbox" class="toggle-input"
+                                                   data-id="{{ promocion.id_promocion }}"
+                                                   data-nombre="{{ promocion.nombre }}"
+                                                   {% if promocion.activo %}checked{% endif %}>
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                    {% endif %}
+                                </div>
                             </td>
                             <td>
                                 <div class="mini-actions">
                                     <a class="mini-btn" href="{% url 'promociones' %}?editar={{ promocion.id_promocion }}">Editar</a>
-                                    <form class="inline-form" method="post">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="action" value="toggle_promocion">
-                                        <input type="hidden" name="promocion_id" value="{{ promocion.id_promocion }}">
-                                        <button class="mini-btn {% if promocion.activo %}toggle-on{% else %}toggle-off{% endif %}" type="submit">
-                                            {% if promocion.activo %}Inactivar{% else %}Activar{% endif %}
-                                        </button>
-                                    </form>
+                                    <button type="button" class="mini-btn mini-btn-del"
+                                            onclick="abrirModalEliminar({{ promocion.id_promocion }}, '{{ promocion.nombre|escapejs }}')">
+                                        Eliminar
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -468,6 +839,38 @@
     </div>
 </main>
 
+<!-- Modal eliminar promocion -->
+<div id="modal-eliminar" class="modal-overlay" onclick="if(event.target===this)cerrarModalEliminar()">
+    <div class="modal-box" role="dialog" aria-modal="true">
+        <h3 class="modal-title">🗑️ Eliminar promocion</h3>
+        <p class="modal-body">
+            Estas por eliminar <strong id="mel-nombre"></strong>.<br>
+            Esta accion <strong>no se puede deshacer</strong>. Si hay tickets pendientes de hoy con esta promocion, no se podra eliminar.
+        </p>
+        <div class="modal-actions">
+            <button class="modal-btn-cancel" onclick="cerrarModalEliminar()">Cancelar</button>
+            <button class="modal-btn-confirm" onclick="confirmarEliminar()">Sí, eliminar</button>
+        </div>
+    </div>
+</div>
+<form id="form-eliminar-promo" method="POST" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="action" value="delete_promocion">
+    <input type="hidden" name="promocion_id" id="mel-promo-id" value="">
+</form>
+
+<!-- Modal de confirmación: Inactivar promoción -->
+<div id="modal-inactivar" class="modal-overlay" onclick="cerrarModal(event)">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+        <h3 class="modal-title" id="modal-titulo">¿Inactivar promoción?</h3>
+        <p class="modal-body">Estás por inactivar <strong id="modal-nombre"></strong>. Podrás reactivarla después.</p>
+        <div class="modal-actions">
+            <button class="modal-btn-cancel" onclick="cerrarModalDirecto()">Cancelar</button>
+            <button class="modal-btn-confirm" id="modal-confirmar">Sí, inactivar</button>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
     // ── Tema oscuro/claro ──────────────────────────────────────────
@@ -477,6 +880,8 @@
         document.documentElement.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
         updateThemeBtn();
+        // Redibujar el canvas para que el número del centro cambie de color
+        if (window._donutChart) window._donutChart.update();
     }
     function updateThemeBtn() {
         var btn = document.getElementById('theme-toggle');
@@ -492,7 +897,7 @@
     document.getElementById('cnt-activas').textContent  = donutData.data[0];
     document.getElementById('cnt-inactivas').textContent = donutData.data[1];
 
-    new Chart(document.getElementById('donutChart'), {
+    window._donutChart = new Chart(document.getElementById('donutChart'), {
         type: 'doughnut',
         data: {
             labels: donutData.labels,
@@ -527,14 +932,15 @@
             id: 'center',
             afterDraw(chart) {
                 const { ctx, chartArea: { width, height, left, top } } = chart;
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
                 ctx.save();
                 ctx.font = 'bold 22px DM Mono, monospace';
-                ctx.fillStyle = '#0D1E3B';
+                ctx.fillStyle = isDark ? '#e2ddd5' : '#0D1E3B';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(totalPromos, left + width/2, top + height/2 - 8);
                 ctx.font = '13px DM Sans, sans-serif';
-                ctx.fillStyle = '#9B8B7A';
+                ctx.fillStyle = isDark ? '#6e5e52' : '#9B8B7A';
                 ctx.fillText('total', left + width/2, top + height/2 + 14);
                 ctx.restore();
             }
@@ -611,12 +1017,14 @@
         const nombre  = document.getElementById('f-nombre').value.toLowerCase();
         const maxDesc = parseFloat(document.getElementById('f-desc').value);
         const rest    = document.getElementById('f-rest').value;
+        const tipo    = document.getElementById('f-tipo').value;
         const estado  = document.getElementById('f-estado').value;
 
         filteredRows = allRows.filter(row => {
             return (!nombre || row.dataset.nombre.includes(nombre) || row.dataset.desc.includes(nombre)) &&
                    (isNaN(maxDesc) || parseFloat(row.dataset.porcentaje) <= maxDesc) &&
                    (!rest   || row.dataset.rest   === rest) &&
+                   (!tipo   || row.dataset.tipo   === tipo) &&
                    (!estado || row.dataset.estado === estado);
         });
         currentPage = 1;
@@ -627,11 +1035,458 @@
         document.getElementById('f-nombre').value  = '';
         document.getElementById('f-desc').value    = '';
         document.getElementById('f-rest').value    = '';
+        document.getElementById('f-tipo').value    = '';
         document.getElementById('f-estado').value  = '';
         applyFilters();
     }
 
     applyFilters();
+
+    // ── Categorías para el formulario de combo (JSON embebido) ───
+    const CATS_COMBO = [
+        {% for cat in categorias %}
+        {"id": {{ cat.id_categoria }}, "label": "{{ cat.icono }} {{ cat.nombre|escapejs }}"}{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    const COMBO_EDITAR = {{ combo_items_editar|safe }};
+    let comboRowIdx = 0;
+
+    function buildCatOptions(selectedId) {
+        return '<option value="">— Categoría —</option>' +
+            CATS_COMBO.map(function(c) {
+                return '<option value="' + c.id + '"' +
+                    (Number(selectedId) === c.id ? ' selected' : '') +
+                    '>' + c.label + '</option>';
+            }).join('');
+    }
+
+    function addComboRow(catId, minimo) {
+        comboRowIdx++;
+        var div = document.createElement('div');
+        div.className = 'combo-row';
+        div.innerHTML =
+            '<select name="combo_categoria[]" class="form-select">' +
+                buildCatOptions(catId || 0) +
+            '</select>' +
+            '<input type="number" name="combo_minimo[]" min="1" value="' + (minimo || 1) + '" ' +
+                'class="form-input combo-qty" placeholder="Mín">' +
+            '<button type="button" class="combo-row-del" onclick="removeComboRow(this)" title="Quitar">✕</button>';
+        document.getElementById('combo-rows').appendChild(div);
+    }
+
+    function removeComboRow(btn) {
+        var rows = document.querySelectorAll('#combo-rows .combo-row');
+        if (rows.length <= 2) {
+            document.getElementById('err-combo').textContent = 'El combo necesita mínimo 2 componentes.';
+            return;
+        }
+        document.getElementById('err-combo').textContent = '';
+        btn.closest('.combo-row').remove();
+    }
+
+    // ── Mostrar/ocultar campos según tipo ────────────────────────
+    function toggleTipoFields() {
+        var tipo = document.getElementById('tipo');
+        var fieldCat   = document.getElementById('field-categoria');
+        var fieldCombo = document.getElementById('field-combo');
+        if (!tipo) return;
+        var val = tipo.value;
+        if (fieldCat)   { fieldCat.style.display   = (val === 'CATEGORIA') ? '' : 'none'; }
+        if (fieldCombo) { fieldCombo.style.display  = (val === 'COMBO')     ? '' : 'none'; }
+
+        // Al cambiar a COMBO: asegurar al menos 2 filas
+        if (val === 'COMBO' && fieldCombo) {
+            var container = document.getElementById('combo-rows');
+            if (!container.children.length) {
+                if (COMBO_EDITAR.length >= 2) {
+                    COMBO_EDITAR.forEach(function(item) { addComboRow(item.categoria_id, item.cantidad_minima); });
+                } else {
+                    addComboRow(); addComboRow();
+                }
+            }
+        }
+    }
+    // Estado inicial al cargar la página
+    toggleTipoFields();
+    // Si estamos editando un COMBO, pre-cargar filas
+    (function() {
+        var tipo = document.getElementById('tipo');
+        if (tipo && tipo.value === 'COMBO' && COMBO_EDITAR.length) {
+            var container = document.getElementById('combo-rows');
+            if (!container.children.length) {
+                COMBO_EDITAR.forEach(function(item) { addComboRow(item.categoria_id, item.cantidad_minima); });
+            }
+        }
+    })();
+
+    // ── Validación formulario de promoción ────────────────────────
+    (function () {
+        var form        = document.getElementById('promo-form');
+        if (!form) return;
+
+        var fNombre     = document.getElementById('nombre');
+        var fPorcentaje = document.getElementById('porcentaje');
+        var fRestriccion= document.getElementById('restriccion');
+        var fFechaInicio= document.getElementById('fecha_inicio');
+        var fFechaFin   = document.getElementById('fecha_fin');
+        var errNombre   = document.getElementById('err-nombre');
+        var errPct      = document.getElementById('err-porcentaje');
+        var errFechas   = document.getElementById('err-fechas');
+        var warnRest    = document.getElementById('warn-restriccion');
+
+        function setError(input, span, msg) {
+            span.textContent = msg;
+            input.classList.add('input-error');
+        }
+        function clearError(input, span) {
+            span.textContent = '';
+            input.classList.remove('input-error');
+        }
+
+        function validateNombre() {
+            if (!fNombre.value.trim()) {
+                setError(fNombre, errNombre, 'El nombre es obligatorio.');
+                return false;
+            }
+            clearError(fNombre, errNombre);
+            return true;
+        }
+
+        function validatePorcentaje() {
+            var v = fPorcentaje.value;
+            var n = parseFloat(v);
+            if (v === '' || isNaN(n) || n < 0 || n > 100) {
+                setError(fPorcentaje, errPct, 'El descuento debe ser un número entre 0 y 100.');
+                return false;
+            }
+            clearError(fPorcentaje, errPct);
+            return true;
+        }
+
+        function updateWarnRestriccion() {
+            warnRest.textContent = fRestriccion.value === ''
+                ? '⚠ Sin restricción: la promoción se aplicará a cualquier pedido.'
+                : '';
+        }
+
+        function validateFechas() {
+            if (fFechaInicio.value && fFechaFin.value && fFechaFin.value < fFechaInicio.value) {
+                errFechas.textContent = 'La fecha de fin no puede ser anterior a la de inicio.';
+                fFechaFin.classList.add('input-error');
+                return false;
+            }
+            errFechas.textContent = '';
+            fFechaFin.classList.remove('input-error');
+            return true;
+        }
+
+        // Validación al perder foco
+        fNombre.addEventListener('blur', validateNombre);
+        fPorcentaje.addEventListener('blur', validatePorcentaje);
+        fFechaFin.addEventListener('blur', validateFechas);
+        fFechaInicio.addEventListener('change', validateFechas);
+        fRestriccion.addEventListener('change', updateWarnRestriccion);
+
+        // Mostrar aviso inicial si ya viene sin restricción (carga de página)
+        updateWarnRestriccion();
+
+        function validateCategoria() {
+            var tipo = document.getElementById('tipo');
+            var catSelect = document.getElementById('categoria_id');
+            var errCat = document.getElementById('err-categoria');
+            if (!tipo || !catSelect || !errCat) return true;
+            if (tipo.value === 'CATEGORIA' && !catSelect.value) {
+                errCat.textContent = 'Selecciona una categoría para este tipo de promocion.';
+                catSelect.classList.add('input-error');
+                return false;
+            }
+            errCat.textContent = '';
+            catSelect.classList.remove('input-error');
+            return true;
+        }
+
+        function validateCombo() {
+            var tipo = document.getElementById('tipo');
+            if (!tipo || tipo.value !== 'COMBO') return true;
+            var rows = document.querySelectorAll('#combo-rows .combo-row');
+            var errCombo = document.getElementById('err-combo');
+            if (rows.length < 2) {
+                errCombo.textContent = 'El combo necesita al menos 2 componentes.';
+                return false;
+            }
+            var allSelected = Array.from(rows).every(function(r) { return r.querySelector('select').value; });
+            if (!allSelected) {
+                errCombo.textContent = 'Selecciona una categoría en cada componente.';
+                return false;
+            }
+            errCombo.textContent = '';
+            return true;
+        }
+
+        // Validación al enviar
+        form.addEventListener('submit', function (e) {
+            var ok = validateNombre() & validatePorcentaje() & validateFechas() & validateCategoria() & validateCombo();
+            if (!ok) e.preventDefault();
+        });
+    })();
+
+    // ── Ordenamiento de tabla ──────────────────────────────────────
+    (function () {
+        var sortHeaders = document.querySelectorAll('.th-sortable');
+        var tbody = document.getElementById('promo-tbody');
+        var activeCol = null;
+        var activeDir = 'asc';
+
+        function getCellText(row, colIdx) {
+            var cells = row.querySelectorAll('td');
+            if (!cells[colIdx]) return '';
+            return (cells[colIdx].textContent || '').trim().toLowerCase();
+        }
+
+        sortHeaders.forEach(function (th) {
+            th.addEventListener('click', function () {
+                var col = parseInt(th.dataset.col, 10);
+                if (activeCol === col) {
+                    activeDir = activeDir === 'asc' ? 'desc' : 'asc';
+                } else {
+                    activeCol = col;
+                    activeDir = 'asc';
+                }
+                sortHeaders.forEach(function (h) {
+                    h.classList.remove('sort-asc', 'sort-desc');
+                    h.querySelector('.sort-icon').textContent = '↕';
+                });
+                th.classList.add('sort-' + activeDir);
+                th.querySelector('.sort-icon').textContent = activeDir === 'asc' ? '↑' : '↓';
+
+                var rows = Array.from(tbody.querySelectorAll('tr[data-nombre]'));
+                rows.sort(function (a, b) {
+                    var av = getCellText(a, col);
+                    var bv = getCellText(b, col);
+                    return activeDir === 'asc'
+                        ? av.localeCompare(bv, 'es', { numeric: true })
+                        : bv.localeCompare(av, 'es', { numeric: true });
+                });
+                rows.forEach(function (r) { tbody.appendChild(r); });
+                applyFilters(); // re-paginar tras ordenar
+            });
+        });
+    })();
+
+    // ── Modal de confirmación (singleton, construido en JS) ────────
+    var _confirmResolve = null;
+    var _confirmEl = null;
+
+    function buildConfirmModal() {
+        if (_confirmEl) return;
+        var el = document.createElement('div');
+        el.className = 'confirm-overlay';
+        el.innerHTML =
+            '<div class="confirm-box" role="dialog" aria-modal="true">' +
+            '  <div class="confirm-icon">⚠️</div>' +
+            '  <div class="confirm-title">¿Inactivar promoción?</div>' +
+            '  <p class="confirm-body" id="confirm-body"></p>' +
+            '  <div class="confirm-actions">' +
+            '    <button class="confirm-cancel-btn" id="confirm-cancel">Cancelar</button>' +
+            '    <button class="confirm-ok-btn" id="confirm-ok">Sí, inactivar</button>' +
+            '  </div>' +
+            '</div>';
+        document.body.appendChild(el);
+        _confirmEl = el;
+        document.getElementById('confirm-cancel').addEventListener('click', function () { closeConfirmModal(false); });
+        document.getElementById('confirm-ok').addEventListener('click', function () { closeConfirmModal(true); });
+        el.addEventListener('click', function (e) { if (e.target === el) closeConfirmModal(false); });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && _confirmEl && _confirmEl.classList.contains('open')) closeConfirmModal(false);
+        });
+    }
+
+    function openConfirmModal(nombre) {
+        buildConfirmModal();
+        document.getElementById('confirm-body').innerHTML =
+            'Estás por inactivar <strong>' + nombre + '</strong>. Podrás reactivarla después.';
+        _confirmEl.classList.add('open');
+        return new Promise(function (resolve) { _confirmResolve = resolve; });
+    }
+
+    function closeConfirmModal(result) {
+        if (_confirmEl) _confirmEl.classList.remove('open');
+        if (_confirmResolve) { _confirmResolve(result); _confirmResolve = null; }
+    }
+
+    // ── Toggle AJAX ────────────────────────────────────────────────
+    (function () {
+        function getCsrf() {
+            var m = document.cookie.match(/csrftoken=([^;]+)/);
+            return m ? m[1] : '';
+        }
+
+        function doToggle(toggle, id) {
+            toggle.disabled = true;
+            fetch('/promociones/' + id + '/toggle-estado/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCsrf() },
+            })
+            .then(function (r) {
+                if (!r.ok) throw new Error('Error ' + r.status);
+                return r.json();
+            })
+            .then(function (data) {
+                var badge = document.getElementById('badge-' + id);
+                var row   = toggle.closest('tr');
+                if (data.estado === 'activa') {
+                    badge.className   = 'status-badge badge-active';
+                    badge.textContent = 'Activa';
+                    toggle.checked    = true;
+                    toggle.closest('label').title = 'Inactivar';
+                    if (row) row.dataset.estado = 'activa';
+                } else {
+                    badge.className   = 'status-badge badge-inactive';
+                    badge.textContent = 'Inactiva';
+                    toggle.checked    = false;
+                    toggle.closest('label').title = 'Activar';
+                    if (row) row.dataset.estado = 'inactiva';
+                }
+            })
+            .catch(function () {
+                toggle.checked = !toggle.checked;
+                alert('No se pudo cambiar el estado. Intenta de nuevo.');
+            })
+            .finally(function () { toggle.disabled = false; });
+        }
+
+        document.querySelectorAll('.toggle-input').forEach(function (chk) {
+            chk.addEventListener('change', function () {
+                var id       = this.dataset.id;
+                var nombre   = this.dataset.nombre;
+                var activando = this.checked;
+                var toggle   = this;
+
+                if (!activando) {
+                    // Revertir visualmente mientras espera confirmación
+                    toggle.checked = true;
+                    openConfirmModal(nombre).then(function (ok) {
+                        if (!ok) return; // cancelado — toggle ya está revertido
+                        toggle.checked = false;
+                        doToggle(toggle, id);
+                    });
+                } else {
+                    doToggle(toggle, id);
+                }
+            });
+        });
+    })();
+
+    // ── Modal Inactivar ────────────────────────────────────────────
+    let _modalForm = null;
+
+    function abrirModalInactivar(btn) {
+        _modalForm = btn.closest('form');
+        document.getElementById('modal-nombre').textContent = btn.dataset.nombre;
+        document.getElementById('modal-inactivar').classList.add('open');
+    }
+
+    function cerrarModalDirecto() {
+        document.getElementById('modal-inactivar').classList.remove('open');
+        _modalForm = null;
+    }
+
+    function cerrarModal(e) {
+        if (e.target === document.getElementById('modal-inactivar')) cerrarModalDirecto();
+    }
+
+    document.getElementById('modal-confirmar').addEventListener('click', function () {
+        if (_modalForm) _modalForm.submit();
+        cerrarModalDirecto();
+    });
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { cerrarModalDirecto(); cerrarModalEliminar(); }
+    });
+
+    // ── Modal Eliminar Promocion ───────────────────────────────────
+    function abrirModalEliminar(id, nombre) {
+        document.getElementById('mel-nombre').textContent = nombre;
+        document.getElementById('mel-promo-id').value = id;
+        document.getElementById('modal-eliminar').classList.add('open');
+    }
+    function cerrarModalEliminar() {
+        document.getElementById('modal-eliminar').classList.remove('open');
+    }
+    function confirmarEliminar() {
+        document.getElementById('form-eliminar-promo').submit();
+    }
+
+    // ── Form rapido nueva restriccion: etiquetas dinamicas ─────────
+    var RR_CONFIG = {
+        ITEMS:   { label: 'Minimo de piezas',  hint: 'Productos que debe llevar en el pedido actual.' },
+        VISITAS: { label: 'Minimo de visitas', hint: 'Compras anteriores registradas del cliente.' },
+        MONTO:   { label: 'Monto minimo ($)',   hint: 'Total gastado en visitas pagadas anteriores.' },
+    };
+    function rrTipoChange() {
+        var tipo = document.getElementById('rr-tipo').value;
+        var cfg  = RR_CONFIG[tipo] || RR_CONFIG['ITEMS'];
+        document.getElementById('rr-lbl-min').textContent = cfg.label;
+        document.getElementById('rr-hint').textContent    = cfg.hint;
+    }
+
+    // ── Restricciones overview table: filtro + paginacion ─────────
+    (function () {
+        var RO_PER_PAGE = 7;
+        var allRoRows = Array.from(document.querySelectorAll('#ro-tbody .ro-row'));
+        if (!allRoRows.length) return;
+
+        var roPagEl   = document.getElementById('ro-pagination');
+        var roPagInfo = document.getElementById('ro-pag-info');
+        var roPrev    = document.getElementById('ro-pag-prev');
+        var roNext    = document.getElementById('ro-pag-next');
+        var roJump    = document.getElementById('ro-pag-jump');
+        var roOf      = document.getElementById('ro-pag-of');
+
+        var roFiltered = allRoRows.slice();
+        var roPage = 1;
+
+        function roRender() {
+            var pages = Math.max(1, Math.ceil(roFiltered.length / RO_PER_PAGE));
+            var start = (roPage - 1) * RO_PER_PAGE;
+            var end   = start + RO_PER_PAGE;
+            allRoRows.forEach(function(r) { r.style.display = 'none'; });
+            roFiltered.forEach(function(r, i) { r.style.display = (i >= start && i < end) ? '' : 'none'; });
+            roPagInfo.textContent = 'Página ' + roPage + ' de ' + pages;
+            roJump.value = roPage;
+            roJump.max   = pages;
+            roOf.textContent = 'de ' + pages;
+            roPrev.disabled = roPage <= 1;
+            roNext.disabled = roPage >= pages;
+            roPagEl.style.display = roFiltered.length > RO_PER_PAGE ? 'flex' : 'none';
+        }
+        function roFilter() {
+            var q    = (document.getElementById('ro-search').value || '').toLowerCase();
+            var tipo = document.getElementById('ro-tipo-f').value;
+            roFiltered = allRoRows.filter(function(r) {
+                return (!q    || r.dataset.nombre.includes(q)) &&
+                       (!tipo || r.dataset.tipo === tipo);
+            });
+            roPage = 1;
+            roRender();
+        }
+        function roGoTo(val) {
+            var pages = Math.max(1, Math.ceil(roFiltered.length / RO_PER_PAGE));
+            roPage = Math.min(Math.max(parseInt(val, 10) || 1, 1), pages);
+            roRender();
+        }
+        roPrev.addEventListener('click', function() { if (roPage > 1) { roPage--; roRender(); } });
+        roNext.addEventListener('click', function() {
+            var pages = Math.max(1, Math.ceil(roFiltered.length / RO_PER_PAGE));
+            if (roPage < pages) { roPage++; roRender(); }
+        });
+        roJump.addEventListener('change', function() { roGoTo(this.value); });
+        roJump.addEventListener('keydown', function(e) { if (e.key === 'Enter') { roGoTo(this.value); this.blur(); } });
+
+        // Exponer para los inputs inline
+        window.roFilter = roFilter;
+        roRender();
+    })();
 </script>
 </body>
 </html>
