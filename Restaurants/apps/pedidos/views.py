@@ -28,18 +28,34 @@ def _generar_codigo_unico():
 
 
 def _promociones_elegibles(cliente, total_productos):
-    promociones = Promocion.objects.filter(activo=True).select_related("id_restriccion")
+    from django.db.models import Sum as _Sum
+    promociones = Promocion.objects.filter(activo=True).select_related("id_restriccion", "categoria")
     compras_previas = Ticket.objects.filter(nombre_usuario=cliente).count()
+    monto_gastado_qs = Ticket.objects.filter(nombre_usuario=cliente, pagado=True).aggregate(total=_Sum("precio_final"))
+    monto_gastado = monto_gastado_qs["total"] or Decimal("0")
     elegibles = []
 
     for promocion in promociones:
-        restriccion = promocion.id_restriccion
-        minimo = getattr(restriccion, "consumo_minimo_para_aplicar", 0) or 0
-        nombre_restriccion = ((restriccion.nombre if restriccion else "") or "").lower()
+        tipo_promo = getattr(promocion, 'tipo', 'TOTAL')
 
-        if "frecuente" in nombre_restriccion:
+        # CATEGORIA y COMBO siempre aparecen — el frontend filtra según el carrito
+        if tipo_promo in ('CATEGORIA', 'COMBO'):
+            elegibles.append(promocion)
+            continue
+
+        restriccion = promocion.id_restriccion
+        if not restriccion:
+            elegibles.append(promocion)
+            continue
+
+        minimo = getattr(restriccion, "consumo_minimo_para_aplicar", 0) or 0
+        tipo_rest = getattr(restriccion, "tipo_restriccion", "ITEMS")
+
+        if tipo_rest == 'VISITAS':
             cumple = compras_previas >= minimo
-        else:
+        elif tipo_rest == 'MONTO':
+            cumple = monto_gastado >= Decimal(minimo)
+        else:  # ITEMS
             cumple = total_productos >= minimo
 
         if cumple:
@@ -68,13 +84,22 @@ def _promociones_json(promociones):
     data = []
     for promocion in promociones:
         restriccion = promocion.id_restriccion
-        nombre_restriccion = (getattr(restriccion, "nombre", "") or "").lower()
+        tipo = getattr(promocion, 'tipo', 'TOTAL')
+        combo_items = []
+        if tipo == 'COMBO':
+            combo_items = [
+                {"categoria_id": ci.categoria_id, "cantidad_minima": ci.cantidad_minima}
+                for ci in promocion.combo_items.all()
+            ]
         data.append({
-            "id": promocion.id_promocion,
-            "nombre": promocion.nombre,
-            "porcentaje": float(promocion.porcentaje_a_reducir or 0),
-            "minimo": int(getattr(restriccion, "consumo_minimo_para_aplicar", 0) or 0),
-            "frecuente": "frecuente" in nombre_restriccion,
+            "id":               promocion.id_promocion,
+            "nombre":           promocion.nombre,
+            "porcentaje":       float(promocion.porcentaje_a_reducir or 0),
+            "tipo":             tipo,
+            "categoria_id":     getattr(promocion, 'categoria_id', None),
+            "combo_items":      combo_items,
+            "minimo":           int(getattr(restriccion, "consumo_minimo_para_aplicar", 0) or 0),
+            "tipo_restriccion": getattr(restriccion, "tipo_restriccion", "ITEMS") if restriccion else None,
         })
     return json.dumps(data)
 
@@ -163,10 +188,17 @@ def atender_mesa(request):
     clientes = Cliente.objects.filter(
         id_tipo_de_usuario__tipo_de_usuario__iexact="Cliente"
     ).order_by("nombre")
-    promociones = Promocion.objects.filter(activo=True).select_related("id_restriccion").order_by("nombre")
+    promociones = (Promocion.objects.filter(activo=True)
+                   .select_related("id_restriccion", "categoria")
+                   .prefetch_related("combo_items")
+                   .order_by("nombre"))
     compras_clientes = {
         row["nombre_usuario"]: row["total"]
         for row in Ticket.objects.values("nombre_usuario").annotate(total=Count("id_ticket"))
+    }
+    monto_clientes = {
+        row["nombre_usuario"]: float(row["total"] or 0)
+        for row in Ticket.objects.filter(pagado=True).values("nombre_usuario").annotate(total=Sum("precio_final"))
     }
 
     catalogo_data = [
@@ -189,6 +221,7 @@ def atender_mesa(request):
         "promociones": promociones,
         "promociones_json": _promociones_json(promociones),
         "compras_clientes_json": json.dumps(compras_clientes),
+        "monto_clientes_json": json.dumps(monto_clientes),
         "catalogo_json": json.dumps(catalogo_data),
         "categorias_json": json.dumps(categorias_data),
     })
@@ -233,9 +266,37 @@ def guardar_ticket(request):
         return redirect("atender_mesa")
 
     promocion = _get_promocion_seleccionada(promocion_id)
-    precio_final = sum(alimento.costo * cantidad for alimento, cantidad in lineas)
+    subtotal = sum(alimento.costo * cantidad for alimento, cantidad in lineas)
+    precio_final = subtotal
     if promocion and promocion.porcentaje_a_reducir:
-        precio_final -= precio_final * (promocion.porcentaje_a_reducir / Decimal("100"))
+        from collections import defaultdict
+        pct  = promocion.porcentaje_a_reducir / Decimal("100")
+        tipo = getattr(promocion, 'tipo', 'TOTAL')
+
+        if tipo == 'CATEGORIA' and getattr(promocion, 'categoria_id', None):
+            base = sum(
+                alimento.costo * cantidad
+                for alimento, cantidad in lineas
+                if alimento.categoria_id == promocion.categoria_id
+            )
+        elif tipo == 'COMBO':
+            combo_items = list(promocion.combo_items.all())
+            cat_counts = defaultdict(int)
+            cat_costs  = defaultdict(Decimal)
+            for alimento, cantidad in lineas:
+                cat_counts[alimento.categoria_id] += cantidad
+                cat_costs[alimento.categoria_id]  += alimento.costo * cantidad
+            all_met = all(
+                cat_counts[ci.categoria_id] >= ci.cantidad_minima
+                for ci in combo_items
+            )
+            base = (
+                sum(cat_costs[ci.categoria_id] for ci in combo_items)
+                if (combo_items and all_met) else Decimal("0")
+            )
+        else:
+            base = subtotal
+        precio_final = subtotal - base * pct
     precio_final = precio_final.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     ticket = Ticket.objects.create(

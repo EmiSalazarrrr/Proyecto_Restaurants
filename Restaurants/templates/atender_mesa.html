@@ -489,6 +489,7 @@
 <script id="categorias-data" type="application/json">{{ categorias_json|safe }}</script>
 <script id="promociones-data" type="application/json">{{ promociones_json|safe }}</script>
 <script id="compras-clientes-data" type="application/json">{{ compras_clientes_json|safe }}</script>
+<script id="monto-clientes-data" type="application/json">{{ monto_clientes_json|safe }}</script>
 
 <script>
     // ── Tema ──────────────────────────────────────────────────────
@@ -511,12 +512,15 @@
     const categorias    = JSON.parse(document.getElementById('categorias-data').textContent);
     const promociones   = JSON.parse(document.getElementById('promociones-data').textContent);
     const comprasClientes = JSON.parse(document.getElementById('compras-clientes-data').textContent);
+    const montoClientes   = JSON.parse(document.getElementById('monto-clientes-data').textContent);
 
     let filaId = 0;
     let pickerTargetFila = null; // null = nueva fila, number = cambiar producto en fila existente
     let activeCategoriaId = 0;
     let promocionRecomendadaId = '';
     let currentSubtotal = 0, currentDiscount = 0, currentTotal = 0;
+    let categorySums       = {};   // { categoria_id: subtotal_$_de_esa_categoria }
+    let categoryItemCounts = {};   // { categoria_id: piezas_en_carrito }
 
     // ── Picker: construcción de tabs ──────────────────────────────
     function buildPickerTabs() {
@@ -561,7 +565,7 @@
             return;
         }
         grid.innerHTML = filtered.map(p =>
-            `<button type="button" class="picker-item" onclick="seleccionarProducto(${p.id},'${escJs(p.nombre)}',${p.precio})">
+            `<button type="button" class="picker-item" onclick="seleccionarProducto(${p.id},'${escJs(p.nombre)}',${p.precio},${p.categoria_id||0})">
                 <span class="picker-item-name">${p.nombre}</span>
                 <span class="picker-item-price">$${Number(p.precio).toFixed(2)}</span>
             </button>`
@@ -572,17 +576,17 @@
         return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
 
-    function seleccionarProducto(id, nombre, precio) {
+    function seleccionarProducto(id, nombre, precio, categoriaId) {
         cerrarPicker();
         if (pickerTargetFila === null) {
-            agregarFilaConProducto(id, nombre, precio);
+            agregarFilaConProducto(id, nombre, precio, categoriaId || 0);
         } else {
-            cambiarProductoEnFila(pickerTargetFila, id, nombre, precio);
+            cambiarProductoEnFila(pickerTargetFila, id, nombre, precio, categoriaId || 0);
         }
     }
 
     // ── Filas ─────────────────────────────────────────────────────
-    function agregarFilaConProducto(productoId, nombre, precio) {
+    function agregarFilaConProducto(productoId, nombre, precio, categoriaId) {
         const empty = document.getElementById('empty-hint');
         if (empty) empty.remove();
         filaId++;
@@ -593,7 +597,7 @@
             <div class="product-cell">
                 <span class="row-product-name">${nombre}</span>
                 <button type="button" class="change-btn" onclick="abrirPicker(${filaId})">cambiar</button>
-                <input type="hidden" name="producto_id[]" value="${productoId}" data-precio="${precio}">
+                <input type="hidden" name="producto_id[]" value="${productoId}" data-precio="${precio}" data-categoria="${categoriaId||0}">
             </div>
             <div>
                 <div class="qty-wrap">
@@ -611,13 +615,14 @@
         recalcular();
     }
 
-    function cambiarProductoEnFila(id, productoId, nombre, precio) {
+    function cambiarProductoEnFila(id, productoId, nombre, precio, categoriaId) {
         const fila = document.getElementById(`fila-${id}`);
         if (!fila) return;
         fila.querySelector('.row-product-name').textContent = nombre;
         const hidden = fila.querySelector('input[type="hidden"]');
         hidden.value = productoId;
-        hidden.dataset.precio = precio;
+        hidden.dataset.precio    = precio;
+        hidden.dataset.categoria = categoriaId || 0;
         fila.querySelector('input[disabled]').value = `$${Number(precio).toFixed(2)}`;
         recalcular();
     }
@@ -650,19 +655,27 @@
 
     function recalcular() {
         let subtotal = 0, totalPiezas = 0;
+        categorySums       = {};
+        categoryItemCounts = {};
         document.querySelectorAll('#filas-container .row').forEach(fila => {
             const hidden   = fila.querySelector('input[type="hidden"][name="producto_id[]"]');
             const cantidad = fila.querySelector('input[name="cantidad[]"]');
             const importe  = fila.querySelector('input[disabled]');
             if (!hidden) return;
-            const precio = Number(hidden.dataset.precio || 0);
-            const cant   = Number(cantidad?.value || 0);
+            const precio = Number(hidden.dataset.precio    || 0);
+            const cant   = Number(cantidad?.value          || 0);
+            const catId  = Number(hidden.dataset.categoria || 0);
             const imp    = precio * cant;
             subtotal    += imp;
             totalPiezas += cant;
+            if (catId) {
+                categorySums[catId]       = (categorySums[catId]       || 0) + imp;
+                categoryItemCounts[catId] = (categoryItemCounts[catId] || 0) + cant;
+            }
             if (importe) importe.value = `$${imp.toFixed(2)}`;
         });
         currentSubtotal = subtotal;
+        updatePromoOptions();
         updateTotals();
         document.getElementById('subtotal').textContent        = `$${subtotal.toFixed(2)}`;
         document.getElementById('total-productos').textContent = totalPiezas;
@@ -684,13 +697,32 @@
             badge.textContent = '—';
             badge.style.color = 'var(--text-muted)';
         }
+        updatePromoOptions();
         updateRecommendation(Number(document.getElementById('total-productos').textContent || 0));
     }
 
     function recomendarPromo(totalPiezas) {
         const cliente  = document.getElementById('cliente').value;
         const compras  = Number(comprasClientes[cliente] || 0);
-        const elegibles = promociones.filter(p => p.frecuente ? compras >= p.minimo : totalPiezas >= p.minimo);
+        const monto    = Number(montoClientes[cliente]   || 0);
+        const elegibles = promociones.filter(p => {
+            // 1. Restricción de cliente
+            const tr = p.tipo_restriccion;
+            if (tr === 'VISITAS' && compras < p.minimo) return false;
+            if (tr === 'MONTO'   && monto   < p.minimo) return false;
+            if (tr === 'ITEMS'   && totalPiezas < p.minimo) return false;
+            // 2. Categoría presente en carrito
+            if (p.tipo === 'CATEGORIA' && p.categoria_id) {
+                return (categorySums[p.categoria_id] || 0) > 0;
+            }
+            // 3. Combo: todos los componentes cumplidos
+            if (p.tipo === 'COMBO' && p.combo_items && p.combo_items.length) {
+                return p.combo_items.every(ci =>
+                    (categoryItemCounts[ci.categoria_id] || 0) >= ci.cantidad_minima
+                );
+            }
+            return true;
+        });
         if (!elegibles.length) return null;
         return elegibles.sort((a, b) => b.porcentaje - a.porcentaje)[0];
     }
@@ -737,11 +769,73 @@
         return promociones.find(p => String(p.id) === String(selectedId)) || null;
     }
 
+    // Oculta/deshabilita promos que no aplican al pedido actual
+    function updatePromoOptions() {
+        const cliente     = document.getElementById('cliente').value;
+        const compras     = Number(comprasClientes[cliente] || 0);
+        const monto       = Number(montoClientes[cliente]   || 0);
+        const totalPiezas = Number(document.getElementById('total-productos').textContent || 0);
+        const select      = document.getElementById('promocion_id');
+        const currentVal  = select.value;
+
+        Array.from(select.options).forEach(opt => {
+            if (!opt.value) return;  // opción "Sin promocion"
+            const p = promociones.find(pr => String(pr.id) === String(opt.value));
+            if (!p) return;
+
+            let elegible = true;
+            // Verificar restriccion
+            const tr = p.tipo_restriccion;
+            if      (tr === 'VISITAS') elegible = compras >= p.minimo;
+            else if (tr === 'MONTO')   elegible = monto   >= p.minimo;
+            else if (tr === 'ITEMS')   elegible = totalPiezas >= p.minimo;
+            // tr === null → sin restriccion, siempre elegible
+
+            // Para CATEGORIA: el carrito debe tener ítems de esa categoría
+            if (elegible && p.tipo === 'CATEGORIA' && p.categoria_id) {
+                elegible = (categorySums[p.categoria_id] || 0) > 0;
+            }
+            // Para COMBO: todos los componentes deben cumplirse
+            if (elegible && p.tipo === 'COMBO' && p.combo_items && p.combo_items.length) {
+                elegible = p.combo_items.every(ci =>
+                    (categoryItemCounts[ci.categoria_id] || 0) >= ci.cantidad_minima
+                );
+            }
+
+            opt.disabled = !elegible;
+            opt.style.color  = elegible ? '' : 'var(--text-muted)';
+        });
+
+        // Si la promo seleccionada ya no aplica, limpiar selección
+        if (currentVal) {
+            const selOpt = select.querySelector(`option[value="${currentVal}"]`);
+            if (selOpt && selOpt.disabled) {
+                select.value = '';
+                updatePromoSummary();
+            }
+        }
+    }
+
     function updateTotals() {
-        const promo   = getSelectedPromo();
-        const percent = promo ? Number(promo.porcentaje || 0) : 0;
-        currentDiscount = currentSubtotal * (percent / 100);
-        currentTotal    = Math.max(currentSubtotal - currentDiscount, 0);
+        const promo = getSelectedPromo();
+        if (!promo) {
+            currentDiscount = 0;
+        } else {
+            const pct = Number(promo.porcentaje || 0) / 100;
+            let base = currentSubtotal;
+            if (promo.tipo === 'CATEGORIA' && promo.categoria_id) {
+                base = categorySums[promo.categoria_id] || 0;
+            } else if (promo.tipo === 'COMBO' && promo.combo_items && promo.combo_items.length) {
+                const allMet = promo.combo_items.every(ci =>
+                    (categoryItemCounts[ci.categoria_id] || 0) >= ci.cantidad_minima
+                );
+                base = allMet
+                    ? promo.combo_items.reduce((s, ci) => s + (categorySums[ci.categoria_id] || 0), 0)
+                    : 0;
+            }
+            currentDiscount = base * pct;
+        }
+        currentTotal = Math.max(currentSubtotal - currentDiscount, 0);
         document.getElementById('discount-summary').textContent = `$${currentDiscount.toFixed(2)}`;
         document.getElementById('total-summary').textContent    = `$${currentTotal.toFixed(2)}`;
     }

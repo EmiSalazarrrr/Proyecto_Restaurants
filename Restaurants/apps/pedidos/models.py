@@ -37,14 +37,46 @@ class Ticket(models.Model):
     pagado = models.BooleanField(default=False)
 
     def calcular_total(self):
-        total = 0
-        for detalle in self.detalleticket_set.all():
-            if detalle.id_productopedido and detalle.id_productopedido.id_alimentosbebidas:
-                total += detalle.id_productopedido.id_alimentosbebidas.costo
-        if self.id_promocion and self.id_promocion.porcentaje_a_reducir:
-            descuento = total * (self.id_promocion.porcentaje_a_reducir / 100)
-            total -= descuento
-        return total
+        from decimal import Decimal
+        from collections import defaultdict
+        alimentos = [
+            detalle.id_productopedido.id_alimentosbebidas
+            for detalle in self.detalleticket_set.all()
+            if detalle.id_productopedido and detalle.id_productopedido.id_alimentosbebidas
+        ]
+        subtotal = sum(a.costo for a in alimentos)
+
+        promo = self.id_promocion
+        if not promo or not promo.porcentaje_a_reducir:
+            return subtotal
+
+        pct  = promo.porcentaje_a_reducir / Decimal('100')
+        tipo = getattr(promo, 'tipo', 'TOTAL')
+
+        if tipo == 'CATEGORIA' and getattr(promo, 'categoria_id', None):
+            base = sum(a.costo for a in alimentos if a.categoria_id == promo.categoria_id)
+
+        elif tipo == 'COMBO':
+            combo_items = list(promo.combo_items.all())
+            if not combo_items:
+                return subtotal
+            cat_counts = defaultdict(int)
+            cat_costs  = defaultdict(Decimal)
+            for a in alimentos:
+                cat_counts[a.categoria_id] += 1
+                cat_costs[a.categoria_id]  += a.costo
+            all_met = all(
+                cat_counts[item.categoria_id] >= item.cantidad_minima
+                for item in combo_items
+            )
+            if not all_met:
+                return subtotal
+            base = sum(cat_costs[item.categoria_id] for item in combo_items)
+
+        else:
+            base = subtotal  # TOTAL
+
+        return subtotal - base * pct
 
     def __str__(self):
         usuario = self.nombre_usuario.nombre_usuario if self.nombre_usuario else 'sin usuario'
