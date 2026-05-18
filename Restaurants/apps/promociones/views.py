@@ -17,6 +17,13 @@ def _parse_decimal(value):
         return None
 
 
+def _parse_int_min(value):
+    try:
+        return max(int(value or 0), 0)
+    except (TypeError, ValueError):
+        return None
+
+
 @login_required(role="admin")
 def promociones_view(request):
     if request.method == "POST":
@@ -24,22 +31,20 @@ def promociones_view(request):
 
         if action == "create_restriccion":
             nombre = (request.POST.get("restriccion_nombre") or "").strip()
-            minimo = request.POST.get("consumo_minimo") or "0"
-            try:
-                minimo_int = max(int(minimo), 0)
-            except (TypeError, ValueError):
-                minimo_int = None
+            minimo_int = _parse_int_min(request.POST.get("consumo_minimo"))
+            visitas_minimas = _parse_int_min(request.POST.get("visitas_minimas"))
 
             if not nombre:
                 messages.error(request, "El nombre de la restriccion es obligatorio.")
-            elif minimo_int is None:
-                messages.error(request, "El consumo minimo debe ser un numero entero.")
+            elif minimo_int is None or visitas_minimas is None:
+                messages.error(request, "Los minimos deben ser numeros enteros.")
             elif Restricciones.objects.filter(nombre__iexact=nombre).exists():
                 messages.error(request, "Ya existe una restriccion con ese nombre.")
             else:
                 Restricciones.objects.create(
                     nombre=nombre,
                     consumo_minimo_para_aplicar=minimo_int,
+                    visitas_minimas_para_aplicar=visitas_minimas,
                 )
                 messages.success(request, "Restriccion creada correctamente.")
             return redirect("promociones")
@@ -97,7 +102,7 @@ def promociones_view(request):
             return redirect("promociones")
 
     promociones = Promocion.objects.select_related("id_restriccion").order_by("-activo", "nombre")
-    restricciones = Restricciones.objects.order_by("consumo_minimo_para_aplicar", "nombre")
+    restricciones = Restricciones.objects.order_by("visitas_minimas_para_aplicar", "consumo_minimo_para_aplicar", "nombre")
     editar_id = request.GET.get("editar")
     promocion_editar = None
     if editar_id:
@@ -126,22 +131,20 @@ def restricciones_view(request):
 
         if action == "create_restriccion":
             nombre = (request.POST.get("restriccion_nombre") or "").strip()
-            minimo = request.POST.get("consumo_minimo") or "0"
-            try:
-                minimo_int = max(int(minimo), 0)
-            except (TypeError, ValueError):
-                minimo_int = None
+            minimo_int = _parse_int_min(request.POST.get("consumo_minimo"))
+            visitas_minimas = _parse_int_min(request.POST.get("visitas_minimas"))
 
             if not nombre:
                 messages.error(request, "El nombre de la restriccion es obligatorio.")
-            elif minimo_int is None:
-                messages.error(request, "El consumo minimo debe ser un numero entero.")
+            elif minimo_int is None or visitas_minimas is None:
+                messages.error(request, "Los minimos deben ser numeros enteros.")
             elif Restricciones.objects.filter(nombre__iexact=nombre).exists():
                 messages.error(request, "Ya existe una restriccion con ese nombre.")
             else:
                 Restricciones.objects.create(
                     nombre=nombre,
                     consumo_minimo_para_aplicar=minimo_int,
+                    visitas_minimas_para_aplicar=visitas_minimas,
                 )
                 messages.success(request, "Restriccion creada correctamente.")
             return redirect("restricciones")
@@ -159,6 +162,6 @@ def restricciones_view(request):
     restricciones = (
         Restricciones.objects
         .annotate(total_promociones=Count("promocion"))
-        .order_by("consumo_minimo_para_aplicar", "nombre")
+        .order_by("visitas_minimas_para_aplicar", "consumo_minimo_para_aplicar", "nombre")
     )
     return render(request, "restricciones.html", {"restricciones": restricciones})

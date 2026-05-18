@@ -228,6 +228,7 @@
                         <th>#</th>
                         <th>Nombre</th>
                         <th>Consumo mínimo</th>
+                        <th>Visitas mínimas</th>
                         <th>Uso en promociones</th>
                         <th>Acciones</th>
                     </tr>
@@ -238,6 +239,7 @@
                         <td class="mono" style="color:var(--text-muted);font-size:12px;">{{ r.id_restriccion }}</td>
                         <td style="font-weight:500;">{{ r.nombre }}</td>
                         <td class="mono">{{ r.consumo_minimo_para_aplicar }} piezas</td>
+                        <td class="mono">{{ r.visitas_minimas_para_aplicar }} tickets</td>
                         <td>
                             {% if r.total_promociones > 0 %}
                                 <span class="usage-badge badge-in-use">{{ r.total_promociones }} promocion{{ r.total_promociones|pluralize:"es" }}</span>
@@ -260,7 +262,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="empty-td">No hay restricciones registradas.</td>
+                        <td colspan="6" class="empty-td">No hay restricciones registradas.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -294,8 +296,14 @@
                     <div class="field">
                         <label for="consumo_minimo">Consumo mínimo (piezas)</label>
                         <input type="number" id="consumo_minimo" name="consumo_minimo"
+                               min="0" value="0" placeholder="0 si no aplica">
+                        <p class="field-hint">Déjalo en 0 cuando la promoción solo dependa de visitas.</p>
+                    </div>
+                    <div class="field">
+                        <label for="visitas_minimas">Visitas mínimas (tickets)</label>
+                        <input type="number" id="visitas_minimas" name="visitas_minimas"
                                min="0" value="0" required>
-                        <p class="field-hint">Número de productos que debe haber pedido el cliente para calificar.</p>
+                        <p class="field-hint">Número de tickets previos que debe tener el cliente para calificar.</p>
                     </div>
                     <button class="btn-submit" type="submit">Agregar restriccion</button>
                 </form>
@@ -303,8 +311,8 @@
 
             <div class="info-card anim d4">
                 <strong>¿Qué es una restricción?</strong><br>
-                Define cuántos productos debe haber consumido un cliente en total para que se le aplique automáticamente una promoción.<br><br>
-                Por ejemplo, con consumo mínimo de <strong>5</strong>, el descuento solo se activa cuando el cliente lleva al menos 5 piezas en el pedido.<br><br>
+                Define cuántos productos o visitas debe cumplir un cliente para que se le recomiende una promoción.<br><br>
+                Por ejemplo, con visitas mínimas de <strong>5</strong>, el descuento solo se recomienda cuando el cliente ya tiene al menos 5 tickets en su cuenta.<br><br>
                 No puedes eliminar una restricción que esté asignada a una o más promociones activas.
             </div>
         </div>

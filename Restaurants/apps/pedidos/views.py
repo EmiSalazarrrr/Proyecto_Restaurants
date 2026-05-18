@@ -32,15 +32,13 @@ def _promociones_elegibles(cliente, total_productos):
 
     for promocion in promociones:
         restriccion = promocion.id_restriccion
-        minimo = getattr(restriccion, "consumo_minimo_para_aplicar", 0) or 0
-        nombre_restriccion = ((restriccion.nombre if restriccion else "") or "").lower()
+        consumo_minimo = getattr(restriccion, "consumo_minimo_para_aplicar", 0) or 0
+        visitas_minimas = getattr(restriccion, "visitas_minimas_para_aplicar", 0) or 0
 
-        if "frecuente" in nombre_restriccion:
-            cumple = compras_previas >= minimo
-        else:
-            cumple = total_productos >= minimo
+        cumple_consumo = total_productos >= consumo_minimo
+        cumple_visitas = compras_previas >= visitas_minimas
 
-        if cumple:
+        if cumple_consumo and cumple_visitas:
             elegibles.append(promocion)
 
     return elegibles
@@ -62,17 +60,28 @@ def _get_promocion_seleccionada(promocion_id):
         return None
 
 
+def _promocion_cumple_restriccion(promocion, cliente, total_productos):
+    if not promocion:
+        return True
+
+    restriccion = promocion.id_restriccion
+    consumo_minimo = getattr(restriccion, "consumo_minimo_para_aplicar", 0) or 0
+    visitas_minimas = getattr(restriccion, "visitas_minimas_para_aplicar", 0) or 0
+    compras_previas = Ticket.objects.filter(nombre_usuario=cliente).count()
+
+    return total_productos >= consumo_minimo and compras_previas >= visitas_minimas
+
+
 def _promociones_json(promociones):
     data = []
     for promocion in promociones:
         restriccion = promocion.id_restriccion
-        nombre_restriccion = (getattr(restriccion, "nombre", "") or "").lower()
         data.append({
             "id": promocion.id_promocion,
             "nombre": promocion.nombre,
             "porcentaje": float(promocion.porcentaje_a_reducir or 0),
-            "minimo": int(getattr(restriccion, "consumo_minimo_para_aplicar", 0) or 0),
-            "frecuente": "frecuente" in nombre_restriccion,
+            "consumo_minimo": int(getattr(restriccion, "consumo_minimo_para_aplicar", 0) or 0),
+            "visitas_minimas": int(getattr(restriccion, "visitas_minimas_para_aplicar", 0) or 0),
         })
     return json.dumps(data)
 
@@ -212,6 +221,10 @@ def guardar_ticket(request):
         return redirect("atender_mesa")
 
     promocion = _get_promocion_seleccionada(promocion_id)
+    if promocion and not _promocion_cumple_restriccion(promocion, cliente, total_productos):
+        messages.error(request, "El cliente no cumple las restricciones de la promocion seleccionada.")
+        return redirect("atender_mesa")
+
     precio_final = sum(alimento.costo * cantidad for alimento, cantidad in lineas)
     if promocion and promocion.porcentaje_a_reducir:
         precio_final -= precio_final * (promocion.porcentaje_a_reducir / Decimal("100"))

@@ -312,7 +312,7 @@
                         <option value="" {% if promocion_editar and not promocion_editar.id_restriccion %}selected{% endif %}>Sin restriccion</option>
                         {% for restriccion in restricciones %}
                             <option value="{{ restriccion.id_restriccion }}" {% if promocion_editar and promocion_editar.id_restriccion_id == restriccion.id_restriccion %}selected{% endif %}>
-                                {{ restriccion.nombre }} — minimo {{ restriccion.consumo_minimo_para_aplicar }}
+                                {{ restriccion.nombre }} — consumo {{ restriccion.consumo_minimo_para_aplicar }} / visitas {{ restriccion.visitas_minimas_para_aplicar }}
                             </option>
                         {% endfor %}
                     </select>
@@ -338,7 +338,11 @@
                 </div>
                 <div>
                     <label class="form-label" for="consumo_minimo">Consumo minimo para aplicar</label>
-                    <input class="form-input" id="consumo_minimo" name="consumo_minimo" type="number" min="0" step="1" required>
+                    <input class="form-input" id="consumo_minimo" name="consumo_minimo" type="number" min="0" step="1" value="0" placeholder="0 si no aplica">
+                </div>
+                <div>
+                    <label class="form-label" for="visitas_minimas">Visitas minimas para aplicar</label>
+                    <input class="form-input" id="visitas_minimas" name="visitas_minimas" type="number" min="0" step="1" value="0" required>
                 </div>
                 <button class="btn-primary" type="submit">Crear restriccion</button>
             </form>
@@ -350,7 +354,7 @@
                     {% for r in restricciones %}
                     <div style="background: rgba(13,30,59,0.04); border: 1px solid rgba(13,30,59,0.10); border-radius: 8px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
                         <span style="font-size: 13px;">{{ r.nombre }}</span>
-                        <span class="mono" style="font-size: 12px; color: var(--accent);">min. {{ r.consumo_minimo_para_aplicar }}</span>
+                        <span class="mono" style="font-size: 12px; color: var(--accent);">consumo {{ r.consumo_minimo_para_aplicar }} / visitas {{ r.visitas_minimas_para_aplicar }}</span>
                     </div>
                     {% endfor %}
                 </div>
@@ -424,7 +428,7 @@
                             <td class="text-muted">
                                 {% if promocion.id_restriccion %}
                                     {{ promocion.id_restriccion.nombre }}
-                                    <span class="mono" style="color: var(--text-muted); font-size: 11px;">(min. {{ promocion.id_restriccion.consumo_minimo_para_aplicar }})</span>
+                                    <span class="mono" style="color: var(--text-muted); font-size: 11px;">(consumo {{ promocion.id_restriccion.consumo_minimo_para_aplicar }}, visitas {{ promocion.id_restriccion.visitas_minimas_para_aplicar }})</span>
                                 {% else %}
                                     <span style="color: var(--text-muted);">—</span>
                                 {% endif %}

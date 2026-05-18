@@ -4,7 +4,7 @@ from .models import Restricciones, Promocion
 # Register your models here.
 @admin.register(Restricciones)
 class RestriccionesAdmin(admin.ModelAdmin):
-    list_display =('id_restriccion','nombre','consumo_minimo_para_aplicar')
+    list_display =('id_restriccion','nombre','consumo_minimo_para_aplicar','visitas_minimas_para_aplicar')
     search_fields = ('nombre',)
     ordering = ('nombre',)
     list_per_page = 20

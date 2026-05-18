@@ -5,6 +5,7 @@ class Restricciones(models.Model):
     id_restriccion = models.AutoField(primary_key=True)
     nombre = models.CharField(unique=True, max_length=25)
     consumo_minimo_para_aplicar = models.IntegerField()
+    visitas_minimas_para_aplicar = models.IntegerField(default=0)
 
     class Meta:
         db_table = 'restricciones'

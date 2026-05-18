@@ -593,7 +593,10 @@
     function recomendarPromo(totalPiezas) {
         const cliente = document.getElementById('cliente').value;
         const compras = Number(comprasClientes[cliente] || 0);
-        const elegibles = promociones.filter(p => p.frecuente ? compras >= p.minimo : totalPiezas >= p.minimo);
+        const elegibles = promociones.filter(p =>
+            totalPiezas >= Number(p.consumo_minimo || 0) &&
+            compras >= Number(p.visitas_minimas || 0)
+        );
         if (!elegibles.length) return null;
         return elegibles.sort((a, b) => b.porcentaje - a.porcentaje)[0];
     }
@@ -611,7 +614,11 @@
             return;
         }
         promocionRecomendadaId = String(promo.id);
-        box.textContent = `Recomendacion: ${promo.nombre} (${promo.porcentaje}% de descuento).`;
+        const reglas = [];
+        if (Number(promo.consumo_minimo || 0) > 0) reglas.push(`${promo.consumo_minimo} piezas`);
+        if (Number(promo.visitas_minimas || 0) > 0) reglas.push(`${promo.visitas_minimas} tickets`);
+        const detalle = reglas.length ? ` Requiere: ${reglas.join(" y ")}.` : "";
+        box.textContent = `Recomendacion: ${promo.nombre} (${promo.porcentaje}% de descuento).${detalle}`;
         btn.hidden = false;
     }
 
