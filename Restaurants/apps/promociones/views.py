@@ -51,7 +51,7 @@ def promociones_view(request):
             if not nombre:
                 messages.error(request, "El nombre de la restriccion es obligatorio.")
             elif minimo_int is None:
-                messages.error(request, "El consumo minimo debe ser un numero entero.")
+                messages.error(request, "El minimo debe ser un numero entero.")
             elif Restricciones.objects.filter(nombre__iexact=nombre).exists():
                 messages.error(request, "Ya existe una restriccion con ese nombre.")
             else:
@@ -268,7 +268,7 @@ def restricciones_view(request):
             if not nombre:
                 messages.error(request, "El nombre de la restriccion es obligatorio.")
             elif minimo_int is None:
-                messages.error(request, "El consumo minimo debe ser un numero entero.")
+                messages.error(request, "El minimo debe ser un numero entero.")
             elif Restricciones.objects.filter(nombre__iexact=nombre).exists():
                 messages.error(request, "Ya existe una restriccion con ese nombre.")
             else:
@@ -295,7 +295,7 @@ def restricciones_view(request):
             if not nombre:
                 messages.error(request, "El nombre de la restriccion es obligatorio.")
             elif minimo_int is None:
-                messages.error(request, "El consumo minimo debe ser un numero entero.")
+                messages.error(request, "El minimo debe ser un numero entero.")
             elif Restricciones.objects.exclude(pk=restriccion.pk).filter(nombre__iexact=nombre).exists():
                 messages.error(request, "Ya existe otra restriccion con ese nombre.")
             else:

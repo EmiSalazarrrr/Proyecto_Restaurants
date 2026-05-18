@@ -80,6 +80,30 @@ def _get_promocion_seleccionada(promocion_id):
         return None
 
 
+def _cliente_cumple_restriccion(promocion, cliente, total_productos):
+    if not promocion or not promocion.id_restriccion:
+        return True
+
+    restriccion = promocion.id_restriccion
+    minimo = getattr(restriccion, "consumo_minimo_para_aplicar", 0) or 0
+    tipo_rest = getattr(restriccion, "tipo_restriccion", "ITEMS")
+
+    if tipo_rest == "VISITAS":
+        compras_previas = Ticket.objects.filter(nombre_usuario=cliente).count()
+        return compras_previas >= minimo
+
+    if tipo_rest == "MONTO":
+        monto_gastado = (
+            Ticket.objects
+            .filter(nombre_usuario=cliente, pagado=True)
+            .aggregate(total=Sum("precio_final"))["total"]
+            or Decimal("0")
+        )
+        return monto_gastado >= Decimal(minimo)
+
+    return total_productos >= minimo
+
+
 def _promociones_json(promociones):
     data = []
     for promocion in promociones:
@@ -266,6 +290,10 @@ def guardar_ticket(request):
         return redirect("atender_mesa")
 
     promocion = _get_promocion_seleccionada(promocion_id)
+    if promocion and not _cliente_cumple_restriccion(promocion, cliente, total_productos):
+        messages.error(request, "El cliente no cumple la restriccion de la promocion seleccionada.")
+        return redirect("atender_mesa")
+
     subtotal = sum(alimento.costo * cantidad for alimento, cantidad in lineas)
     precio_final = subtotal
     if promocion and promocion.porcentaje_a_reducir:
