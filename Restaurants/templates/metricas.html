@@ -72,6 +72,8 @@
         html[data-theme="dark"] .client-name, html[data-theme="dark"] .top-name { color: var(--text-primary) !important; }
         html[data-theme="dark"] .client-rank { color: var(--text-primary) !important; }
         html[data-theme="dark"] .client-tickets-label, html[data-theme="dark"] .client-user { color: var(--text-muted) !important; }
+        html[data-theme="dark"] .chart-shell { background: rgba(255,255,255,0.025); border-color: rgba(255,255,255,0.06); }
+        html[data-theme="dark"] .chart-empty-state { background: rgba(26,32,53,0.84); color: var(--text-muted); }
 
         /* ── Main ── */
         .main { margin-left: 220px; flex: 1; padding: 36px 40px; }
@@ -184,6 +186,63 @@
             font-size: 9px; color: var(--text-muted);
             text-align: center; white-space: nowrap;
             overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+        }
+        .chart-shell {
+            position: relative;
+            height: 300px;
+            border: 1px solid rgba(13,30,59,0.08);
+            border-radius: 12px;
+            background: rgba(13,30,59,0.025);
+            padding: 14px 16px 8px;
+            overflow: hidden;
+        }
+        .chart-shell canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+        .chart-empty-state {
+            position: absolute;
+            inset: 14px 16px 8px;
+            display: grid;
+            place-items: center;
+            background: rgba(253,250,247,0.82);
+            color: var(--text-muted);
+            font-size: 13px;
+            pointer-events: none;
+            border-radius: 10px;
+        }
+        .chart-empty-state[hidden] {
+            display: none !important;
+        }
+        .chart-shell.is-empty canvas {
+            opacity: 0;
+        }
+        .chart-tooltip {
+            position: absolute;
+            z-index: 3;
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, -4px);
+            background: #212842;
+            border: 1px solid rgba(216,174,72,0.35);
+            border-radius: 10px;
+            padding: 9px 11px;
+            box-shadow: 0 12px 28px rgba(13,30,59,0.18);
+            transition: opacity 0.12s ease;
+            min-width: 104px;
+        }
+        .chart-tooltip .tip-date {
+            color: #F0E7D5;
+            font-size: 11px;
+            margin-bottom: 3px;
+        }
+        .chart-tooltip .tip-value {
+            color: var(--success);
+            font: 700 15px "DM Mono", monospace;
+        }
+        html[data-theme="dark"] .chart-tooltip {
+            background: #090d14;
+            box-shadow: 0 14px 30px rgba(0,0,0,0.30);
         }
 
         @media (max-width: 1100px) { .stats-grid { grid-template-columns: 1fr 1fr; } }
@@ -306,18 +365,13 @@
     <!-- Chart -->
     <div class="chart-card anim d7">
         <div class="chart-title">{{ chart_label }}</div>
-        <div class="sales-chart" role="img" aria-label="{{ chart_label }}">
-            {% for point in chart_points %}
-                <div class="sales-bar">
-                    <div class="sales-bar-track">
-                        <div class="sales-bar-fill" style="height: {{ point.percent }}%;"></div>
-                    </div>
-                    <div class="sales-value">${{ point.value|floatformat:0 }}</div>
-                    <div class="sales-label">{{ point.label }}</div>
-                </div>
-            {% empty %}
-                <p class="no-data">Sin ventas en el periodo seleccionado.</p>
-            {% endfor %}
+        <div class="chart-shell" role="img" aria-label="{{ chart_label }}">
+            <canvas id="ventasPeriodoChart"></canvas>
+            <div class="chart-tooltip" id="ventas-tooltip">
+                <div class="tip-date"></div>
+                <div class="tip-value"></div>
+            </div>
+            <div class="chart-empty-state" id="ventas-empty" hidden>Sin ventas en el periodo seleccionado.</div>
         </div>
     </div>
 
@@ -373,6 +427,7 @@
     </div>
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
     // ── Tema oscuro/claro ──────────────────────────────────────────
     function toggleTheme() {
@@ -381,6 +436,7 @@
         document.documentElement.setAttribute('data-theme', next);
         localStorage.setItem('theme', next);
         updateThemeBtn();
+        updateVentasChartTheme();
     }
     function updateThemeBtn() {
         var btn = document.getElementById('theme-toggle');
@@ -389,6 +445,125 @@
         btn.textContent = dark ? '☀️ Modo claro' : '🌙 Modo oscuro';
     }
     updateThemeBtn();
+
+    function isDarkMode() {
+        return document.documentElement.getAttribute('data-theme') === 'dark';
+    }
+    function chartTickColor() {
+        return isDarkMode() ? '#a08870' : '#5C4A3A';
+    }
+    function chartGridColor() {
+        return isDarkMode() ? 'rgba(255,255,255,0.07)' : 'rgba(13,30,59,0.08)';
+    }
+
+    const ventasChartData = {{ chart_data|safe }};
+    const ventasShell = document.getElementById('ventasPeriodoChart').closest('.chart-shell');
+    const ventasEmpty = document.getElementById('ventas-empty');
+    const ventasHasData = Array.isArray(ventasChartData.values)
+        && ventasChartData.values.some(value => Number(value) > 0);
+    if (ventasEmpty) ventasEmpty.hidden = ventasHasData;
+    if (ventasShell) ventasShell.classList.toggle('is-empty', !ventasHasData);
+
+    const ventasTooltip = document.getElementById('ventas-tooltip');
+    const tipDate = ventasTooltip.querySelector('.tip-date');
+    const tipValue = ventasTooltip.querySelector('.tip-value');
+
+    function ventasExternalTooltip({ chart, tooltip }) {
+        if (tooltip.opacity === 0) {
+            ventasTooltip.style.opacity = '0';
+            return;
+        }
+        const point = tooltip.dataPoints[0];
+        const shellRect = chart.canvas.parentElement.getBoundingClientRect();
+        const tooltipWidth = ventasTooltip.offsetWidth || 112;
+        const tooltipHeight = ventasTooltip.offsetHeight || 58;
+        const margin = 12;
+        let x = chart.canvas.offsetLeft + tooltip.caretX + 18;
+        let y = chart.canvas.offsetTop + tooltip.caretY - (tooltipHeight / 2);
+
+        if (x + tooltipWidth + margin > shellRect.width) {
+            x = chart.canvas.offsetLeft + tooltip.caretX - tooltipWidth - 18;
+        }
+        y = Math.max(margin, Math.min(y, shellRect.height - tooltipHeight - margin));
+
+        tipDate.textContent = tooltip.title[0] || '';
+        tipValue.textContent = '$' + Number(point.parsed.y || 0).toFixed(2);
+        ventasTooltip.style.left = x + 'px';
+        ventasTooltip.style.top = y + 'px';
+        ventasTooltip.style.opacity = '1';
+    }
+
+    const ventasGradientPlugin = {
+        id: 'ventasGradient',
+        beforeDatasetsDraw(chart) {
+            const { ctx, chartArea } = chart;
+            if (!chartArea) return;
+            const grad = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+            grad.addColorStop(0, 'rgba(216,174,72,0.72)');
+            grad.addColorStop(0.65, 'rgba(216,174,72,0.28)');
+            grad.addColorStop(1, 'rgba(216,174,72,0.06)');
+            chart.data.datasets[0].backgroundColor = grad;
+        }
+    };
+
+    window._ventasPeriodoChart = new Chart(document.getElementById('ventasPeriodoChart'), {
+        type: 'bar',
+        data: {
+            labels: ventasChartData.labels,
+            datasets: [{
+                label: ventasChartData.label,
+                data: ventasChartData.values,
+                backgroundColor: 'rgba(216,174,72,0.28)',
+                borderColor: '#D8AE48',
+                borderWidth: { top: 2, right: 0, bottom: 0, left: 0 },
+                borderRadius: { topLeft: 6, topRight: 6 },
+                borderSkipped: false,
+                hoverBackgroundColor: 'rgba(216,174,72,0.78)',
+                maxBarThickness: 42,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 800, easing: 'easeOutQuart' },
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false, external: ventasExternalTooltip }
+            },
+            scales: {
+                x: {
+                    grid: { display: false },
+                    border: { display: false },
+                    ticks: {
+                        color: chartTickColor(),
+                        font: { size: 12, family: 'DM Sans' },
+                        maxRotation: 0,
+                        autoSkip: true,
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    grid: { color: chartGridColor(), lineWidth: 0.5 },
+                    border: { display: false },
+                    ticks: {
+                        color: chartTickColor(),
+                        font: { size: 12, family: 'DM Mono' },
+                        callback: value => '$' + value,
+                        maxTicksLimit: 6,
+                    }
+                }
+            }
+        },
+        plugins: [ventasGradientPlugin]
+    });
+
+    function updateVentasChartTheme() {
+        if (!window._ventasPeriodoChart) return;
+        _ventasPeriodoChart.options.scales.x.ticks.color = chartTickColor();
+        _ventasPeriodoChart.options.scales.y.ticks.color = chartTickColor();
+        _ventasPeriodoChart.options.scales.y.grid.color = chartGridColor();
+        _ventasPeriodoChart.update('none');
+    }
 
     // Animación de contadores
     document.querySelectorAll('[data-count]').forEach(el => {

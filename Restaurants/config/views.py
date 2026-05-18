@@ -217,6 +217,12 @@ def metricas_view(request):
         }
         for label, value in zip(labels_chart, data_chart)
     ]
+    chart_data = json.dumps({
+        "labels": labels_chart,
+        "values": data_chart,
+        "label": chart_label,
+        "hasData": any(value > 0 for value in data_chart),
+    })
 
     top_productos = list(
         Alimentosbebidas.objects
@@ -259,6 +265,7 @@ def metricas_view(request):
         "promedio_ticket": round(promedio, 2),
         "chart_label": chart_label,
         "chart_points": chart_points,
+        "chart_data": chart_data,
         "top_productos": top_productos,
         "max_top": max_top,
         "top_clientes": top_clientes,
