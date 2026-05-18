@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <script>!function(){var t=localStorage.getItem('theme');t&&document.documentElement.setAttribute('data-theme',t)}();</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis tickets | Restaurants</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+    <style>
+        /* ── Variables ── */
+        :root {
+            --bg: #F8F3F0;
+            --card: #FFFFFF;
+            --border: rgba(0,32,91,0.10);
+            --blue: #014BAA;
+            --blue-light: #307FE2;
+            --amber: #F2A900;
+            --dark: #00205B;
+            --muted: rgba(0,32,91,0.50);
+            --muted-text: #5C6B8A;
+            --success: #1E8A4C;
+            --success-dim: rgba(30,138,76,0.10);
+            --danger: #C0392B;
+            --danger-dim: rgba(192,57,43,0.08);
+            --divider: rgba(0,32,91,0.08);
+        }
+        html[data-theme="dark"] {
+            --bg: #111827;
+            --card: #1a2035;
+            --border: rgba(255,255,255,0.07);
+            --blue: #D8AE48;
+            --blue-light: #D8AE48;
+            --amber: #D8AE48;
+            --dark: #e2ddd5;
+            --muted: rgba(226,221,213,0.50);
+            --muted-text: #8f8173;
+            --success: #4cc970;
+            --success-dim: rgba(76,201,112,0.10);
+            --danger: #f07a7a;
+            --danger-dim: rgba(240,122,122,0.08);
+            --divider: rgba(255,255,255,0.07);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh;
+            font-family: "DM Sans", sans-serif;
+            color: var(--dark);
+            background: var(--bg);
+            padding-bottom: 48px;
+        }
+
+        /* ── Header ── */
+        header {
+            background: linear-gradient(135deg, #014BAA 0%, #307FE2 100%);
+            padding: 20px 16px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            animation: fadeDown 0.5s ease both;
+        }
+        html[data-theme="dark"] header {
+            background: linear-gradient(135deg, #090d14 0%, #111827 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .header-left .brand-tag {
+            font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase;
+            color: rgba(255,255,255,0.60); font-family: "DM Mono", monospace;
+            display: block; margin-bottom: 4px;
+        }
+        html[data-theme="dark"] .brand-tag { color: rgba(216,174,72,0.70); }
+        .header-left h1 { font-size: 20px; font-weight: 600; color: #fff; line-height: 1.2; }
+        html[data-theme="dark"] .header-left h1 { color: var(--dark); }
+        .header-left .header-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 3px; }
+        html[data-theme="dark"] .header-left .header-sub { color: rgba(226,221,213,0.55); }
+
+        .header-btns { display: flex; gap: 8px; flex-shrink: 0; margin-top: 2px; }
+        .hbtn {
+            text-decoration: none; font: 500 12px "DM Sans", sans-serif;
+            color: rgba(255,255,255,0.80); border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 9px; padding: 8px 12px; background: rgba(255,255,255,0.08);
+            cursor: pointer; transition: all 0.15s; white-space: nowrap;
+        }
+        .hbtn:hover { color: #fff; border-color: rgba(255,255,255,0.50); background: rgba(255,255,255,0.16); }
+        html[data-theme="dark"] .hbtn { color: rgba(226,221,213,0.78); border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.04); }
+        html[data-theme="dark"] .hbtn:hover { color: var(--amber); border-color: rgba(216,174,72,0.45); background: rgba(216,174,72,0.08); }
+
+        /* ── Contenido ── */
+        .wrap { max-width: 540px; margin: 0 auto; padding: 0 16px; }
+
+        /* ── Mensajes ── */
+        .alert {
+            margin: 14px 0 0; padding: 11px 14px; border-radius: 10px; font-size: 13px;
+            animation: fadeIn 0.3s ease both;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .alert.success { background: var(--success-dim); border: 1px solid rgba(30,138,76,0.22); color: var(--success); }
+        .alert.error   { background: var(--danger-dim);  border: 1px solid rgba(192,57,43,0.22);  color: var(--danger);  }
+
+        /* ── Section title ── */
+        .section-title {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+            color: var(--muted-text); margin: 24px 0 12px; font-weight: 500;
+        }
+        .section-title::after {
+            content: ''; flex: 1; height: 1px; background: var(--divider);
+        }
+        html[data-theme="dark"] .section-title { color: #6e5e52; }
+
+        /* ── Ticket card (activo) ── */
+        .ticket-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 12px rgba(0,32,91,0.07);
+            animation: cardUp 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+        }
+        html[data-theme="dark"] .ticket-card {
+            background: var(--card); border-color: var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+        }
+        @keyframes cardUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .ticket-card:nth-child(1) { animation-delay: 0.10s; }
+        .ticket-card:nth-child(2) { animation-delay: 0.18s; }
+        .ticket-card:nth-child(3) { animation-delay: 0.26s; }
+
+        /* Top strip: gradient or muted */
+        .card-strip {
+            padding: 14px 18px;
+            display: flex; justify-content: space-between; align-items: center; gap: 10px;
+        }
+        .card-strip.strip-abierto {
+            background: linear-gradient(135deg, #014BAA 0%, #307FE2 100%);
+        }
+        .card-strip.strip-canjeado {
+            background: linear-gradient(135deg, #1E8A4C 0%, #27ae60 100%);
+        }
+        html[data-theme="dark"] .card-strip.strip-abierto {
+            background: linear-gradient(135deg, #090d14 0%, #1a2035 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        html[data-theme="dark"] .card-strip.strip-canjeado {
+            background: linear-gradient(135deg, #0d2018 0%, #1a2035 100%);
+            border-bottom: 1px solid rgba(76,201,112,0.15);
+        }
+        .strip-label { font: 10px "DM Mono", monospace; letter-spacing: 0.20em; text-transform: uppercase; color: rgba(255,255,255,0.65); }
+        html[data-theme="dark"] .strip-label { color: rgba(226,221,213,0.50); }
+        html[data-theme="dark"] .card-strip.strip-canjeado .strip-label { color: rgba(76,201,112,0.70); }
+        .strip-id { font: 500 12px "DM Mono", monospace; color: rgba(255,255,255,0.70); }
+        html[data-theme="dark"] .strip-id { color: rgba(226,221,213,0.55); }
+        html[data-theme="dark"] .card-strip.strip-canjeado .strip-id { color: rgba(76,201,112,0.80); }
+
+        /* Card body */
+        .card-body { padding: 18px 18px 0; }
+
+        /* Código TK — destacado */
+        .tk-code-wrap { text-align: center; padding: 14px 0 16px; border-bottom: 1px dashed var(--divider); margin-bottom: 16px; }
+        .tk-label { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--muted-text); margin-bottom: 6px; }
+        .tk-code {
+            font: 700 34px "DM Mono", monospace;
+            color: var(--amber);
+            letter-spacing: 6px;
+        }
+        html[data-theme="dark"] .tk-code { color: var(--amber); }
+        .tk-hint { font-size: 11px; color: var(--muted-text); margin-top: 5px; }
+
+        /* Productos */
+        .products-list { margin-bottom: 14px; }
+        .product-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 0; border-bottom: 1px solid var(--divider); gap: 10px;
+            font-size: 13px;
+        }
+        .product-row:last-child { border-bottom: none; }
+        .product-name { color: var(--dark); font-weight: 500; flex: 1; }
+        .product-meta { font: 12px "DM Mono", monospace; color: var(--muted-text); white-space: nowrap; }
+        html[data-theme="dark"] .product-name { color: var(--dark); }
+
+        /* Totals strip */
+        .totals-bar {
+            background: rgba(0,32,91,0.03);
+            border: 1px solid var(--divider);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 16px;
+            display: flex; flex-direction: column; gap: 5px;
+        }
+        html[data-theme="dark"] .totals-bar { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
+        .totals-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+        .totals-row.final-row { margin-top: 4px; padding-top: 8px; border-top: 1px solid var(--divider); }
+        .totals-label { color: var(--muted-text); }
+        .totals-value { font: 500 13px "DM Mono", monospace; color: var(--dark); }
+        .totals-row.discount-row .totals-value { color: var(--success); }
+        .totals-row.final-row .totals-label { font-weight: 600; color: var(--dark); font-size: 14px; }
+        .totals-row.final-row .totals-value { font: 700 18px "DM Mono", monospace; color: var(--amber); }
+
+        /* Status badge dentro de la card */
+        .card-status { display: flex; align-items: center; gap: 8px; padding: 0 18px 16px; }
+        .badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 10px; border-radius: 999px;
+            font-size: 11px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap;
+        }
+        .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .badge-abierto  { background: rgba(1,75,170,0.08);  color: #014BAA; border: 1px solid rgba(1,75,170,0.18); }
+        .badge-canjeado { background: var(--success-dim);    color: var(--success); border: 1px solid rgba(30,138,76,0.22); }
+        .badge-pagado   { background: rgba(30,138,76,0.10);  color: var(--success); border: 1px solid rgba(30,138,76,0.22); }
+        .badge-expirado { background: rgba(192,57,43,0.08);  color: var(--danger);  border: 1px solid rgba(192,57,43,0.20); }
+        .badge-cancelado{ background: rgba(0,32,91,0.06);    color: var(--muted-text); border: 1px solid var(--divider); }
+        html[data-theme="dark"] .badge-abierto  { background: rgba(216,174,72,0.12); color: var(--amber); border-color: rgba(216,174,72,0.25); }
+        html[data-theme="dark"] .badge-canjeado { background: rgba(76,201,112,0.12); color: var(--success); border-color: rgba(76,201,112,0.22); }
+        .badge-date { font: 11px "DM Mono", monospace; color: var(--muted-text); margin-left: auto; }
+
+        /* Botón canjear */
+        .btn-canjear {
+            display: block; width: 100%;
+            padding: 15px; margin-bottom: 0;
+            background: var(--blue); color: #fff;
+            border: none; border-radius: 0;
+            font: 600 14px "DM Sans", sans-serif;
+            cursor: pointer; text-align: center;
+            transition: opacity 0.15s, transform 0.1s;
+            letter-spacing: 0.02em;
+        }
+        .btn-canjear:hover { opacity: 0.92; }
+        .btn-canjear:active { transform: scale(0.99); }
+        html[data-theme="dark"] .btn-canjear { background: var(--amber); color: #0D1E3B; }
+
+        /* Canjeado: nota informativa */
+        .canjeado-note {
+            margin: 0; padding: 14px 18px;
+            background: var(--success-dim);
+            border-top: 1px solid rgba(30,138,76,0.15);
+            display: flex; align-items: flex-start; gap: 10px;
+            font-size: 13px; color: var(--success); line-height: 1.55;
+        }
+        html[data-theme="dark"] .canjeado-note { background: rgba(76,201,112,0.08); border-top-color: rgba(76,201,112,0.12); }
+        .canjeado-note-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+        /* ── Empty state ── */
+        .empty-state {
+            text-align: center; padding: 40px 20px;
+            background: var(--card); border: 1px dashed var(--border);
+            border-radius: 16px; margin-bottom: 14px;
+            animation: cardUp 0.5s ease 0.1s both;
+        }
+        html[data-theme="dark"] .empty-state { background: var(--card); border-color: rgba(255,255,255,0.06); }
+        .empty-icon { font-size: 40px; margin-bottom: 14px; display: block; }
+        .empty-title { font-size: 15px; font-weight: 600; color: var(--dark); margin-bottom: 6px; }
+        .empty-sub { font-size: 13px; color: var(--muted-text); line-height: 1.6; }
+
+        /* ── Tickets recientes (compact) ── */
+        .recent-item {
+            display: flex; align-items: center; gap: 14px;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 12px; padding: 13px 14px; margin-bottom: 10px;
+            animation: cardUp 0.4s ease both;
+        }
+        html[data-theme="dark"] .recent-item { background: var(--card); border-color: var(--border); }
+        .recent-item:nth-child(1) { animation-delay: 0.05s; }
+        .recent-item:nth-child(2) { animation-delay: 0.10s; }
+        .recent-item:nth-child(3) { animation-delay: 0.15s; }
+        .recent-item:nth-child(4) { animation-delay: 0.20s; }
+        .recent-item:nth-child(5) { animation-delay: 0.25s; }
+        .recent-icon {
+            width: 38px; height: 38px; border-radius: 10px;
+            background: rgba(0,32,91,0.05); display: flex;
+            align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+        }
+        html[data-theme="dark"] .recent-icon { background: rgba(255,255,255,0.05); }
+        .recent-info { flex: 1; min-width: 0; }
+        .recent-id { font-size: 13px; font-weight: 600; color: var(--dark); }
+        .recent-date { font: 11px "DM Mono", monospace; color: var(--muted-text); margin-top: 2px; }
+        .recent-right { text-align: right; flex-shrink: 0; }
+        .recent-total { font: 600 14px "DM Mono", monospace; color: var(--amber); }
+        .recent-badge { display: block; margin-top: 4px; }
+
+        /* ── Auto-refresh bar ── */
+        .refresh-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--card); border-top: 1px solid var(--divider);
+            padding: 10px 16px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            font-size: 11px; color: var(--muted-text);
+            animation: slideUp 0.4s ease 0.5s both;
+        }
+        html[data-theme="dark"] .refresh-bar { background: #0d1525; border-top-color: rgba(255,255,255,0.06); }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .refresh-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: var(--success); animation: pulse 2s ease infinite;
+        }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .refresh-bar span { font-family: "DM Mono", monospace; }
+
+        /* ── Modal de confirmación ── */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 100;
+            background: rgba(0, 15, 40, 0.60);
+            display: none; align-items: flex-end; justify-content: center;
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+        }
+        html[data-theme="dark"] .modal-overlay { background: rgba(0, 0, 0, 0.75); }
+        .modal-overlay.open { display: flex; }
+
+        .modal-sheet {
+            background: var(--card);
+            border-radius: 20px 20px 0 0;
+            width: 100%; max-width: 540px;
+            padding: 0 0 env(safe-area-inset-bottom, 0);
+            box-shadow: 0 -8px 40px rgba(0,32,91,0.18);
+            animation: sheetUp 0.35s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        html[data-theme="dark"] .modal-sheet { background: var(--card); box-shadow: 0 -8px 40px rgba(0,0,0,0.45); }
+        @keyframes sheetUp {
+            from { transform: translateY(100%); opacity: 0.6; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+
+        .modal-handle {
+            width: 36px; height: 4px; border-radius: 2px;
+            background: rgba(0,32,91,0.15); margin: 12px auto 0;
+        }
+        html[data-theme="dark"] .modal-handle { background: rgba(255,255,255,0.12); }
+
+        .modal-header-section {
+            padding: 18px 20px 14px; border-bottom: 1px solid var(--divider);
+        }
+        .modal-title {
+            font-size: 17px; font-weight: 600; color: var(--dark); margin-bottom: 4px;
+        }
+        .modal-subtitle { font-size: 13px; color: var(--muted-text); }
+
+        .modal-body { padding: 16px 20px; }
+
+        .modal-products { margin-bottom: 14px; }
+        .modal-product-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 8px 0; border-bottom: 1px solid var(--divider); gap: 10px; font-size: 13px;
+        }
+        .modal-product-row:last-child { border-bottom: none; }
+        .modal-product-name { color: var(--dark); font-weight: 500; }
+        .modal-product-price { font: 12px "DM Mono", monospace; color: var(--muted-text); white-space: nowrap; }
+
+        .modal-totals { background: rgba(0,32,91,0.03); border: 1px solid var(--divider); border-radius: 10px; padding: 12px 14px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 5px; }
+        html[data-theme="dark"] .modal-totals { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
+        .modal-total-row { display: flex; justify-content: space-between; font-size: 13px; }
+        .modal-total-row.modal-final { padding-top: 8px; margin-top: 4px; border-top: 1px solid var(--divider); }
+        .modal-total-label { color: var(--muted-text); }
+        .modal-total-value { font-family: "DM Mono", monospace; font-weight: 500; color: var(--dark); }
+        .modal-total-row.discount .modal-total-value { color: var(--success); }
+        .modal-total-row.modal-final .modal-total-label { font-weight: 700; color: var(--dark); font-size: 14px; }
+        .modal-total-row.modal-final .modal-total-value { font-size: 18px; font-weight: 700; color: var(--amber); }
+
+        .modal-warning {
+            background: rgba(192,57,43,0.07);
+            border: 1px solid rgba(192,57,43,0.18);
+            border-radius: 10px;
+            padding: 12px 14px;
+            display: flex; gap: 10px; align-items: flex-start;
+            margin-bottom: 18px;
+        }
+        html[data-theme="dark"] .modal-warning { background: rgba(240,122,122,0.08); border-color: rgba(240,122,122,0.18); }
+        .modal-warning-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+        .modal-warning-text { font-size: 13px; color: var(--danger); line-height: 1.6; }
+        html[data-theme="dark"] .modal-warning-text { color: #f07a7a; }
+        .modal-warning-text strong { display: block; margin-bottom: 3px; }
+
+        .modal-actions { padding: 0 20px 20px; display: grid; gap: 10px; }
+        .btn-confirm {
+            display: block; width: 100%; padding: 14px;
+            background: var(--blue); color: #fff; border: none;
+            border-radius: 11px; font: 600 14px "DM Sans", sans-serif;
+            cursor: pointer; text-align: center; transition: opacity 0.15s, transform 0.1s;
+        }
+        .btn-confirm:hover { opacity: 0.9; transform: translateY(-1px); }
+        html[data-theme="dark"] .btn-confirm { background: var(--amber); color: #0D1E3B; }
+        .btn-cancel-modal {
+            display: block; width: 100%; padding: 13px;
+            background: transparent; color: var(--muted-text);
+            border: 1px solid var(--border); border-radius: 11px;
+            font: 13px "DM Sans", sans-serif; cursor: pointer; text-align: center; transition: all 0.15s;
+        }
+        .btn-cancel-modal:hover { border-color: var(--blue); color: var(--blue); background: rgba(1,75,170,0.04); }
+        html[data-theme="dark"] .btn-cancel-modal { border-color: rgba(255,255,255,0.10); color: var(--muted-text); }
+        html[data-theme="dark"] .btn-cancel-modal:hover { border-color: rgba(216,174,72,0.45); color: var(--amber); background: rgba(216,174,72,0.06); }
+
+        /* Enlace canjear código manualmente */
+        .manual-link {
+            display: block; text-align: center; margin-top: 18px;
+            font-size: 12px; color: var(--muted-text); text-decoration: none;
+        }
+        .manual-link:hover { color: var(--blue); text-decoration: underline; }
+        html[data-theme="dark"] .manual-link:hover { color: var(--amber); }
+    </style>
+    <link rel="stylesheet" href="/static/css/performance.css">
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+    <div class="header-left">
+        <span class="brand-tag">✦ Restaurants</span>
+        <h1>Mis tickets</h1>
+        <p class="header-sub">Hola, {{ cliente.nombre }} — estado en tiempo real</p>
+    </div>
+    <div class="header-btns">
+        <button class="hbtn" onclick="toggleTheme()" id="theme-btn">🌙</button>
+        <a class="hbtn" href="{% url 'menu_cliente' %}">← Inicio</a>
+    </div>
+</header>
+
+<div class="wrap">
+
+    <!-- Mensajes de Django -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' or 'reabierto' in message.message or 'correctamente' in message.message %}success{% else %}error{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- ── TICKETS ACTIVOS ── -->
+    <p class="section-title">🟢 Activos ahora</p>
+
+    {% if activos %}
+        {% for entry in activos %}
+        <div class="ticket-card">
+
+            <!-- Strip superior -->
+            <div class="card-strip {% if entry.estado == 'abierto' %}strip-abierto{% else %}strip-canjeado{% endif %}">
+                <span class="strip-label">
+                    {% if entry.estado == 'abierto' %}Pedido registrado{% else %}Canjeado — pendiente de cobro{% endif %}
+                </span>
+                <span class="strip-id">#{{ entry.ticket.id_ticket }}</span>
+            </div>
+
+            <div class="card-body">
+                <!-- Código TK -->
+                {% if entry.ticket.codigounico %}
+                <div class="tk-code-wrap">
+                    <p class="tk-label">Tu código de ticket</p>
+                    <div class="tk-code">TK-{{ entry.ticket.codigounico }}</div>
+                    <p class="tk-hint">
+                        {% if entry.estado == 'abierto' %}Muéstraselo al mesero cuando quieras canjear{% else %}Ya canjeado — espera que el cajero te cobre{% endif %}
+                    </p>
+                </div>
+                {% endif %}
+
+                <!-- Productos -->
+                <div class="products-list">
+                    {% for linea in entry.lineas %}
+                    <div class="product-row">
+                        <span class="product-name">{{ linea.nombre }}</span>
+                        <span class="product-meta">×{{ linea.cantidad }} &nbsp; ${{ linea.importe }}</span>
+                    </div>
+                    {% empty %}
+                    <p style="font-size:13px;color:var(--muted-text);text-align:center;padding:10px 0;">Sin productos registrados aún.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Totales -->
+                <div class="totals-bar">
+                    <div class="totals-row">
+                        <span class="totals-label">Subtotal</span>
+                        <span class="totals-value">${{ entry.subtotal }}</span>
+                    </div>
+                    {% if entry.descuento > 0 %}
+                    <div class="totals-row discount-row">
+                        <span class="totals-label">Descuento ({{ entry.ticket.id_promocion.nombre }})</span>
+                        <span class="totals-value">− ${{ entry.descuento }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="totals-row final-row">
+                        <span class="totals-label">Total a pagar</span>
+                        <span class="totals-value">${{ entry.ticket.precio_final }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado + fecha -->
+            <div class="card-status">
+                {% if entry.estado == 'abierto' %}
+                    <span class="badge badge-abierto"><span class="badge-dot"></span>Abierto</span>
+                {% else %}
+                    <span class="badge badge-canjeado"><span class="badge-dot"></span>Canjeado ✓</span>
+                {% endif %}
+                <span class="badge-date">{{ entry.ticket.fecha|date:"d/m/Y H:i" }}</span>
+            </div>
+
+            <!-- Botón o nota según estado -->
+            {% if entry.estado == 'abierto' %}
+                <button class="btn-canjear" onclick="openModal('modal-{{ entry.ticket.id_ticket }}')">
+                    Canjear ticket →
+                </button>
+            {% else %}
+                <div class="canjeado-note">
+                    <span class="canjeado-note-icon">✅</span>
+                    <span>Tu ticket ya fue canjeado. <strong>Muestra esta pantalla al cajero</strong> para completar tu pago de <strong>${{ entry.ticket.precio_final }}</strong>.</span>
+                </div>
+            {% endif %}
+
+        </div>
+
+        <!-- Modal de confirmación (solo para tickets abiertos) -->
+        {% if entry.estado == 'abierto' %}
+        <div class="modal-overlay" id="modal-{{ entry.ticket.id_ticket }}" onclick="closeModalOutside(event, 'modal-{{ entry.ticket.id_ticket }}')">
+            <div class="modal-sheet">
+                <div class="modal-handle"></div>
+
+                <div class="modal-header-section">
+                    <p class="modal-title">¿Confirmar canje?</p>
+                    <p class="modal-subtitle">Revisa tu pedido antes de continuar</p>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Productos -->
+                    <div class="modal-products">
+                        {% for linea in entry.lineas %}
+                        <div class="modal-product-row">
+                            <span class="modal-product-name">{{ linea.nombre }} <span style="color:var(--muted-text);font-weight:400;">×{{ linea.cantidad }}</span></span>
+                            <span class="modal-product-price">${{ linea.importe }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Totales -->
+                    <div class="modal-totals">
+                        <div class="modal-total-row">
+                            <span class="modal-total-label">Subtotal</span>
+                            <span class="modal-total-value">${{ entry.subtotal }}</span>
+                        </div>
+                        {% if entry.descuento > 0 %}
+                        <div class="modal-total-row discount">
+                            <span class="modal-total-label">Descuento ({{ entry.ticket.id_promocion.nombre }})</span>
+                            <span class="modal-total-value">− ${{ entry.descuento }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="modal-total-row modal-final">
+                            <span class="modal-total-label">Total a cobrar</span>
+                            <span class="modal-total-value">${{ entry.ticket.precio_final }}</span>
+                        </div>
+                    </div>
+
+                    <!-- Advertencia -->
+                    <div class="modal-warning">
+                        <span class="modal-warning-icon">⚠️</span>
+                        <p class="modal-warning-text">
+                            <strong>Una vez canjeado no habrá cambios.</strong>
+                            Si necesitas modificar tu pedido, dile al mesero antes de canjear.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <form method="POST" action="{% url 'canjear_directo' entry.ticket.id_ticket %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-confirm">✓ Sí, canjear mi ticket</button>
+                    </form>
+                    <button class="btn-cancel-modal" onclick="closeModal('modal-{{ entry.ticket.id_ticket }}')">
+                        Cancelar — seguir revisando
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% endfor %}
+
+    {% else %}
+        <!-- Empty state -->
+        <div class="empty-state">
+            <span class="empty-icon">🎫</span>
+            <p class="empty-title">Sin tickets activos</p>
+            <p class="empty-sub">Cuando el mesero registre tu pedido<br>aparecerá aquí en tiempo real.</p>
+        </div>
+        <a href="{% url 'canjear_ticket' %}" class="manual-link">¿Tienes un código? Ingrésalo manualmente →</a>
+    {% endif %}
+
+    <!-- ── TICKETS RECIENTES ── -->
+    {% if recientes %}
+    <p class="section-title">🕐 Recientes</p>
+    {% for entry in recientes %}
+    <div class="recent-item">
+        <div class="recent-icon">
+            {% if entry.estado == 'pagado' %}✅
+            {% elif entry.estado == 'cancelado' %}❌
+            {% elif entry.estado == 'expirado' %}⏰
+            {% else %}🎫{% endif %}
+        </div>
+        <div class="recent-info">
+            <div class="recent-id">Ticket #{{ entry.ticket.id_ticket }}
+                {% if entry.ticket.codigounico %}<span style="font-weight:400;color:var(--muted-text);font-size:11px;font-family:'DM Mono',monospace;"> · TK-{{ entry.ticket.codigounico }}</span>{% endif %}
+            </div>
+            <div class="recent-date">{{ entry.ticket.fecha|date:"d/m/Y · H:i" }}</div>
+        </div>
+        <div class="recent-right">
+            <div class="recent-total">${{ entry.ticket.precio_final }}</div>
+            <span class="recent-badge">
+                {% if entry.estado == 'pagado' %}
+                    <span class="badge badge-pagado" style="font-size:10px;padding:2px 8px;"><span class="badge-dot"></span>Pagado</span>
+                {% elif entry.estado == 'cancelado' %}
+                    <span class="badge badge-cancelado" style="font-size:10px;padding:2px 8px;"><span class="badge-dot"></span>Cancelado</span>
+                {% elif entry.estado == 'expirado' %}
+                    <span class="badge badge-expirado" style="font-size:10px;padding:2px 8px;"><span class="badge-dot"></span>Expirado</span>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+    {% endfor %}
+
+    <a href="{% url 'historial' %}" style="display:block;text-align:center;margin-top:14px;font-size:13px;color:var(--muted-text);text-decoration:none;">Ver historial completo →</a>
+    {% endif %}
+
+</div><!-- /wrap -->
+
+<!-- ── Barra de auto-refresh ── -->
+<div class="refresh-bar">
+    <div class="refresh-dot"></div>
+    <span>Actualizando en <span id="refresh-countdown">30</span>s</span>
+</div>
+
+<script>
+    // ── Tema oscuro/claro ──────────────────────────────────────────
+    function toggleTheme() {
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var next = dark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateThemeBtn();
+    }
+    function updateThemeBtn() {
+        var btn = document.getElementById('theme-btn');
+        if (!btn) return;
+        btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+    }
+    updateThemeBtn();
+
+    // ── Modal ──────────────────────────────────────────────────────
+    var _modalOpen = false;
+    function openModal(id) {
+        var overlay = document.getElementById(id);
+        if (!overlay) return;
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+        _modalOpen = true;
+    }
+    function closeModal(id) {
+        var overlay = document.getElementById(id);
+        if (!overlay) return;
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+        _modalOpen = false;
+    }
+    function closeModalOutside(e, id) {
+        if (e.target === document.getElementById(id)) closeModal(id);
+    }
+
+    // ── Auto-refresh (30 s) ────────────────────────────────────────
+    var _countdown = 30;
+    var _countEl = document.getElementById('refresh-countdown');
+
+    var _timer = setInterval(function() {
+        if (_modalOpen) return; // No refrescar si hay modal abierto
+        _countdown--;
+        if (_countEl) _countEl.textContent = _countdown;
+        if (_countdown <= 0) {
+            clearInterval(_timer);
+            window.location.reload();
+        }
+    }, 1000);
+</script>
+</body>
+</html>

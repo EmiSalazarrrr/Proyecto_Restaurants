@@ -6,7 +6,8 @@ urlpatterns = [
     path('agregar/', views.agregar_alimento, name='agregar_alimento'),
     path('modificar/', views.modificar_alimento, name='modificar_alimento'),
     path('modificar/<int:id>/', views.modificar_alimento, name='modificar_alimento_id'),
-    path('eliminar/', views.eliminar_alimento, name ='eliminar_alimento'),
+    path('eliminar/', views.eliminar_alimento, name='eliminar_alimento'),
     path('eliminar/<int:id>/', views.eliminar_alimento, name='eliminar_alimento_id'),
-
+    path('categorias/', views.lista_categorias, name='lista_categorias'),
+    path('categorias/cambiar/<int:alimento_id>/', views.cambiar_categoria_ajax, name='cambiar_categoria_ajax'),
 ]

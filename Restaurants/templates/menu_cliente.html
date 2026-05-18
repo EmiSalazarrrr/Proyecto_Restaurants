@@ -61,15 +61,16 @@
             border-radius: 10px;
             padding: 9px 14px;
             font-size: 13px;
-            transition: all 0.15s;
+            transition: all 0.15s, transform 0.1s;
             white-space: nowrap;
             text-align: center;
             display: inline-block;
             background: rgba(255,255,255,0.08);
         }
-        .hbtn:hover { color: #FFFFFF; border-color: rgba(255,255,255,0.50); background: rgba(255,255,255,0.16); }
+        .hbtn:hover  { color: #FFFFFF; border-color: rgba(255,255,255,0.50); background: rgba(255,255,255,0.16); transform: translateY(-1px); }
+        .hbtn:active { transform: scale(0.96) translateY(0); }
         .hbtn.accent { background: #F2A900; border-color: #F2A900; color: #00205B; font-weight: 600; }
-        .hbtn.accent:hover { background: #E09B00; border-color: #E09B00; }
+        .hbtn.accent:hover { background: #E09B00; border-color: #E09B00; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(242,169,0,0.30); }
         .theme-toggle-user {
             color: rgba(255,255,255,0.80);
             border: 1px solid rgba(255,255,255,0.25);
@@ -260,9 +261,21 @@
             border: 1px solid var(--border); border-radius: 11px;
             padding: 12px 14px; background: #F8F3F0;
             display: flex; justify-content: space-between; align-items: center;
-            gap: 12px; transition: border-color 0.15s;
+            gap: 12px;
+            transition: border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+            /* Stagger entrance — starts after parent card (d5 = 0.42s) fades in */
+            opacity: 0;
+            animation: fadeInUp 0.38s ease forwards;
         }
-        .menu-item:hover { border-color: rgba(1,75,170,0.28); }
+        .menu-item:hover { border-color: rgba(1,75,170,0.28); transform: translateX(3px); box-shadow: 0 2px 8px rgba(1,75,170,0.07); }
+        .menu-item:nth-child(1)  { animation-delay: 0.52s; }
+        .menu-item:nth-child(2)  { animation-delay: 0.58s; }
+        .menu-item:nth-child(3)  { animation-delay: 0.64s; }
+        .menu-item:nth-child(4)  { animation-delay: 0.70s; }
+        .menu-item:nth-child(5)  { animation-delay: 0.76s; }
+        .menu-item:nth-child(6)  { animation-delay: 0.82s; }
+        .menu-item:nth-child(7)  { animation-delay: 0.88s; }
+        .menu-item:nth-child(n+8){ animation-delay: 0.94s; }
         .menu-name { font-size: 13.5px; font-weight: 500; margin-bottom: 3px; color: var(--dark); }
         .menu-desc { color: var(--muted); font-size: 11.5px; line-height: 1.45; }
         .menu-price { font: 700 14px "DM Mono", monospace; color: var(--amber); white-space: nowrap; flex-shrink: 0; }
@@ -271,10 +284,19 @@
         .ticket-item {
             border: 1px solid var(--border); border-radius: 11px;
             padding: 13px 14px; background: #F8F3F0;
-            margin-bottom: 9px; transition: border-color 0.15s;
+            margin-bottom: 9px;
+            transition: border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+            /* Stagger entrance — parent card is d6 = 0.3s+0.5s = 0.8s */
+            opacity: 0;
+            animation: fadeInUp 0.38s ease forwards;
         }
         .ticket-item:last-child { margin-bottom: 0; }
-        .ticket-item:hover { border-color: rgba(1,75,170,0.28); }
+        .ticket-item:hover { border-color: rgba(1,75,170,0.28); transform: translateX(3px); box-shadow: 0 2px 8px rgba(1,75,170,0.07); }
+        .ticket-item:nth-child(1) { animation-delay: 0.62s; }
+        .ticket-item:nth-child(2) { animation-delay: 0.70s; }
+        .ticket-item:nth-child(3) { animation-delay: 0.78s; }
+        .ticket-item:nth-child(4) { animation-delay: 0.86s; }
+        .ticket-item:nth-child(5) { animation-delay: 0.94s; }
         .ticket-top { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 4px; }
         .ticket-id   { font-size: 13px; font-weight: 600; color: var(--dark); }
         .ticket-price { font: 700 14px "DM Mono", monospace; color: var(--amber); }
@@ -370,7 +392,7 @@
             <div class="greeting">Hola, <span>{{ cliente.nombre }} {{ cliente.apellido_paterno }}</span></div>
         </div>
         <div class="header-actions">
-            <a class="hbtn accent" href="{% url 'canjear_ticket' %}">🎫 Canjear</a>
+            <a class="hbtn accent" href="{% url 'mis_tickets' %}">🎫 Mis tickets</a>
             <a class="hbtn" href="{% url 'historial' %}">📋 Historial</a>
             <button class="theme-toggle-user" id="theme-toggle" type="button" onclick="toggleTheme()">Modo oscuro</button>
             <a class="hbtn" href="{% url 'logout' %}">Salir</a>
@@ -393,17 +415,17 @@
     <div class="stats">
         <article class="stat-card anim d2">
             <div class="stat-label">Visitas</div>
-            <div class="stat-value">{{ total_visitas }}</div>
+            <div class="stat-value" data-count="{{ total_visitas }}">{{ total_visitas }}</div>
             <div class="stat-sub">{% if fecha_str %}En esa fecha{% else %}Total histórico{% endif %}</div>
         </article>
         <article class="stat-card anim d3">
             <div class="stat-label">Consumido</div>
-            <div class="stat-value">${{ total_gastado }}</div>
+            <div class="stat-value" data-count="{{ total_gastado }}" data-prefix="$">${{ total_gastado }}</div>
             <div class="stat-sub">{% if fecha_str %}Ese día{% else %}Acumulado{% endif %}</div>
         </article>
         <article class="stat-card anim d4">
             <div class="stat-label">Productos</div>
-            <div class="stat-value">{{ productos_distintos }}</div>
+            <div class="stat-value" data-count="{{ productos_distintos }}">{{ productos_distintos }}</div>
             <div class="stat-sub">{% if fecha_str %}Ese día{% else %}Distintos{% endif %}</div>
         </article>
     </div>
@@ -468,6 +490,27 @@
     </div>
 </div>
 <script>
+    // Counter animation — wait for stat cards to animate in (d4 = 0.34s + 0.5s = 0.84s)
+    setTimeout(function () {
+        document.querySelectorAll('[data-count]').forEach(function (el) {
+            var target = parseFloat(el.dataset.count) || 0;
+            var prefix = el.dataset.prefix || '';
+            if (target === 0) return;
+            var start = null;
+            var duration = 900;
+            function step(ts) {
+                if (!start) start = ts;
+                var p = Math.min((ts - start) / duration, 1);
+                var eased = 1 - Math.pow(1 - p, 3);
+                var val = eased * target;
+                el.textContent = prefix + (Number.isInteger(target) ? Math.round(val) : val.toFixed(2));
+                if (p < 1) requestAnimationFrame(step);
+                else el.textContent = prefix + (Number.isInteger(target) ? target : target.toFixed(2));
+            }
+            requestAnimationFrame(step);
+        });
+    }, 320);
+
     function toggleTheme() {
         var dark = document.documentElement.getAttribute('data-theme') === 'dark';
         var next = dark ? 'light' : 'dark';

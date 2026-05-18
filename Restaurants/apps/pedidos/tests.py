@@ -22,8 +22,8 @@ class PromocionesPorVisitasTests(TestCase):
         )
         self.restriccion = Restricciones.objects.create(
             nombre="5 visitas",
-            consumo_minimo_para_aplicar=0,
-            visitas_minimas_para_aplicar=5,
+            consumo_minimo_para_aplicar=5,
+            tipo_restriccion="VISITAS",
         )
         self.promocion = Promocion.objects.create(
             nombre="Cliente frecuente",

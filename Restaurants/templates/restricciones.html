@@ -27,9 +27,10 @@
 
         /* ── Sidebar ── */
         .sidebar { width: 220px; background: var(--sidebar-bg); padding: 28px 0; position: fixed; inset: 0 auto 0 0; border-right: 1px solid var(--card-border); display: flex; flex-direction: column; }
-        .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid var(--card-border); margin-bottom: 20px; }
+        .sidebar-logo { padding: 0 24px 28px; border-bottom: 1px solid var(--card-border); margin-bottom: 12px; }
         .sidebar-logo span { font-size: 17px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #F4F0E8; }
         .sidebar-logo b { color: var(--accent); }
+        .sidebar-label { padding: 14px 24px 6px; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: rgba(244,240,232,0.35); }
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 24px; color: #F4F0E8; text-decoration: none; border-left: 3px solid transparent; transition: all 0.15s; }
         .nav-item.active { color: #0D1E3B; background: #D8AE48; border-left-color: #D8AE48; }
         .nav-item:hover { color: #F4F0E8; background: #1A2F50; border-left-color: transparent; }
@@ -37,10 +38,9 @@
         .sidebar-bottom { margin-top: auto; padding: 20px 24px 20px; border-top: 1px solid var(--card-border); display: flex; flex-direction: column; gap: 10px; }
         .btn-logout { display: block; text-decoration: none; color: rgba(244,240,232,0.75); border: 1px solid rgba(244,240,232,0.15); border-radius: 8px; padding: 10px 14px; text-align: center; transition: all 0.15s; }
         .btn-logout:hover { border-color: var(--danger); color: var(--danger); background: var(--danger-dim); }
-        /* Botón tema — inline para evitar caché */
         .btn-theme { display: flex; align-items: center; gap: 8px; justify-content: center; width: 100%; background: transparent; border: 1px solid rgba(244,240,232,0.12); border-radius: 8px; padding: 9px 14px; color: rgba(244,240,232,0.65); cursor: pointer; font: 500 13px "DM Sans", sans-serif; transition: all 0.15s; line-height: 1; white-space: nowrap; }
         .btn-theme:hover { border-color: var(--accent, #D8AE48); color: var(--accent, #D8AE48); }
-        /* Modo oscuro — variables inline */
+        /* Modo oscuro */
         html[data-theme="dark"] {
             --bg: #111827; --card-bg: #1a2035; --card-border: rgba(255,255,255,0.07);
             --text-primary: #e2ddd5; --text-secondary: #a08870; --text-muted: #6e5e52;
@@ -57,7 +57,8 @@
         html[data-theme="dark"] .topbar p, html[data-theme="dark"] .muted { color: var(--text-muted) !important; }
         html[data-theme="dark"] .card-header { background: rgba(255,255,255,0.02) !important; border-bottom-color: var(--card-border) !important; }
         html[data-theme="dark"] .card-count { color: var(--text-muted) !important; }
-        html[data-theme="dark"] .field input { background: #151b27 !important; border-color: rgba(255,255,255,0.10) !important; color: var(--text-primary) !important; }
+        html[data-theme="dark"] .field input,
+        html[data-theme="dark"] .field select { background: #151b27 !important; border-color: rgba(255,255,255,0.10) !important; color: var(--text-primary) !important; }
         html[data-theme="dark"] .field label { color: var(--text-muted) !important; }
         html[data-theme="dark"] .info-card { background: rgba(216,174,72,0.07) !important; border-color: rgba(216,174,72,0.15) !important; color: var(--text-secondary) !important; }
         html[data-theme="dark"] .badge-in-use { background: rgba(216,174,72,0.15) !important; }
@@ -68,6 +69,7 @@
         html[data-theme="dark"] .pag-info, html[data-theme="dark"] .pag-jump-of { color: var(--text-muted) !important; }
         html[data-theme="dark"] .alert-success { background: rgba(76,201,112,0.08) !important; border-color: rgba(76,201,112,0.18) !important; }
         html[data-theme="dark"] .alert-error   { background: rgba(240,122,122,0.08) !important; border-color: rgba(240,122,122,0.18) !important; }
+        html[data-theme="dark"] .badge-tipo { filter: brightness(0.85); }
 
         /* ── Main ── */
         .main { margin-left: 220px; flex: 1; padding: 36px 40px; }
@@ -109,6 +111,16 @@
         tbody tr:hover { background: rgba(13,30,59,0.03); }
         .mono { font-family: "DM Mono", monospace; }
 
+        /* Tipo badge */
+        .badge-tipo {
+            display: inline-flex; align-items: center;
+            padding: 3px 9px; border-radius: 999px;
+            font-size: 11px; font-weight: 600; white-space: nowrap;
+        }
+        .tipo-items   { background: rgba(76,201,112,0.12); color: #1a6030; border: 1px solid rgba(76,201,112,0.25); }
+        .tipo-visitas { background: rgba(100,149,237,0.12); color: #1a3a7a; border: 1px solid rgba(100,149,237,0.25); }
+        .tipo-monto   { background: rgba(216,174,72,0.12);  color: #7a5a00; border: 1px solid rgba(216,174,72,0.25); }
+
         .usage-badge {
             display: inline-flex; align-items: center;
             padding: 3px 10px; border-radius: 999px;
@@ -127,6 +139,16 @@
         }
         .btn-del:hover { background: rgba(240,122,122,0.1); border-color: rgba(240,122,122,0.6); }
         .btn-del:disabled { opacity: 0.3; cursor: not-allowed; }
+        .btn-edit-row {
+            padding: 5px 11px; border-radius: 6px;
+            font-size: 11px; font-weight: 600;
+            border: 1px solid rgba(216,174,72,0.35);
+            color: #8b6914; background: transparent;
+            cursor: pointer; font-family: "DM Sans", sans-serif;
+            text-decoration: none; display: inline-block;
+            transition: all 0.15s;
+        }
+        .btn-edit-row:hover { background: rgba(216,174,72,0.10); border-color: rgba(216,174,72,0.6); }
 
         .empty-td { text-align: center; padding: 40px 16px; color: var(--text-secondary); font-size: 13px; }
 
@@ -152,13 +174,15 @@
         .form-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 20px; }
         .field { margin-bottom: 16px; }
         .field label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.15em; color: var(--text-muted); margin-bottom: 8px; }
-        .field input {
+        .field input, .field select {
             width: 100%; background: #FAFAF8;
             border: 1px solid var(--card-border); border-radius: 10px;
             padding: 11px 14px; color: var(--text-primary);
             font: 14px "DM Sans", sans-serif; transition: border-color 0.15s;
+            appearance: none; -webkit-appearance: none;
         }
-        .field input:focus { outline: none; border-color: rgba(216,174,72,0.55); }
+        .field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239B8B7A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: pointer; }
+        .field input:focus, .field select:focus { outline: none; border-color: rgba(216,174,72,0.55); }
         .field-hint { margin-top: 5px; font-size: 11px; color: var(--text-muted); }
         .btn-submit {
             width: 100%; padding: 12px; border: none; border-radius: 10px;
@@ -171,6 +195,8 @@
         /* ── Info card ── */
         .info-card { background: rgba(216,174,72,0.07); border: 1px solid rgba(216,174,72,0.18); border-radius: 12px; padding: 16px 18px; margin-top: 14px; font-size: 13px; color: var(--text-secondary); line-height: 1.65; }
         .info-card strong { color: var(--accent); }
+        .info-tipo-row { display: flex; align-items: flex-start; gap: 8px; margin-top: 8px; }
+        .info-tipo-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
 
         @media (max-width: 960px)  { .layout { grid-template-columns: 1fr; } }
         @media (max-width: 720px)  {
@@ -178,7 +204,6 @@
             .sidebar { position: static; width: 100%; min-height: auto; }
             .main { margin-left: 0; padding: 24px 16px; }
         }
-        /* Hide native number spinners */
         input[type="number"]::-webkit-outer-spin-button,
         input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         input[type="number"] { -moz-appearance: textfield; }
@@ -187,12 +212,23 @@
 <body>
 <aside class="sidebar">
     <div class="sidebar-logo"><span>REST<b>AU</b>RANTS</span></div>
+
+    <div class="sidebar-label">General</div>
     <a class="nav-item" href="{% url 'menu_admin' %}"><span class="nav-icon">⊞</span>Dashboard</a>
+    <a class="nav-item" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
+
+    <div class="sidebar-label">Carta</div>
     <a class="nav-item" href="/alimentos-bebidas/"><span class="nav-icon">🍽️</span>Alimentos / Bebidas</a>
+    <a class="nav-item" href="{% url 'lista_categorias' %}"><span class="nav-icon">🏷️</span>Categorias</a>
+
+    <div class="sidebar-label">Servicio</div>
     <a class="nav-item" href="{% url 'atender_mesa' %}"><span class="nav-icon">🪑</span>Atender mesa</a>
     <a class="nav-item" href="{% url 'lista_tickets' %}"><span class="nav-icon">🎫</span>Tickets</a>
-    <a class="nav-item active" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
-    <a class="nav-item" href="{% url 'metricas' %}"><span class="nav-icon">📊</span>Metricas</a>
+
+    <div class="sidebar-label">Marketing</div>
+    <a class="nav-item" href="{% url 'promociones' %}"><span class="nav-icon">🎁</span>Promociones</a>
+    <a class="nav-item active" href="{% url 'restricciones' %}"><span class="nav-icon">🔒</span>Restricciones</a>
+
     <div class="sidebar-bottom">
         <button class="btn-theme" id="theme-toggle" onclick="toggleTheme()">🌙 Modo oscuro</button>
         <a class="btn-logout" href="{% url 'logout' %}">Cerrar sesion</a>
@@ -227,8 +263,8 @@
                     <tr>
                         <th>#</th>
                         <th>Nombre</th>
-                        <th>Consumo mínimo</th>
-                        <th>Visitas mínimas</th>
+                        <th>Tipo</th>
+                        <th>Mínimo requerido</th>
                         <th>Uso en promociones</th>
                         <th>Acciones</th>
                     </tr>
@@ -238,8 +274,24 @@
                     <tr class="data-row">
                         <td class="mono" style="color:var(--text-muted);font-size:12px;">{{ r.id_restriccion }}</td>
                         <td style="font-weight:500;">{{ r.nombre }}</td>
-                        <td class="mono">{{ r.consumo_minimo_para_aplicar }} piezas</td>
-                        <td class="mono">{{ r.visitas_minimas_para_aplicar }} tickets</td>
+                        <td>
+                            {% if r.tipo_restriccion == 'ITEMS' %}
+                                <span class="badge-tipo tipo-items">🛒 Piezas</span>
+                            {% elif r.tipo_restriccion == 'VISITAS' %}
+                                <span class="badge-tipo tipo-visitas">🔁 Visitas</span>
+                            {% else %}
+                                <span class="badge-tipo tipo-monto">💰 Monto</span>
+                            {% endif %}
+                        </td>
+                        <td class="mono">
+                            {% if r.tipo_restriccion == 'MONTO' %}
+                                ${{ r.consumo_minimo_para_aplicar }}
+                            {% elif r.tipo_restriccion == 'VISITAS' %}
+                                {{ r.consumo_minimo_para_aplicar }} visita{{ r.consumo_minimo_para_aplicar|pluralize:"s" }}
+                            {% else %}
+                                {{ r.consumo_minimo_para_aplicar }} pieza{{ r.consumo_minimo_para_aplicar|pluralize:"s" }}
+                            {% endif %}
+                        </td>
                         <td>
                             {% if r.total_promociones > 0 %}
                                 <span class="usage-badge badge-in-use">{{ r.total_promociones }} promocion{{ r.total_promociones|pluralize:"es" }}</span>
@@ -248,16 +300,19 @@
                             {% endif %}
                         </td>
                         <td>
-                            <form method="POST" style="display:inline;"
-                                  onsubmit="return confirm('¿Eliminar la restriccion «{{ r.nombre }}»?')">
-                                {% csrf_token %}
-                                <input type="hidden" name="action" value="delete_restriccion">
-                                <input type="hidden" name="restriccion_id" value="{{ r.id_restriccion }}">
-                                <button type="submit" class="btn-del"
-                                        {% if r.total_promociones > 0 %}disabled title="En uso por {{ r.total_promociones }} promocion(es)"{% endif %}>
-                                    Eliminar
-                                </button>
-                            </form>
+                            <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+                                <a class="btn-edit-row" href="?editar={{ r.id_restriccion }}">Editar</a>
+                                <form method="POST" style="display:inline;"
+                                      onsubmit="return confirm('¿Eliminar la restriccion «{{ r.nombre }}»?')">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="delete_restriccion">
+                                    <input type="hidden" name="restriccion_id" value="{{ r.id_restriccion }}">
+                                    <button type="submit" class="btn-del"
+                                            {% if r.total_promociones > 0 %}disabled title="En uso por {{ r.total_promociones }} promocion(es)"{% endif %}>
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     {% empty %}
@@ -280,40 +335,74 @@
             </div>
         </div>
 
-        <!-- Formulario nueva restriccion -->
+        <!-- Formulario nueva / editar restriccion -->
         <div>
             <div class="form-card anim d3">
-                <p class="form-title">Nueva restriccion</p>
+                <p class="form-title">{% if restriccion_editar %}Editar restriccion{% else %}Nueva restriccion{% endif %}</p>
                 <form method="POST" action="{% url 'restricciones' %}">
                     {% csrf_token %}
-                    <input type="hidden" name="action" value="create_restriccion">
+                    {% if restriccion_editar %}
+                        <input type="hidden" name="action" value="update_restriccion">
+                        <input type="hidden" name="restriccion_id" value="{{ restriccion_editar.id_restriccion }}">
+                    {% else %}
+                        <input type="hidden" name="action" value="create_restriccion">
+                    {% endif %}
 
                     <div class="field">
                         <label for="restriccion_nombre">Nombre</label>
                         <input type="text" id="restriccion_nombre" name="restriccion_nombre"
-                               placeholder="Ej: Clientes frecuentes" required maxlength="100">
+                               placeholder="Ej: Clientes frecuentes" required maxlength="25"
+                               value="{{ restriccion_editar.nombre|default:'' }}">
                     </div>
+
                     <div class="field">
-                        <label for="consumo_minimo">Consumo mínimo (piezas)</label>
+                        <label for="tipo_restriccion">Tipo de condicion</label>
+                        <select id="tipo_restriccion" name="tipo_restriccion" onchange="onTipoChange()">
+                            <option value="ITEMS" {% if restriccion_editar and restriccion_editar.tipo_restriccion == 'ITEMS' %}selected{% elif not restriccion_editar %}selected{% endif %}>🛒 Piezas en pedido</option>
+                            <option value="VISITAS" {% if restriccion_editar and restriccion_editar.tipo_restriccion == 'VISITAS' %}selected{% endif %}>🔁 Compras anteriores</option>
+                            <option value="MONTO" {% if restriccion_editar and restriccion_editar.tipo_restriccion == 'MONTO' %}selected{% endif %}>💰 Monto gastado ($)</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="consumo_minimo" id="lbl-minimo">Minimo de piezas</label>
                         <input type="number" id="consumo_minimo" name="consumo_minimo"
-                               min="0" value="0" placeholder="0 si no aplica">
-                        <p class="field-hint">Déjalo en 0 cuando la promoción solo dependa de visitas.</p>
+                               min="0" value="{{ restriccion_editar.consumo_minimo_para_aplicar|default:'0' }}" required>
+                        <p class="field-hint" id="hint-minimo">
+                            Cantidad de productos que el cliente debe llevar en este pedido.
+                        </p>
                     </div>
-                    <div class="field">
-                        <label for="visitas_minimas">Visitas mínimas (tickets)</label>
-                        <input type="number" id="visitas_minimas" name="visitas_minimas"
-                               min="0" value="0" required>
-                        <p class="field-hint">Número de tickets previos que debe tener el cliente para calificar.</p>
+
+                    <div style="display:flex;gap:10px;">
+                        <button class="btn-submit" type="submit" style="flex:1;">
+                            {% if restriccion_editar %}Guardar cambios{% else %}Agregar restriccion{% endif %}
+                        </button>
+                        {% if restriccion_editar %}
+                            <a href="{% url 'restricciones' %}"
+                               style="flex:0 0 auto;padding:0 16px;height:44px;line-height:44px;background:transparent;border:1px solid var(--card-border);color:var(--text-secondary);text-decoration:none;text-align:center;border-radius:10px;font:13px 'DM Sans',sans-serif;white-space:nowrap;display:inline-flex;align-items:center;">
+                                Cancelar
+                            </a>
+                        {% endif %}
                     </div>
-                    <button class="btn-submit" type="submit">Agregar restriccion</button>
                 </form>
             </div>
 
             <div class="info-card anim d4">
                 <strong>¿Qué es una restricción?</strong><br>
-                Define cuántos productos o visitas debe cumplir un cliente para que se le recomiende una promoción.<br><br>
-                Por ejemplo, con visitas mínimas de <strong>5</strong>, el descuento solo se recomienda cuando el cliente ya tiene al menos 5 tickets en su cuenta.<br><br>
-                No puedes eliminar una restricción que esté asignada a una o más promociones activas.
+                Establece la condición que un cliente debe cumplir para que se le pueda aplicar una promocion. Hay tres tipos:
+                <div class="info-tipo-row">
+                    <span class="info-tipo-dot" style="background:#4cc970;"></span>
+                    <span><strong style="color:#1a6030;">Piezas en pedido</strong> — el cliente debe llevar al menos N productos <em>en el pedido actual</em>.</span>
+                </div>
+                <div class="info-tipo-row">
+                    <span class="info-tipo-dot" style="background:#6495ED;"></span>
+                    <span><strong style="color:#1a3a7a;">Compras anteriores</strong> — el cliente debe haber realizado al menos N visitas previas al restaurante.</span>
+                </div>
+                <div class="info-tipo-row">
+                    <span class="info-tipo-dot" style="background:#D8AE48;"></span>
+                    <span><strong style="color:#7a5a00;">Monto gastado</strong> — el cliente debe haber gastado al menos $N en visitas pagadas anteriores.</span>
+                </div>
+                <br>No puedes eliminar una restriccion que esté asignada a una o mas promociones activas.
             </div>
         </div>
 
@@ -337,6 +426,22 @@
     }
     updateThemeBtn();
 
+    // ── Tipo de restriccion: etiquetas dinámicas ───────────────────
+    var TIPO_CONFIG = {
+        ITEMS:   { label: 'Minimo de piezas',    hint: 'Cantidad de productos que el cliente debe llevar en este pedido.' },
+        VISITAS: { label: 'Minimo de visitas',   hint: 'Numero de compras anteriores que el cliente debe tener registradas.' },
+        MONTO:   { label: 'Monto minimo ($)',     hint: 'Total en pesos que el cliente debe haber gastado en visitas pagadas anteriores.' },
+    };
+    function onTipoChange() {
+        var tipo = document.getElementById('tipo_restriccion').value;
+        var cfg  = TIPO_CONFIG[tipo] || TIPO_CONFIG['ITEMS'];
+        document.getElementById('lbl-minimo').textContent  = cfg.label;
+        document.getElementById('hint-minimo').textContent = cfg.hint;
+    }
+    // Aplicar etiqueta correcta al cargar (importante en modo edicion)
+    onTipoChange();
+
+    // ── Paginacion ─────────────────────────────────────────────────
 (function() {
     const PER_PAGE = 10;
     let page = 1;
@@ -354,7 +459,7 @@
         const start = (page - 1) * PER_PAGE;
         const end   = start + PER_PAGE;
         rows.forEach(function(tr, i) { tr.style.display = (i >= start && i < end) ? '' : 'none'; });
-        infoEl.textContent = 'Página ' + page + ' de ' + pages;
+        infoEl.textContent = 'Pagina ' + page + ' de ' + pages;
         jumpInput.value = page;
         jumpInput.max   = pages;
         ofEl.textContent = 'de ' + pages;

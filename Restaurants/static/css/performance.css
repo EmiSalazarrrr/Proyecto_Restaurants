@@ -78,17 +78,26 @@ a {
     *,
     *::before,
     *::after {
-        animation-duration: 0.01ms !important;
+        /*
+         * "reduce" significa más breve, no necesariamente cero.
+         * 0.25s mantiene el feedback visual respetando la preferencia del usuario.
+         * (0.01ms era tan corto que las animaciones parecían inexistentes)
+         */
+        animation-duration: 0.25s !important;
         animation-iteration-count: 1 !important;
+        animation-delay: 0s !important;
         scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
+        transition-duration: 0.25s !important;
+        transition-delay: 0s !important;
     }
 }
 
 @media (max-width: 900px) {
     body:has(.hero):has(.panel) {
-        display: grid !important;
-        grid-template-columns: 1fr !important;
+        /* flex-direction:column en lugar de grid para ser compatible
+           con la animación del panel (width:0 → 100% + translateY) */
+        display: flex !important;
+        flex-direction: column !important;
         min-height: 100svh;
         overflow-y: auto !important;
     }
@@ -125,8 +134,8 @@ a {
     }
 
     body:has(.hero):has(.panel) {
-        display: grid !important;
-        grid-template-columns: 1fr !important;
+        display: flex !important;
+        flex-direction: column !important;
         background:
             radial-gradient(ellipse at 70% 10%, rgba(201,168,76,0.13), transparent 35%),
             radial-gradient(ellipse at 10% 90%, rgba(51,90,160,0.18), transparent 35%),

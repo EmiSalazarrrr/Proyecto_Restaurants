@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <script>!function(){var t=localStorage.getItem('theme');t&&document.documentElement.setAttribute('data-theme',t)}();</script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket #{{ ticket.id_ticket }} | Restaurants</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
+    <style>
+        :root {
+            --bg: #F4F0E8;
+            --card-bg: #FDFAF7;
+            --card-border: rgba(33,40,66,0.16);
+            --accent: #D8AE48;
+            --text-primary: #0D1E3B;
+            --text-secondary: #5C4A3A;
+            --text-muted: #9B8B7A;
+            --success: #4cc970;
+            --danger: #f07a7a;
+            --divider: rgba(33,40,66,0.10);
+        }
+        html[data-theme="dark"] {
+            --bg: #111827;
+            --card-bg: #1a2035;
+            --card-border: rgba(255,255,255,0.07);
+            --text-primary: #e2ddd5;
+            --text-secondary: #a08870;
+            --text-muted: #6e5e52;
+            --accent: #D8AE48;
+            --success: #4cc970;
+            --danger: #f07a7a;
+            --divider: rgba(255,255,255,0.07);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text-primary);
+            font-family: "DM Sans", sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 16px 60px;
+        }
+
+        /* ── Top bar ── */
+        .topbar {
+            width: 100%;
+            max-width: 540px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+        .topbar-brand {
+            font-size: 15px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .topbar-brand b { color: var(--accent); }
+        .topbar-actions { display: flex; gap: 8px; align-items: center; }
+        .btn-back {
+            padding: 7px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            background: transparent;
+            color: var(--text-secondary);
+            font: 13px "DM Sans", sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-back:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-print {
+            padding: 7px 14px;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent);
+            color: #0D1E3B;
+            font: 600 13px "DM Sans", sans-serif;
+            text-decoration: none;
+            cursor: pointer;
+            transition: opacity 0.15s;
+            white-space: nowrap;
+        }
+        .btn-print:hover { opacity: 0.85; }
+        .btn-theme-mini {
+            padding: 7px 10px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .btn-theme-mini:hover { border-color: var(--accent); }
+
+        /* ── Receipt card ── */
+        .receipt {
+            width: 100%;
+            max-width: 540px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(13,30,59,0.06);
+        }
+
+        /* Header */
+        .receipt-header {
+            padding: 28px 32px 22px;
+            border-bottom: 1px solid var(--divider);
+            text-align: center;
+        }
+        .receipt-restaurant {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 4px;
+        }
+        .receipt-tagline {
+            font-size: 11px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* Meta row */
+        .receipt-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            border-bottom: 1px solid var(--divider);
+        }
+        .meta-cell {
+            padding: 14px 20px;
+        }
+        .meta-cell + .meta-cell {
+            border-left: 1px solid var(--divider);
+        }
+        .meta-label {
+            font-size: 10px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+        .meta-value {
+            font: 500 13px "DM Mono", monospace;
+            color: var(--text-primary);
+        }
+        .meta-value.accent { color: var(--accent); }
+
+        /* Customer row */
+        .receipt-client {
+            padding: 14px 20px;
+            border-bottom: 1px dashed var(--divider);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .client-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(216,174,72,0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+        .client-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        .client-user {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-family: "DM Mono", monospace;
+        }
+
+        /* Items */
+        .receipt-items {
+            padding: 0 20px;
+        }
+        .items-header {
+            display: grid;
+            grid-template-columns: 1fr auto auto auto;
+            gap: 8px;
+            padding: 12px 12px 8px;
+            font-size: 10px;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--divider);
+        }
+        .items-header .col-price,
+        .items-header .col-qty,
+        .items-header .col-total { text-align: right; }
+
+        .item-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto auto;
+            gap: 8px;
+            align-items: center;
+            padding: 11px 12px;
+            border-bottom: 1px solid var(--divider);
+            font-size: 13px;
+        }
+        .item-row:last-child { border-bottom: none; }
+        .item-name { color: var(--text-primary); font-weight: 500; }
+        .item-price { font-family: "DM Mono", monospace; color: var(--text-secondary); text-align: right; min-width: 60px; }
+        .item-qty   { font-family: "DM Mono", monospace; color: var(--text-muted); text-align: center; min-width: 28px; }
+        .item-total { font-family: "DM Mono", monospace; color: var(--text-primary); font-weight: 600; text-align: right; min-width: 64px; }
+
+        /* Totals */
+        .receipt-totals {
+            padding: 16px 32px 20px;
+            border-top: 1px dashed var(--divider);
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 4px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        .total-row.final {
+            margin-top: 10px;
+            padding-top: 12px;
+            border-top: 2px solid var(--divider);
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .total-row.discount { color: var(--success); }
+        .total-mono { font-family: "DM Mono", monospace; }
+
+        /* Promo badge */
+        .promo-row {
+            margin-top: 4px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(76,201,112,0.08);
+            border: 1px solid rgba(76,201,112,0.18);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #1a6030;
+        }
+        html[data-theme="dark"] .promo-row { color: var(--success); background: rgba(76,201,112,0.07); border-color: rgba(76,201,112,0.14); }
+        .promo-icon { font-size: 14px; }
+
+        /* Estado badge */
+        .status-section {
+            padding: 16px 20px;
+            border-top: 1px solid var(--divider);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+        .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .badge-abierto   { background: rgba(216,174,72,0.12);  color: #7a5c00; border: 1px solid rgba(216,174,72,0.25); }
+        .badge-canjeado  { background: rgba(99,143,255,0.14);  color: #1a3acc; border: 1px solid rgba(99,143,255,0.30); }
+        .badge-pagado    { background: rgba(76,201,112,0.12);  color: #1a6030; border: 1px solid rgba(76,201,112,0.25); }
+        .badge-expirado  { background: rgba(240,160,122,0.13); color: #7a3a10; border: 1px solid rgba(240,160,122,0.30); }
+        .badge-cancelado { background: rgba(155,139,122,0.12); color: #5a4a3a; border: 1px solid rgba(155,139,122,0.25); }
+        html[data-theme="dark"] .badge-abierto  { background: rgba(216,174,72,0.15);  color: #D8AE48; }
+        html[data-theme="dark"] .badge-canjeado { background: rgba(99,143,255,0.15);  color: #7eb3ff; }
+        html[data-theme="dark"] .badge-pagado   { background: rgba(76,201,112,0.15);  color: #4cc970; }
+        html[data-theme="dark"] .badge-expirado { background: rgba(240,160,122,0.15); color: #f0a07a; }
+        html[data-theme="dark"] .badge-cancelado{ background: rgba(155,139,122,0.12); color: #9B8B7A; }
+
+        .status-code {
+            font: 500 12px "DM Mono", monospace;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        .receipt-footer {
+            padding: 16px 32px;
+            text-align: center;
+            border-top: 1px dashed var(--divider);
+            font-size: 11px;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        /* Entrance animation */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .receipt { animation: fadeInUp 0.4s ease forwards; }
+        .topbar  { animation: fadeInUp 0.3s ease forwards; }
+
+        @media print {
+            body { padding: 0; background: #fff; }
+            .topbar { display: none; }
+            .receipt { border: none; border-radius: 0; box-shadow: none; max-width: 100%; }
+        }
+        @media (max-width: 580px) {
+            body { padding: 20px 12px 40px; }
+            .receipt-header { padding: 20px 20px 16px; }
+            .receipt-totals { padding: 14px 20px 18px; }
+            .receipt-footer { padding: 14px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+    <a class="topbar-brand" href="{% if es_admin %}{% url 'lista_tickets' %}{% else %}{% url 'historial' %}{% endif %}">
+        REST<b>AU</b>RANTS
+    </a>
+    <div class="topbar-actions">
+        <button class="btn-theme-mini" onclick="toggleTheme()" id="theme-btn" title="Cambiar tema">🌙</button>
+        {% if es_admin %}
+            <a href="{% url 'imprimir_ticket' ticket.id_ticket %}" target="_blank" class="btn-print">🖨 Imprimir</a>
+            <a href="{% url 'lista_tickets' %}" class="btn-back">← Tickets</a>
+        {% else %}
+            <a href="{% url 'historial' %}" class="btn-back">← Mi historial</a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Receipt -->
+<div class="receipt">
+
+    <!-- Header -->
+    <div class="receipt-header">
+        <div class="receipt-restaurant">Restaurants</div>
+        <div class="receipt-tagline">Comprobante de ticket</div>
+    </div>
+
+    <!-- Meta info -->
+    <div class="receipt-meta">
+        <div class="meta-cell">
+            <div class="meta-label">Ticket</div>
+            <div class="meta-value accent">#{{ ticket.id_ticket }}</div>
+        </div>
+        <div class="meta-cell">
+            <div class="meta-label">Fecha</div>
+            <div class="meta-value">{{ ticket.fecha|date:"d/m/Y" }} · {{ ticket.fecha|date:"H:i" }}</div>
+        </div>
+        <div class="meta-cell">
+            <div class="meta-label">Código</div>
+            <div class="meta-value">
+                {% if ticket.codigounico %}TK-{{ ticket.codigounico }}{% else %}—{% endif %}
+            </div>
+        </div>
+        <div class="meta-cell">
+            <div class="meta-label">Método de pago</div>
+            <div class="meta-value" style="text-transform: capitalize;">
+                {{ ticket.metodo_pago|default:"Pendiente" }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Client -->
+    {% if ticket.nombre_usuario %}
+    <div class="receipt-client">
+        <div class="client-icon">👤</div>
+        <div>
+            <div class="client-name">{{ ticket.nombre_usuario.nombre }} {{ ticket.nombre_usuario.apellido_paterno }}</div>
+            <div class="client-user">@{{ ticket.nombre_usuario.nombre_usuario }}</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Items -->
+    <div class="receipt-items">
+        <div class="items-header">
+            <span>Producto</span>
+            <span class="col-price">Precio unit.</span>
+            <span class="col-qty">Cant.</span>
+            <span class="col-total">Importe</span>
+        </div>
+        {% for linea in lineas %}
+        <div class="item-row">
+            <span class="item-name">{{ linea.nombre }}</span>
+            <span class="item-price">${{ linea.precio_unitario }}</span>
+            <span class="item-qty">× {{ linea.cantidad }}</span>
+            <span class="item-total">${{ linea.importe }}</span>
+        </div>
+        {% empty %}
+        <div style="padding: 20px 12px; color: var(--text-muted); font-size: 13px;">Sin productos registrados.</div>
+        {% endfor %}
+    </div>
+
+    <!-- Totals -->
+    <div class="receipt-totals">
+        <div class="total-row">
+            <span>Subtotal</span>
+            <span class="total-mono">${{ subtotal }}</span>
+        </div>
+
+        {% if ticket.id_promocion %}
+        <div class="total-row discount">
+            <span>Descuento ({{ ticket.id_promocion.nombre }} · {{ ticket.id_promocion.porcentaje_a_reducir }}%)</span>
+            <span class="total-mono">− ${{ descuento_amount }}</span>
+        </div>
+        {% endif %}
+
+        <div class="total-row final">
+            <span>Total</span>
+            <span class="total-mono">${{ ticket.precio_final }}</span>
+        </div>
+
+        {% if ticket.id_promocion %}
+        <div class="promo-row" style="margin-top: 12px;">
+            <span class="promo-icon">🎁</span>
+            <span>Promoción <strong>{{ ticket.id_promocion.nombre }}</strong> aplicada — ahorraste ${{ descuento_amount }}</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Estado -->
+    <div class="status-section">
+        {% if ticket.pagado %}
+            <span class="badge badge-pagado"><span class="badge-dot"></span>Pagado</span>
+        {% elif ticket.canjeado == 1 %}
+            <span class="badge badge-canjeado"><span class="badge-dot"></span>Canjeado — pendiente de cobro</span>
+        {% elif ticket.canjeado == -1 %}
+            <span class="badge badge-cancelado"><span class="badge-dot"></span>Cancelado</span>
+        {% else %}
+            <span class="badge badge-abierto"><span class="badge-dot"></span>Abierto</span>
+        {% endif %}
+        {% if ticket.codigounico %}
+        <span class="status-code">TK-{{ ticket.codigounico }}</span>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <div class="receipt-footer">
+        Gracias por tu visita &mdash; Restaurants &copy; {{ ticket.fecha|date:"Y" }}
+    </div>
+
+</div>
+
+<script>
+    function toggleTheme() {
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var next = dark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateThemeBtn();
+    }
+    function updateThemeBtn() {
+        var btn = document.getElementById('theme-btn');
+        if (!btn) return;
+        btn.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+    }
+    updateThemeBtn();
+</script>
+</body>
+</html>
