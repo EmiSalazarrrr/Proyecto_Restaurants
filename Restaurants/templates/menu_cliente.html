@@ -132,11 +132,19 @@
             border-color: var(--border);
             box-shadow: none;
         }
+        html[data-theme="dark"] .menu-category,
         html[data-theme="dark"] .menu-item,
         html[data-theme="dark"] .ticket-item {
             background: rgba(255,255,255,0.03);
             border-color: rgba(255,255,255,0.06);
         }
+        html[data-theme="dark"] .menu-category-title { color: var(--dark); }
+        html[data-theme="dark"] .menu-category-count {
+            background: rgba(216,174,72,0.14);
+            border-color: rgba(216,174,72,0.30);
+            color: var(--amber);
+        }
+        html[data-theme="dark"] .category-divider { background: rgba(255,255,255,0.07); }
         html[data-theme="dark"] .menu-item:hover,
         html[data-theme="dark"] .ticket-item:hover,
         html[data-theme="dark"] .stat-card:hover {
@@ -253,10 +261,57 @@
         .card-title { font-size: 14px; font-weight: 600; margin-bottom: 14px; color: var(--dark); }
 
         /* ── Menu list ── */
-        .menu-grid { display: grid; gap: 9px; max-height: 460px; overflow-y: auto; padding-right: 4px; }
+        .menu-grid { display: grid; gap: 14px; max-height: none; overflow: visible; padding-right: 0; }
         .menu-grid::-webkit-scrollbar { width: 4px; }
         .menu-grid::-webkit-scrollbar-track { background: transparent; }
         .menu-grid::-webkit-scrollbar-thumb { background: rgba(0,32,91,0.15); border-radius: 2px; }
+        .menu-category {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(248,243,240,0.58);
+            padding: 12px;
+        }
+        .menu-category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .menu-category-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--dark);
+        }
+        .menu-category-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .menu-category-count {
+            flex-shrink: 0;
+            font: 600 11px "DM Mono", monospace;
+            color: #8B6200;
+            background: rgba(242,169,0,0.14);
+            border: 1px solid rgba(242,169,0,0.30);
+            border-radius: 999px;
+            padding: 3px 9px;
+        }
+        .category-divider {
+            height: 1px;
+            background: rgba(0,32,91,0.08);
+            margin-bottom: 10px;
+        }
+        .category-items {
+            display: grid;
+            gap: 8px;
+        }
         .menu-item {
             border: 1px solid var(--border); border-radius: 11px;
             padding: 12px 14px; background: #F8F3F0;
@@ -269,13 +324,10 @@
         }
         .menu-item:hover { border-color: rgba(1,75,170,0.28); transform: translateX(3px); box-shadow: 0 2px 8px rgba(1,75,170,0.07); }
         .menu-item:nth-child(1)  { animation-delay: 0.52s; }
-        .menu-item:nth-child(2)  { animation-delay: 0.58s; }
-        .menu-item:nth-child(3)  { animation-delay: 0.64s; }
-        .menu-item:nth-child(4)  { animation-delay: 0.70s; }
-        .menu-item:nth-child(5)  { animation-delay: 0.76s; }
-        .menu-item:nth-child(6)  { animation-delay: 0.82s; }
-        .menu-item:nth-child(7)  { animation-delay: 0.88s; }
-        .menu-item:nth-child(n+8){ animation-delay: 0.94s; }
+        .menu-item:nth-child(2)  { animation-delay: 0.56s; }
+        .menu-item:nth-child(3)  { animation-delay: 0.60s; }
+        .menu-item:nth-child(4)  { animation-delay: 0.64s; }
+        .menu-item:nth-child(n+5){ animation-delay: 0.68s; }
         .menu-name { font-size: 13.5px; font-weight: 500; margin-bottom: 3px; color: var(--dark); }
         .menu-desc { color: var(--muted); font-size: 11.5px; line-height: 1.45; }
         .menu-price { font: 700 14px "DM Mono", monospace; color: var(--amber); white-space: nowrap; flex-shrink: 0; }
@@ -321,7 +373,7 @@
         ════════════════════════════════ */
         @media (max-width: 900px) {
             .content { grid-template-columns: 1fr; }
-            .menu-grid { max-height: 320px; }
+            .menu-grid { max-height: none; }
         }
 
         /* ════════════════════════════════
@@ -368,7 +420,11 @@
             .content { gap: 12px; }
             .card { padding: 14px 12px; border-radius: 12px; }
             .card-title { font-size: 13px; margin-bottom: 12px; }
-            .menu-grid { gap: 7px; max-height: 240px; }
+            .menu-grid { gap: 10px; max-height: none; }
+            .menu-category { padding: 10px; border-radius: 11px; }
+            .menu-category-header { margin-bottom: 8px; }
+            .menu-category-title { font-size: 11px; }
+            .menu-category-count { font-size: 10px; padding: 2px 8px; }
             .menu-item { padding: 10px 11px; border-radius: 10px; }
             .menu-name { font-size: 13px; }
             .menu-desc { font-size: 11px; }
@@ -436,14 +492,34 @@
         <article class="card anim d5">
             <h3 class="card-title">Menú disponible</h3>
             <div class="menu-grid">
-                {% for alimento in alimentos %}
-                    <div class="menu-item">
-                        <div>
-                            <div class="menu-name">{{ alimento.nombre }}</div>
-                            <div class="menu-desc">{{ alimento.descripcion }}</div>
+                {% regroup alimentos by categoria as categorias_menu %}
+                {% for categoria in categorias_menu %}
+                    <section class="menu-category">
+                        <div class="menu-category-header">
+                            <div class="menu-category-title">
+                                {% if categoria.grouper %}
+                                    <span>{{ categoria.grouper.icono }}</span>
+                                    <span class="menu-category-name">{{ categoria.grouper.nombre }}</span>
+                                {% else %}
+                                    <span>🍽️</span>
+                                    <span class="menu-category-name">Sin categoría</span>
+                                {% endif %}
+                            </div>
+                            <span class="menu-category-count">{{ categoria.list|length }}</span>
                         </div>
-                        <div class="menu-price">${{ alimento.costo }}</div>
-                    </div>
+                        <div class="category-divider"></div>
+                        <div class="category-items">
+                            {% for alimento in categoria.list %}
+                                <div class="menu-item">
+                                    <div>
+                                        <div class="menu-name">{{ alimento.nombre }}</div>
+                                        <div class="menu-desc">{{ alimento.descripcion }}</div>
+                                    </div>
+                                    <div class="menu-price">${{ alimento.costo }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </section>
                 {% empty %}
                     <p class="empty">No hay productos disponibles.</p>
                 {% endfor %}
