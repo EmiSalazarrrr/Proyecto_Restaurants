@@ -176,7 +176,12 @@ def menu_cliente_view(request):
 
     tickets_stats = tickets_base.filter(fecha__date=fecha_filtro) if fecha_filtro else tickets_base
 
-    alimentos = Alimentosbebidas.objects.filter(activo=True).order_by("nombre")
+    alimentos = (
+        Alimentosbebidas.objects
+        .filter(activo=True)
+        .select_related("categoria")
+        .order_by("categoria__orden", "categoria__nombre", "nombre")
+    )
     total_gastado = tickets_stats.aggregate(total=Sum("precio_final"))["total"] or 0
     total_visitas = tickets_stats.count()
 
